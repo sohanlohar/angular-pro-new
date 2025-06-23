@@ -1,0 +1,13 @@
+<form (submit)="submitFormField()" class="search-input-form-wrap">
+  <mat-form-field class="search-input" [class.full-width]="fullWidth" appearance="standard">
+    <input matInput type="text" autocomplete="off" class="search-input-box"
+      [placeholder]="placeholder"
+      (input)="onInputChange($event)">
+    <button matSuffix mat-icon-button type="submit">
+       <span class="icon-wrapper">
+        <span class="divider"></span>
+        <mat-icon>search</mat-icon>
+      </span>
+    </button>
+  </mat-form-field>
+</form>
