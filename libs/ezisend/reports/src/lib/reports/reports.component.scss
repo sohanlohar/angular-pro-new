@@ -85,6 +85,9 @@ pos-page-layout {
       // .mat-form-field-infix {
       //   width: 300px;
       // }
+      .mat-form-field-wrapper {
+        padding-bottom: 0;
+      }
       .mat-form-field-flex {
         padding-top: 0 !important;
       }
@@ -182,7 +185,7 @@ pos-page-layout {
     padding: 4px 0;
 
     .mat-form-field-wrapper {
-      // padding-bottom: 0.7rem;
+      padding-bottom: 0;
     }
 
     // .mat-form-field-infix {

@@ -87,7 +87,7 @@
       padding: 0.5rem 0;
       border-radius: 4px;
       height: auto;
-      width: 95%;
+      width: 100%;
 
         .pickup_default_badge {
             position: absolute;
@@ -228,13 +228,13 @@
   .button-next-recipient{
     // margin-top: 1em;
     // margin-bottom: 1em;
-    width: 95%;
+    // width: 95%;
     // margin-left: 7%;
     position: sticky;
     button{
 // width: 88%;
 // width: 97%;
-width: 95%;
+// width: 95%;
 background-color: rgba(4, 78, 146, 1);
     color: rgba(226, 236, 245, 1);
     height: 40px;
@@ -248,12 +248,12 @@ background-color: rgba(4, 78, 146, 1);
     height: 420px;
   }
 .pickup_list li {
-  width: 95%;
+  // width: 95%;
 }
 }
 @media screen and (max-width: 770px) {
   .pickup_list li {
-    width: 98%;
+    // width: 98%;
   }
   .pickup_list {
     width: 100%;

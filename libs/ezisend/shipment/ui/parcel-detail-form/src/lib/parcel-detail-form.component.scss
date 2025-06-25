@@ -721,7 +721,10 @@
     margin: 0.25em 0 !important;
   }
   .insurance-notes {
-    margin: 0 16px;
+    // margin: 0 16px;
+  }
+  ul.insurance_notes{
+    padding-left: 20px;
   }
   .dimensionWidth {
     width: 100%;
