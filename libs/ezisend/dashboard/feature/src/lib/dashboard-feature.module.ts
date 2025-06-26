@@ -8,6 +8,7 @@ import { NewsPromoModule } from '@pos/ezisend/dashboard/ui/news-promo';
 import { ShipmentSummaryModule } from '@pos/ezisend/dashboard/ui/shipment-summary';
 import { EzisendDashboardUiDashboardMainTileModule } from '@pos/ezisend/dashboard/ui/dashboard-main-tile';
 import { EzisendDashboardUiInsightsModule } from '@pos/ezisend/dashboard/ui/insights';
+import { EzisendSlaDashboardModule } from '@pos/ezisend/sla-dashboard'
 import { BannerModule } from '@pos/ezisend/shared/ui/banner';
 
 @NgModule({
@@ -20,7 +21,8 @@ import { BannerModule } from '@pos/ezisend/shared/ui/banner';
     ShipmentSummaryModule,
     EzisendDashboardUiInsightsModule,
     RouterModule.forChild([{ path: '', component: DashboardComponent }]),
-    BannerModule
+    BannerModule,
+    EzisendSlaDashboardModule
   ],
   declarations: [DashboardComponent],
 })

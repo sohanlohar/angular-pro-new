@@ -16,19 +16,28 @@
 <div class="layout">
   <div
     class="sidebar"
-    [class.sidebar-active]="sidebarActive">
+    [class.sidebar-active]="sidebarActive"
+  [class.sidebar-hover]="hoveringSidebar"
+  (mouseenter)="onSidebarHover(true)"
+  (mouseleave)="onSidebarHover(false)">
+  <div class="sidebar-toggle">
+    <button (click)="expandMenu()" class="toggle-btn">
+      <span *ngIf="sidebarActive" class="collapsedSpan"><span class="arrowIcon active"></span> <span class="collapseText"></span></span>
+      <span *ngIf="!sidebarActive" class="arrowIcon"></span>
+    </button>
+  </div>
     <pos-nav-sidebar
       #navSidebar
-      [sidebarActive]="sidebarActive"
+       [sidebarActive]="sidebarActive || hoveringSidebar"
       (navItemClicked)="navItemClick($event)">
     </pos-nav-sidebar>
     <div class="version_num">
       <!-- <span class="version_num_text">v{{version}}</span> -->
-      <div *ngIf="!sidebarActive" class="expand_menu" (click)="expandMenu()">>></div>
+      <!-- <div *ngIf="!sidebarActive" class="expand_menu" (click)="expandMenu()">>></div>
       <div *ngIf="sidebarActive" (click)="expandMenu()" class="expand_menu">
         <span><<</span>
         <span>Collapse</span>
-      </div>
+      </div> -->
     </div>
 
   </div>

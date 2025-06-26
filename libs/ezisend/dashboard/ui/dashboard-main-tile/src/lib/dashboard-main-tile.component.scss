@@ -1,8 +1,7 @@
 @use 'apps/ezisend/src/styles/variables/index' as v;
 
 .container {
-  .content-container,
-  .pickup-container {
+  .content-container, .pickup-container {
     color: v.$teritary_color;
     font-size: v.$font_size_m;
     font-weight: v.$font-weight-medium;

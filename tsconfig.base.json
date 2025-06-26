@@ -303,6 +303,7 @@
       "@pos/ezisend/shipment/ui/smart-input": [
         "libs/ezisend/shipment/ui/smart-input/src/index.ts"
       ],
+      "@pos/ezisend/sla-dashboard": ["libs/ezisend/sla-dashboard/src/index.ts"],
       "@pos/ezisend/user-management/feature/add-user": [
         "libs/ezisend/user-management/feature/add-user/src/index.ts"
       ],

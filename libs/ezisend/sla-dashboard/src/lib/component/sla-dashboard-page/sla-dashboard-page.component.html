@@ -1,0 +1,228 @@
+<div class="container-page">
+  <div class="spinner-container" *ngIf="isLoading">
+    <mat-spinner class="spinner"></mat-spinner>
+  </div>
+
+  <div class="header-sla">
+    <span class="main-title">SLA Dashboard</span>
+    <div class="header-filter">
+      <div class="date-picker-container">
+        <form [formGroup]="dateRangePickerForm" class="date-picker-form">
+          <pos-date-range-picker
+            (formChange)="onDateRangePickerFormChange($event)"
+            class="px-3"
+          ></pos-date-range-picker>
+        </form>
+        <label>Last Refreshed: {{ updatedLastRefreshed }}</label>
+      </div>
+      <div class="button-download">
+        <button mat-flat-button color="primary" [matMenuTriggerFor]="menu">
+          Download As
+          <mat-icon class="material-icon-outlined" mat-icon-button>
+            arrow_drop_down
+          </mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item>Report (.xlsx)</button>
+          <button mat-menu-item>Report (.pdf)</button>
+        </mat-menu>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex-container">
+    <div class="container">
+      <div class="title-container">
+        <span>SLA Status</span>
+        <button mat-flat-button color="primary" [matMenuTriggerFor]="menu">
+          Download As
+          <mat-icon class="material-icon-outlined" mat-icon-button>
+            arrow_drop_down
+          </mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item>Report (.xlsx)</button>
+          <button mat-menu-item>Report (.pdf)</button>
+        </mat-menu>
+      </div>
+      <div class="chart-card">
+        <canvas
+          baseChart
+          [datasets]="statusPieData"
+          [labels]="statusPieLabels"
+          [options]="statusPieOptions"
+          [legend]="true"
+          [chartType]="'doughnut'"
+        >
+        </canvas>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="title-container">
+        <span>SLA Type (D+1 to D+5)</span>
+        <button mat-flat-button color="primary" [matMenuTriggerFor]="menu">
+          Download As
+          <mat-icon class="material-icon-outlined" mat-icon-button>
+            arrow_drop_down
+          </mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item>Report (.xlsx)</button>
+          <button mat-menu-item>Report (.pdf)</button>
+        </mat-menu>
+      </div>
+      <div class="chart-card">
+        <canvas
+          baseChart
+          [datasets]="catBarData"
+          [labels]="catBarLabels"
+          [options]="catBarOptions"
+          [legend]="catBarLegend"
+          [chartType]="catBarType"
+        >
+        </canvas>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <div class="container one-column">
+    <div class="title-container">
+      <span>SLA by Destination</span>
+      <button mat-flat-button color="primary" [matMenuTriggerFor]="menu">
+        Download As
+        <mat-icon class="material-icon-outlined" mat-icon-button>
+          arrow_drop_down
+        </mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item>Report (.xlsx)</button>
+        <button mat-menu-item>Report (.pdf)</button>
+      </mat-menu>
+    </div>
+    <!-- <div class="flex-container">
+      <div class="chart-container">
+        <canvas
+          baseChart
+          [datasets]="stateChartData"
+          [labels]="stateChartLabels"
+          [options]="stateChartOptions"
+          [legend]="true"
+          [chartType]="'horizontalBar'"
+        >
+        </canvas>
+      </div>
+      <div class="chart-container">
+        <canvas
+          baseChart
+          [datasets]="stateChartData2"
+          [labels]="stateChartLabels"
+          [options]="stateChartOptions2"
+          [legend]="true"
+          [chartType]="'horizontalBar'"
+        >
+        </canvas>
+      </div>
+    </div>
+
+    <div class="report-title">
+      <span class="title">Total Shipment: </span>
+      <span class="number">{{ totalShipmentState }}</span>
+    </div> -->
+
+    <div class="shipment-chart">
+      <div class="shipment-row" *ngFor="let item of shipmentData">
+        <!-- State Name Label -->
+        <div class="state-name">{{ item.state }}</div>
+
+        <!-- SLA Percentage Bar -->
+        <div class="label-section">
+          <div
+            class="percentage-bar"
+            [ngStyle]="{
+              'width.%': item.percentage,
+              'background-color':
+                item.percentage >= 90
+                  ? '#72f285'
+                  : item.percentage >= 80
+                  ? '#f2b572'
+                  : '#f25c5c'
+            }"
+          >
+            {{ item.percentage.toFixed(2) }}%
+          </div>
+        </div>
+
+        <!-- Shipment Bar -->
+        <div class="shipment-section">
+          <div
+            class="shipment-bar"
+            [style.width.%]="getShipmentBarWidth(item.shipments)"
+          >
+            {{ item.shipments | number }}
+          </div>
+        </div>
+      </div>
+
+      <div class="total-shipment">
+        Total Shipment: <strong>{{ getTotalShipments() | number }}</strong>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="container one-column">
+    <div class="title-container">
+      <span>Delivery Exceptions</span>
+    </div>
+
+    <div class="pieChart">
+      <div class="section-data">
+        <canvas
+          baseChart
+          [data]="dexChartData"
+          [labels]="dexChartLabels"
+          [chartType]="'doughnut'"
+          [options]="dexChartOptions"
+          [colors]="dexChartColors"
+          style="width: 800px"
+        >
+        </canvas>
+      </div>
+
+      <div class="pieTable scrollable">
+        <table mat-table [dataSource]="dexSourceData" class="mat-elevation-z8">
+          <ng-container matColumnDef="label">
+            <th mat-header-cell *matHeaderCellDef class="align-left">
+              Description
+            </th>
+            <td mat-cell *matCellDef="let element" class="align-left nowrap">
+              <span
+                class="color-box"
+                [ngStyle]="{ 'background-color': element.color }"
+              ></span>
+              {{ element.label }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="count">
+            <th class="nowrap" mat-header-cell *matHeaderCellDef>Total</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.count }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="percentage">
+            <th class="pl-10" mat-header-cell *matHeaderCellDef>Percentage</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.percentage }}%
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns2"></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

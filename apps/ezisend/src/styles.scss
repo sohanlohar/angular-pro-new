@@ -181,7 +181,9 @@ textarea.mat-input-element {
 .mat-form-field-disabled .mat-form-field-infix mat-select .mat-select-value {
   color: #a6a6a6;
 }
-
+.mat-form-field-wrapper{
+  padding-bottom: 0;
+}
 @media screen and (max-width: 375px) {
   .mat-datepicker-popup .mat-datepicker-content .mat-datepicker-content-container .mat-calendar {
     width: 220px;

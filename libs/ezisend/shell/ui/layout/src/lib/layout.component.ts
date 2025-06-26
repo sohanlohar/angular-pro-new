@@ -21,6 +21,8 @@ export class LayoutComponent {
   sidebarActive = false;
   widthScreen = window.innerWidth;
   showTopButton = false;
+  hoveringSidebar = false;
+  hasToggledSidebar = false;
   showBottomButton = true;
   version: string = environment.version;
 
@@ -36,7 +38,9 @@ export class LayoutComponent {
   ) {
     this.authStore.init();
     this.listenWidthScreen();
-    this.sidebarActive = this.getLocalStorage() === 'true';
+    const storedSidebar = this.getLocalStorage();
+    this.sidebarActive = storedSidebar === 'true';
+    this.hasToggledSidebar = storedSidebar !== null;
   }
 
   navItemClick(menu: string) {
@@ -54,12 +58,13 @@ export class LayoutComponent {
   }
 
   private listenWidthScreen() {
-    this.widthScreen = window.innerWidth;
-    if (this.widthScreen < 768) {
-      this.sidebarActive = false;
-      this.setLocalStorage();
-    }
+  this.widthScreen = window.innerWidth;
+  if (this.widthScreen < 768) {
+    this.sidebarActive = false;
+    this.hasToggledSidebar = true;
+    this.setLocalStorage();
   }
+}
 
   @HostListener('window:scroll')
   onScroll() {
@@ -82,9 +87,17 @@ export class LayoutComponent {
   }
 
   expandMenu() {
-    this.sidebarActive = !this.sidebarActive;
-    this.setLocalStorage();
+   this.sidebarActive = !this.sidebarActive;
+  this.hasToggledSidebar = true;
+  this.setLocalStorage();
+}
+
+onSidebarHover(state: boolean) {
+  // Only trigger hover-expand when user has clicked to collapse
+  if (!this.sidebarActive && this.hasToggledSidebar) {
+    this.hoveringSidebar = state;
   }
+}
 
   collapseSidebar(event: boolean) {
     if (event && !this.sidebarActive) {

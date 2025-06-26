@@ -23,7 +23,7 @@ export class PickupDialogComponent {
   currentDate = moment(new Date()).startOf('day');
   showError = false;
   errorMessage = '';
-  date = '';
+   date = '';
   start_date = '';
   end_date = '';
   cutOff = moment().clone().hour(14).minute(30).second(0);
@@ -68,11 +68,10 @@ export class PickupDialogComponent {
     })
   }
   ngOnInit(): void {
-    this.start_date  = moment().format('YYYY-MM-DDT00:00:00[Z]');
-    this.end_date = moment().add(30, 'days').format('YYYY-MM-DDT00:00:00[Z]');
+    const defaultDate = moment().isBefore(this.cutOff) ? moment() : moment().add(1, 'day');
     this.dateRangePickerForm= this.fb.group({
-      start_date: [this.start_date],
-      end_date: [this.end_date],
+      start_date: [defaultDate.toDate()],
+      end_date: [defaultDate.toDate()],
     });
   }
   setDefaultDate() {
@@ -85,17 +84,18 @@ export class PickupDialogComponent {
     }
   };
   onDateRangePickerFormChange(event: any) {
-    if (event) {
-      this.start_date = event.start_date;
-      this.end_date = event.end_date;
-      const eventDetails ={
+     // This method is for a generic date-range-picker component.
+    // Since this dialog now uses a single date, we'll treat its event as a single date selection.
+    if (event && event.start_date) {
+      this.onDateSelected({ startDate: event.start_date });
+       const eventDetails ={
         "event": "pick_up_select_date",
         "event_category": "SendParcel Pro - My Shipments - Request For Pick Up",
         "event_action": "Select Pick Up Date",
         "event_label": "Pick Up Date"
       };
       this.commonService.googleEventPush(eventDetails)
-    } else {
+      } else {
       this.start_date = '';
       this.end_date = '';
     }
@@ -139,7 +139,7 @@ export class PickupDialogComponent {
 
   onDateSelected(event: any) {
     if (event && event.startDate) {
-      this.date = moment(event.startDate).format('YYYY-MM-DDTHH:mm:ss[Z]');
+      this.date = moment(event.startDate).utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
       this.showError = false;
       this.errorMessage = '';
     } else {

@@ -42,6 +42,11 @@
     padding: 1.5rem;
 
     .dashboard-datepicker {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      justify-content: start;
+
       > span {
         font-size: 13px;
       }
@@ -147,5 +152,110 @@
         padding: 1rem;
       }
     }
+  }
+}
+
+.header-search {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mat-flat-button.mat-primary, .mat-raised-button.mat-primary, .mat-fab.mat-primary, .mat-mini-fab.mat-primary {
+  background-color: #034d91 !important;
+  color: #fff !important;
+
+  &:disabled {
+    background-color: #e0e0e0!important;
+    color: #000!important;
+    cursor: not-allowed!important;
+  }
+}
+
+
+  .pieTable {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .description {
+      margin-top: 30px;
+    }
+
+    ::ng-deep .mat-table {
+      box-shadow: none;
+      border: 1px solid #E1E1E1;
+      text-align: center;
+      border-radius: 5px;
+      // height: 100%;
+
+      .mat-header-cell {
+        color: #5E5873;
+        background-color: #F4F4F4;
+        text-align: center;
+      }
+
+      .mat-row {
+        // height: 80px;
+      }
+    }
+  }
+
+.box-color {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 5px;
+  .color-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    margin-right: 5px;
+  }
+}
+
+.cod_chart {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .pieChart {
+    width: 50%;
+  }
+}
+
+.description {
+  font-size: 16px;
+  font-weight: v.$font-weight-medium;
+  margin-bottom: 2.5rem;
+  display: flex;
+  width: 100%;
+  color: #5E5873;
+  line-height: 24px;
+  .end {
+    color: #5E5873;
+    font-size: 14px;
+  }
+}
+
+.npx-charts {
+  margin-top: 30px;
+  padding-bottom: 30px;
+}
+
+
+.wrapper-column {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 48px;
+
+  .column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
   }
 }

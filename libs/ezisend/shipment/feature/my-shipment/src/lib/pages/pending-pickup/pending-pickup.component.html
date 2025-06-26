@@ -14,7 +14,7 @@
       <label class="container-label">{{languageData.date_range}}</label>
       <div class="container-action date-range-picker">
         <form [formGroup]="dateRangePickerForm">
-          <pos-date-range-picker (formChange)="onDateRangePickerFormChange($event)" [minDate]="minSelectableDate" [maxDate]="maxSelectableDate"
+          <pos-date-range-picker (formChange)="onDateRangePickerFormChange($event)" [minDate]="minSelectableDate" [maxDate]="maxSelectableDate" [initialRange]="'next30'"
           (formChange)="onDateRangePickerFormChange($event)"
           [formGroup]="dateRangePickerForm" class="px-3"  ></pos-date-range-picker>
         </form>

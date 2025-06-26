@@ -1,6 +1,6 @@
 .my-shipment-wrapper {
-  .action-button,
-  .action-field {
+  // .action-button,
+  // .action-field {
     // display: flex;
     // flex-direction: row;
     // justify-content: left;
@@ -8,7 +8,7 @@
     // flex-wrap: wrap;
     // background-color: white;
     // border-radius: 10px 10px 0 0;
-  }
+  // }
 
   .action-button {
     padding-bottom: 0.5em;
@@ -105,12 +105,12 @@
     }
   }
 
-  .container-right {
+  // .container-right {
     // margin-left: auto;
     // display: flex;
     // flex-direction: row;
     // padding-top: 40px;
-  }
+  // }
   .container-label {
     width: 10px;
   }
@@ -129,9 +129,9 @@
   .my-shipment-wrapper .container-right {
     padding-top: 25px;
   }
-  .container .container-action {
+  // .container .container-action {
     // height: 3rem !important ;
-  }
+  // }
   .my-shipment-wrapper .container {
     padding-top: 10px;
   }
@@ -147,11 +147,11 @@
 //   }
 // }
 @media screen and (max-width: 760px) {
-  ::ng-deep {
-    .search-input .mat-form-field-infix {
-      // height: 21px !important;
-    }
-  }
+  // ::ng-deep {
+  //   .search-input .mat-form-field-infix {
+  //     height: 21px !important;
+  //   }
+  // }
   .my-shipment-wrapper .container {
     width: 100%;
     .container-action {

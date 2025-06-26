@@ -2,6 +2,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import {
   ChangeDetectorRef,
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnChanges,
@@ -9,6 +10,7 @@ import {
   OnInit,
   Output,
   SimpleChanges,
+  ViewChild,
 } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -53,6 +55,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./my-shipment-table.component.scss'],
 })
 export class MyShipmentTableComponent implements OnInit, OnChanges, OnDestroy {
+  @ViewChild('tableWrapper') tableWrapperEl!: ElementRef<HTMLDivElement>;
   searchContactStatus = false;
   numSelected = 0;
   searchContact = '';
@@ -88,6 +91,8 @@ export class MyShipmentTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() shopify = './assets/shopify-logo.svg'
   @Input() woo = './assets/wooCommerce.svg'
   @Input() fromMps = false;
+  @Input() isDateRangePickerOpen = false; // New Input to receive picker state
+  public applyMinHeight300Rule = false; // Property to control the 300px min-height rule
   @Input() viewBy = '';
   // pageSizeOptions = [10, 20, 50, 100, 150, 200]; ASAL
   woo2 = './assets/wooCommerce2.svg';
@@ -225,7 +230,6 @@ export class MyShipmentTableComponent implements OnInit, OnChanges, OnDestroy {
       this.pageSize = size;
     });
   }
-
   AssignLanguageLabel() {
     this.dropDownFilter = [
       { id: 'complete', label: this.languageData.no_tracking_id2 },
@@ -336,6 +340,16 @@ export class MyShipmentTableComponent implements OnInit, OnChanges, OnDestroy {
     this.dataTable.data = [];
     this.enabledDataTable = [];
     this.total = 0;
+
+    const onCompleteOrError = () => {
+      this.isListingLoading = false;
+      this.commonService.setTableLoad(false);
+      // Ensure this runs after the DOM has updated due to data changes
+      Promise.resolve().then(() => {
+        this.checkAndUpdateHeightRules();
+        this.cdr.markForCheck(); 
+      });
+    };
     if (this.shipment$) {
       this.shipment$
         .pipe(
@@ -343,7 +357,7 @@ export class MyShipmentTableComponent implements OnInit, OnChanges, OnDestroy {
           tap((res: IResponse<IShipment>) => {
             if(res.error?.error?.code === 'E1005') {
               this.isTimeout = true;
-              this.isListingLoading = false;
+              // this.isListingLoading = false; // Handled by onCompleteOrError
             } else {
               this.isTimeout = false;
               this.dataTable.data = res.data.shipments;
@@ -367,23 +381,23 @@ export class MyShipmentTableComponent implements OnInit, OnChanges, OnDestroy {
                   data.channelOrderLogo = this.getLogo(data.channel_order?.channel)
                 })
               }
-              this.isListingLoading = false;
+              // this.isListingLoading = false; // Handled by onCompleteOrError
             }
 
           }),
-          finalize(() => this.commonService.setTableLoad(false)),
+          finalize(onCompleteOrError),
           catchError((err) => {
-            this.isListingLoading = false;
+            // this.isListingLoading = false; // Handled by onCompleteOrError
             this.dataTable.data = [];
-            this.cdr.detectChanges();
             this.enabledDataTable = [];
             this.total = 0;
+            this.cdr.markForCheck();
             return throwError(err);
           })
         )
         .subscribe(() => this.cdr.detectChanges());
     }
-    if(this.myStore$) {
+    else if(this.myStore$) { // Make this exclusive if shipment$ is not present
       this.myStore$
         .pipe(
           takeUntil(this._onDestroy),
@@ -392,22 +406,27 @@ export class MyShipmentTableComponent implements OnInit, OnChanges, OnDestroy {
            this.total = res.data.total;
            this.totalShipmentRecords.emit(this.total);
           }),
-          finalize(() => this.commonService.setTableLoad(false)),
+          finalize(onCompleteOrError),
           catchError((err) => {
-            this.isListingLoading = false;
-            // this.dataTable.data = [];
-            this.cdr.detectChanges();
+            // this.isListingLoading = false; // Handled by onCompleteOrError
+            this.dataTable.data = [];
             this.enabledDataTable = [];
             this.total = 0;
+            this.cdr.markForCheck();
             return throwError(err);
           })
         )
         .subscribe(() => this.cdr.detectChanges());
-      // this.dataTable.data = [{channel:'test'},{channel:'data'}];
-      // this.isListingLoading = false;
-      // this.commonService.setTableLoad(false)
-      // console.log(this.commonService.$onTableLoad)
+    } else {
+      // Case where neither shipment$ nor myStore$ is provided (e.g., synchronous data)
+      this.isListingLoading = false;
+      this.commonService.setTableLoad(false);
+      Promise.resolve().then(() => {
+          this.checkAndUpdateHeightRules();
+          this.cdr.markForCheck();
+      });
     }
+
   }
 
   private handleCheckboxFilter() {
@@ -619,6 +638,24 @@ export class MyShipmentTableComponent implements OnInit, OnChanges, OnDestroy {
 
   isListingEmpty() {
     return this.dataTable.data.length === 0 && !this.isListingLoading;
+  }
+
+  private checkAndUpdateHeightRules(): void {
+    let newApplyMinHeight300Rule = false;
+
+    // Check for 300px rule only if the listing is NOT empty
+    if (!this.isListingEmpty() && this.tableWrapperEl && this.tableWrapperEl.nativeElement) {
+      const currentHeight = this.tableWrapperEl.nativeElement.offsetHeight;
+      // Apply 300px rule if height is > 0 (rendered) and < 300px
+      if (currentHeight > 0 && currentHeight < 300) {
+        newApplyMinHeight300Rule = true;
+      }
+    }
+
+    if (this.applyMinHeight300Rule !== newApplyMinHeight300Rule) {
+      this.applyMinHeight300Rule = newApplyMinHeight300Rule;
+    }
+    // The 500px rule is handled directly by isListingEmpty() in the template.
   }
 
   changeDateFormat(date:string) {

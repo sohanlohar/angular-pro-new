@@ -281,6 +281,13 @@ export class ParcelDetailFormComponent
   isCountryMY = true;
   isPendingPickup = false;
   getCitiesByPostcode$!: Observable<any>;
+  
+   // SPPI-2323 : Suspend/Block Countries for EMS, Air Parcel & Surface Parcel
+   productMapping: { [key: string]: string } = {
+    'EMS': 'Pos Laju International',
+    'Air Parcel': 'Economy International (Air)',
+    'Surface Parcel': 'Economy International (Surface)'
+  };
 
     constructor(
     private _snackBar: MatSnackBar,
@@ -422,7 +429,7 @@ export class ParcelDetailFormComponent
       .subscribe(() => {
         this.filterHSCLists();
       });
-    this.getEmsCountry();
+    this.getSuspendedCountryList();
         this.parcelAbroadForm = this.fb.group({
       category: ['', Validators.required],
       category_details: ['', Validators.required],
@@ -1805,7 +1812,7 @@ export class ParcelDetailFormComponent
     }
     return invalid;
   }
-  getEmsCountry() {
+  getSuspendedCountryList() {
     this.commonService.getCurrentRecipientData$.subscribe((val) => {
       if(val?.recipient?.country !== undefined) {
         if(val?.recipient && val?.recipient?.country !== 'MY') {
@@ -1814,6 +1821,7 @@ export class ParcelDetailFormComponent
           .pipe(
             takeUntil(this._onDestroy),
             tap((response: any) => {
+              
               this.disabledProducts = response.data.map((product: IProductDisable) => product.product);
               if(!this.isEditOrder) {
                 if (this.disabledProducts) this.parcelAbroadForm.controls['product']?.setValue('')
@@ -1835,9 +1843,24 @@ export class ParcelDetailFormComponent
   openSnackBar(message: string, action: string, time: number){
     this._snackBar.open(message, action, {duration: time})
   }
-  getDisabledCountry(product: string) {
-    return this.disabledProducts.includes(product)
+  
+  // SPPI-2323 : Suspend/Block Countries for EMS, Air Parcel & Surface Parcel
+  reverseProductMapping: { [key: string]: string } = (() => {
+    const reverse: { [key: string]: string } = {};
+    for (const api in this.productMapping) {
+      if (this.productMapping.hasOwnProperty(api)) {
+        const display = this.productMapping[api];
+        reverse[display] = api;
+      }
+    }
+    return reverse;
+  })();
+  
+  getDisabledCountry(product: string): boolean {
+    const apiProductName = this.reverseProductMapping[product];
+    return this.disabledProducts.includes(apiProductName);
   }
+  
   showCOD(){
     return this.is_cod && !this.isReturnOrder && !this.isMelPlus && !this.isMPS;
   }

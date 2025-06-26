@@ -146,7 +146,7 @@ export const shellRoutes: Route[] = [
             (m) => m.EzisendUserManagementFeatureAddUserModule
           ),
       },
-      
+
       {
         path: 'billing',
         loadChildren: () =>
@@ -161,7 +161,7 @@ export const shellRoutes: Route[] = [
             (m) => m.ReportsModule
           ),
       },
-      /**  TEMP HIDE FOR PLUGINS 
+      /**  TEMP HIDE FOR PLUGINS
       {
         path: 'integration',
         loadChildren: () =>

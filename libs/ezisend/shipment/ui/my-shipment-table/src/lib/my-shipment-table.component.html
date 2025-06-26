@@ -98,16 +98,21 @@
                 </span>
               <span (click)="actionHandler(data, 'order-details')" class="click">{{data.channel_order.order_no}}</span>
             </div>
-
-            <ng-container>
-              <div class="date">{{changeDateFormat(data.created_date)}}</div>
-              <div class="date">{{changeTimeFormat(data.created_date)}}</div>
-              <span class="label" *ngIf="data.type === 'INTERNATIONAL'">INTL</span>
-            </ng-container>
-            <ng-container *ngIf="data?.sum_insured && fromMps">
-              <span class="ins_blk ins">INS</span>
-              <div class="amount">RM{{data.sum_insured | number : '.2-2'}}</div>
-            </ng-container>
+            <div class="date-time-td">
+              <ng-container>
+                <div class="date-time-row">
+                  <div class="date">{{ changeDateFormat(data.created_date) }}</div>
+                  <div class="date">{{ changeTimeFormat(data.created_date) }}</div>
+                </div>
+                <span class="label" *ngIf="data.type === 'INTERNATIONAL'">INTL</span>
+              </ng-container>
+            </div>
+            <div class="sum-insured-ins">
+              <ng-container *ngIf="data?.sum_insured && fromMps">
+                <span class="ins_blk ins">INS</span>
+                <div class="amount">RM {{data.sum_insured | number : '.2-2'}}</div>
+              </ng-container>
+            </div>
           </td>
         </ng-container>
 

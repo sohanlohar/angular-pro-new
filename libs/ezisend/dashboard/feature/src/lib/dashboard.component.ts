@@ -17,12 +17,16 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
-
-  
   data: any = (localStorage.getItem("language") && localStorage.getItem("language") === 'en') ? en.data.dashboard :
   (localStorage.getItem("language") && localStorage.getItem("language") === 'my') ? bm.data.dashboard :
     en.data.dashboard;
-  
+
+  dateRange: {startDate: string, endDate: string} = {
+    startDate: '',
+    endDate: ''
+  }
+  lastRefreshed: string = '';
+
   breadcrumbItems: BreadcrumbItem[] = [
     {
       title: this.data.home,
@@ -77,7 +81,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     })
   }
-  
+
   assignLanguageLabel(){
     this.breadcrumbItems = [
       {
@@ -87,6 +91,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
     ];
   };
+
+  onSelectDateRangePicker(value: {startDate: string, endDate: string}){
+    console.log('value', value)
+    this.dateRange = {
+      startDate: value.startDate,
+      endDate: value.endDate
+    }
+  }
+
+  updateLastRefreshed(value: string){
+    this.lastRefreshed = value;
+  }
 
   actionTiles: DashboardTileAction[] = [
     {

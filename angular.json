@@ -98,6 +98,7 @@
     "ezisend-shipment-ui-return-order-form": "libs/ezisend/shipment/ui/return-order-form",
     "ezisend-shipment-ui-search-input": "libs/ezisend/shipment/ui/search-input",
     "ezisend-shipment-ui-smart-input": "libs/ezisend/shipment/ui/smart-input",
+    "ezisend-sla-dashboard": "libs/ezisend/sla-dashboard",
     "ezisend-user-management-feature-add-user": "libs/ezisend/user-management/feature/add-user",
     "ezisend-user-management-ui-account-access-form": "libs/ezisend/user-management/ui/account-access-form",
     "ezisend-user-management-ui-add-user-form": "libs/ezisend/user-management/ui/add-user-form",

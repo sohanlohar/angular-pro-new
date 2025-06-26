@@ -66,8 +66,10 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
   @Input() autoApply = false;
   @Input() initialStartDate?: string;
   @Input() initialEndDate?: string;
+  @Input() initialRange: 'last30' | 'next30' = 'last30';
   form!: FormGroup;
   @Output() formChange = new EventEmitter();
+  @Output() pickerStateChanged = new EventEmitter<boolean>(); // New Output
   isPickerOpen = false;
 
   selected: any;
@@ -82,9 +84,11 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
 
   inlineDateTime: any;
   ranges: any = {
-    ['Today']: [moment(), moment()],
-    ['Yesterday']: [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-    ['Last 7 Days']: [moment().subtract(6, 'days'), moment()],
+    // ['Today']: [moment(), moment()],
+    // ['Yesterday']: [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+    // ['Last 7 Days']: [moment().subtract(6, 'days'), moment()],
+    ['Today']: [moment().startOf('day'), moment().add(1, 'days').startOf('day').subtract(1, 'day')],
+    ['Yesterday']: [moment().subtract(1, 'days').startOf('day'), moment().startOf('day').subtract(1, 'day')],
     ['Last 10 Days']: [moment().subtract(9, 'days'), moment()],
     ['Last 30 Days']: [moment().subtract(29, 'days'), moment()],
     ['Last 90 Days']: [moment().subtract(89, 'days'), moment()],
@@ -137,7 +141,10 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
     // Use parent-provided initial dates if available
     let start: moment.Moment;
     let end: moment.Moment;
-    if (this.initialStartDate && this.initialEndDate) {
+    if (this.initialRange === 'next30') {
+      start = moment();
+      end = moment().add(30, 'days');
+    } else if (this.initialStartDate && this.initialEndDate) {
       start = moment(this.initialStartDate);
       end = moment(this.initialEndDate);
     } else {
@@ -149,9 +156,10 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
       startDate: start.toDate(),
       endDate: end.toDate()
     };
+    console.log('Date-range-picker UI: Initializing display with local dates:', { start: start.toDate(), end: end.toDate() });
     this.form.patchValue({
-      start_date: start.startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
-      end_date: end.endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]')
+      start_date: start.toDate(), // Use local Date object for UI display
+      end_date: end.toDate()      // Use local Date object for UI display
     });
   }
 
@@ -199,13 +207,10 @@ rangeClicked(range: any): void {
   };
 
   this.form.patchValue({
-    start_date: start.startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
-    end_date: end.endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+    start_date: start.toDate(), // Use local Date object for UI display
+    end_date: end.toDate(),     // Use local Date object for UI display
   });
 
-  if (!isCustomRange) {
-    this.onApplyDate();
-  }
 }
 
   datesUpdated(range: any): void {
@@ -217,7 +222,6 @@ rangeClicked(range: any): void {
     const actualDuration = moment.duration(end.diff(start));
 
     if (actualDuration.asDays() > maxDuration.asDays()) {
-      // Show warning (Optional)
      this._snackBar.open(`${this.languageData.three_months_limit}`,'ok'),{
       duration: 4000,
       verticalPosition: 'top', 
@@ -233,16 +237,16 @@ rangeClicked(range: any): void {
       };
 
       this.form.patchValue({
-        start_date: start.startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
-        end_date: correctedEnd.endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+        start_date: start.toDate(), // Use local Date object for UI display
+        end_date: correctedEnd.toDate(), // Use local Date object for UI display
       });
 
       return;
     }
 
     this.form.patchValue({
-      start_date: start.startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
-      end_date: end.endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      start_date: start.toDate(), // Use local Date object for UI display
+      end_date: end.subtract(1, 'days').toDate(), // Use local Date object for UI display
     });
 
     this.onApplyDate();
@@ -287,6 +291,7 @@ rangeClicked(range: any): void {
       .endOf('day')
       .utc()
       .format('YYYY-MM-DDTHH:mm:ss[Z]');
+    console.log('Date-range-picker Payload: Formatting dates to UTC for API', { start_date, end_date });
     return { start_date, end_date };
   }
 
@@ -311,11 +316,12 @@ rangeClicked(range: any): void {
  *     the width of the calendar container to match the width of the input field.
  */
  onPickerOpened() {
-  if (!this.isMobileView) return;
+    this.pickerStateChanged.emit(true); 
+if (!this.isMobileView) return;
   this.picker.open();
     this.setWidthContainerCalendar();
     this.isPickerOpen = true;
-}
+  }
 
 
 

@@ -1,0 +1,25 @@
+{
+  "projectType": "library",
+  "sourceRoot": "libs/ezisend/sla-dashboard/src",
+  "prefix": "pos",
+  "targets": {
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/ezisend/sla-dashboard"],
+      "options": {
+        "jestConfig": "libs/ezisend/sla-dashboard/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/ezisend/sla-dashboard/**/*.ts",
+          "libs/ezisend/sla-dashboard/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}

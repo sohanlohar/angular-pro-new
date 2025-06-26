@@ -67,6 +67,87 @@
     bottom: 0;
     width: 8em;
     background: linear-gradient(90deg, #104485 0%, #0068C8 100%);
+    transition: width 0.3s ease;
+    z-index:9;
+    &.sidebar-active {
+      width: 20em;
+      transition: width 0.3s ease;
+    }
+    &.sidebar-hover {
+      position: fixed;
+      width: 20em;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, #104485 0%, #0068C8 100%);
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+      z-index: 999;
+          height: 100%;
+   .sidebar__nav-list {
+    height: 90%;
+  }
+    }
+    .sidebar-toggle {
+      padding: 10px;
+      display: flex;
+      justify-content: flex-end;
+      background: rgba(0, 0, 0, 0.1);
+
+      .toggle-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 12px;
+        &:hover{
+        transform: none;
+        -webkit-transform: none;
+        -moz-transform: none;
+        -ms-transform: none;
+        -o-transform: none;
+}
+        .arrowIcon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #fff;
+  position: relative;
+  display: inline-block;
+
+&.active{
+&:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background-color: #333; /* dot color */
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+  &:hover:after{
+        background-color: #fff;
+  }}
+
+        &:hover{
+        color: #fff;
+        background: linear-gradient(90deg, #257eed 0%, #1c80db 100%);
+        color: #fff;
+        transform: none;
+        -webkit-transform: none;
+        -moz-transform: none;
+        -ms-transform: none;
+        -o-transform: none;
+}}
+      }
+      .collapsedSpan{
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-direction: row-reverse;
+        color: #fff;
+      }
+    }
     .version_num {
       text-align: center;
       bottom: 0px;
@@ -104,6 +185,9 @@
     right: 0;
     z-index: 999;
     transition: width 300ms ease-in-out;
+     & + .content{
+      margin-left: 21em;
+    }
 
   }
   .content {
@@ -111,6 +195,7 @@
     margin-right: 2em;
     padding-top: 2rem;
     background: #edf0f9;
+    transition: margin-left 0.3s ease;
   }
   .nav-footer {
     display: none;
@@ -176,6 +261,9 @@
   .sidebar {
     width: 0 !important;
     display: none;
+    .sidebar-toggle{
+      display: none !important;
+    }
   }
   .sidebar-active {
     width: 20em !important;

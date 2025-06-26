@@ -1,36 +1,127 @@
 <div class="container">
-  <mat-spinner class="spinner" *ngIf="!allStatusLoadingState();"></mat-spinner>
+  <mat-spinner class="spinner" *ngIf="!allStatusLoadingState()"></mat-spinner>
   <div class="container__title-wrapper">
     <div class="container__title">
-      {{data?.dashboard?.my_orders}}
+      {{ data?.dashboard?.my_orders }}
     </div>
   </div>
   <ng-container>
     <div class="container__orders" [class.nameClass]="!allStatusLoadingState()">
-      <div class="dashboard-datepicker">
-        <label>{{data?.dashboard?.select_date}}</label>
-        <form [formGroup]="dateRangePickerForm">
-          <pos-date-range-picker (formChange)="onDateRangePickerFormChange($event)" class="px-3"></pos-date-range-picker>
-        </form>
+      <div class="header-search">
+        <div class="dashboard-datepicker">
+          <form [formGroup]="dateRangePickerForm">
+            <pos-date-range-picker
+              (formChange)="onDateRangePickerFormChange($event)"
+              class="px-3"
+            ></pos-date-range-picker>
+          </form>
+        </div>
       </div>
       <mat-divider></mat-divider>
-      <label class="container__orders-title">{{data?.dashboard?.my_shipment}}</label>
-      <div class="container__shipment-summary">
-        <span *ngFor="let summary of summaryTiles; let last = last">
-          <pos-shipment-tile [summaryTile]="summary" [boxHeight]="boxHeight" [ngClass]="{'last-tile': last}"></pos-shipment-tile>
-        </span>
-      </div>
-
-      <ng-container *ngIf="(commonService.isCOD | async) || ((commonService.isCOD | async) === true && (commonService.isCODUbat | async) === false)">
-        <label class="container__orders-title">{{data?.dashboard?.my_cod}}</label>
-        <div class="container__cod-orders">
-          <pos-cod-order theme="green" icon="done" [label]="data?.dashboard?.collected" [status]="'delivered'" [price]="$total_cod | async"></pos-cod-order>
-          <pos-cod-order theme="blue" icon="more_horiz" [label]="data?.dashboard?.pending_collection" [status]="'live'" [price]="$total_pending | async">
-          </pos-cod-order>
-          <pos-cod-order theme="red" icon="error_outline" [label]="data?.dashboard?.failed_collect" [status]="'failed'" [price]="$total_failed | async">
-          </pos-cod-order>
+      <div class="wrapper-column">
+        <div class="column">
+          <ng-container
+            *ngIf="
+              (commonService.isCOD | async) ||
+              ((commonService.isCOD | async) === true &&
+                (commonService.isCODUbat | async) === false)
+            "
+          >
+            <label class="container__orders-title">{{
+              data?.dashboard?.my_cod
+            }}</label>
+            <pos-cod-order
+              theme="green"
+              icon="done"
+              [label]="data?.dashboard?.collected"
+              [status]="'delivered'"
+              [price]="$total_cod | async"
+            ></pos-cod-order>
+            <pos-cod-order
+              theme="blue"
+              icon="more_horiz"
+              [label]="data?.dashboard?.pending_collection"
+              [status]="'live'"
+              [price]="$total_pending | async"
+            >
+            </pos-cod-order>
+            <pos-cod-order
+              theme="red"
+              icon="error_outline"
+              [label]="data?.dashboard?.failed_collect"
+              [status]="'failed'"
+              [price]="$total_failed | async"
+            >
+            </pos-cod-order>
+          </ng-container>
         </div>
-      </ng-container>
+        <div class="column">
+          <canvas
+            baseChart
+            height="124"
+            [data]="doughnutChartData"
+            [labels]="doughnutChartLabels"
+            [chartType]="doughnutChartType"
+            [options]="doughnutChartOptions"
+            [plugins]="doughnutChartPlugins"
+            [legend]="doughnutChartLegend"
+            [colors]="doughnutColors"
+          >
+          </canvas>
+          <div class="pieTable scrollable">
+            <table
+              mat-table
+              [dataSource]="dataSource2"
+              class="mat-elevation-z8"
+            >
+              <ng-container matColumnDef="delivery_type">
+                <th mat-header-cell *matHeaderCellDef class="align-left">
+                  {{ languageData.delivery_type }}
+                </th>
+                <td
+                  mat-cell
+                  *matCellDef="let element"
+                  class="align-left nowrap"
+                >
+                  <div class="box-color">
+                    <div
+                      [ngStyle]="{
+                        background: element.color,
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '5px',
+                        marginRight: '5px'
+                      }"
+                    ></div>
+                    {{ element.name }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="order_count">
+                <th class="nowrap" mat-header-cell *matHeaderCellDef>
+                  {{ languageData.order_count }}
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.value }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="percentage">
+                <th class="pl-10" mat-header-cell *matHeaderCellDef>
+                  {{ languageData.percentage }}
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.percentage }}%
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns2"></tr>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </ng-container>
 
@@ -38,5 +129,4 @@
   <ng-template #loadingSpinner>
     <mat-spinner class="spinner"></mat-spinner>
   </ng-template>
-
 </div>

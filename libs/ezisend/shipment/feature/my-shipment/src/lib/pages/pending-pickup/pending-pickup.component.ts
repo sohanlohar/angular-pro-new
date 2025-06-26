@@ -49,7 +49,7 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
   selectedMultipleData: IDataShipment[] = [];
   totalShipmentNoTrackingId: any = [];
   shipment$: Observable<IResponse<IShipment>> | undefined;
-  protected _onDestroy = new Subject<void>();
+   protected _onDestroy = new Subject<void>();
   @ViewChild(MyShipmentTableComponent) myShipment:any;
   // Search Field
   keyword?: string;
@@ -59,7 +59,6 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
     start_date: [''],
     end_date: [''],
   });
-
   pickup_status?: string;
   isSelectAllOrders = false;
   totalShipmentNotRequestPickup = 0;
@@ -70,8 +69,6 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
   shipment_status = '';
   minSelectableDate = moment().subtract(3, 'months').toDate();
   maxSelectableDate = moment().add(3, 'months').toDate();
-  next30Start = '';
-  next30End = '';
   isShowCommercialinvoiceButton = false;
   isSelectedShipmentsNoTrackingId = false;
   toggleValue = new FormControl('view-by-orders');
@@ -126,14 +123,18 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.next30Start = moment().startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.next30End = moment().add(30, 'days').endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.dateRangePickerForm = this.fb.group({
-      start_date: [this.next30Start],
-      end_date: [this.next30End],
-    });
+    this.end_date = moment().add(30, 'days').endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.start_date = moment().startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
 
-    this.fetchShipments();
+    // For Date Picker UI (local time)
+    const localEndDate = moment().add(30, 'days').endOf('day').toDate();
+    const localStartDate = moment().startOf('day').toDate();
+    this.dateRangePickerForm = this.fb.group({
+      start_date: [localStartDate],
+      end_date: [localEndDate],
+    });
+    this.fetchShipments(); // Fetch data initially
+
     const eventDetails = {
       event: 'tab_to_section',
       event_category: 'SendParcel Pro - My Shipments - Pending Shipments',
@@ -440,15 +441,15 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
   
 
   onDateRangePickerFormChange(event: any) {
-    if (event) {
-      this.start_date = event.start_date;
-      this.end_date = event.end_date;
+    if (event && event.start_date && event.end_date) {
+      this.start_date = moment(event.start_date).startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+      this.end_date = moment(event.end_date).endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
       const eventDetails = {
         event: 'filter_section',
         event_category:
           'SendParcel Pro - My Shipments - Pending Shipments',
         event_action: 'Filter Section',
-        event_label: this.start_date + ' - ' + this.end_date,
+        event_label: `${moment(event.start_date).format('YYYY-MM-DD')} - ${moment(event.end_date).format('YYYY-MM-DD')}`,
       };
           this._commonService.googleEventPush(eventDetails);
     } else {

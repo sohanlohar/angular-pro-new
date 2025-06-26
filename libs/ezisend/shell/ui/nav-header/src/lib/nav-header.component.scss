@@ -389,7 +389,7 @@ a.active {
       }
     }
   }
-  
+
 }
 @media screen and (max-width: '360px') {
   .toolbar {
@@ -534,11 +534,5 @@ a.active {
 @media (min-width: 768px) and (max-width: 1023px) {
   .toolbar__menu__container button {
     display: none;
-  }
-}
-
-@media (max-width: 768px) {
-  ::ng-deep .mat-select-panel {
-    // margin-left: 0 !important;
   }
 }

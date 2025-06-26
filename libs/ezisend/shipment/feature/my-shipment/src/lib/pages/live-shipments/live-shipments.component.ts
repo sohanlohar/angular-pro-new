@@ -136,16 +136,13 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-     // For API
-    this.end_date = moment.utc().endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.start_date = moment.utc().subtract(30, 'days').startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
         // For API
     this.end_date = moment().endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
     this.start_date = moment().subtract(30, 'days').startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
 
     // For Date Picker UI (local time)
-    const localEndDate = moment().endOf('day').format('YYYY-MM-DDTHH:mm:ss');
-    const localStartDate = moment().subtract(30, 'days').startOf('day').format('YYYY-MM-DDTHH:mm:ss');
+    const localEndDate = moment().endOf('day').toDate();
+    const localStartDate = moment().subtract(30, 'days').startOf('day').toDate();
 
     this.dateRangePickerForm = this.fb.group({
       start_date: [localStartDate],

@@ -1,0 +1,13 @@
+.paginator-wrapper {
+  ::ng-deep .mat-paginator-container {
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    gap: 10px;
+    .mat-paginator-range-label {
+      margin: 0;
+    }
+    .mat-paginator-page-size-select {
+      width: 40px !important;
+    }
+  }
+}

@@ -11,12 +11,17 @@ import { EzisendDashboardUiCodOrderModule } from '@pos/ezisend/dashboard/ui/cod-
 import { ShipmentTileModule } from '@pos/ezisend/shared/ui/shipment-tile';
 import { EzisendShipmentUiDateRangePickerModule } from '@pos/ezisend/shipment/ui/date-range-picker';
 import { ShipmentSummaryComponent } from './shipment-summary.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
+import { ChartsModule } from 'ng2-charts';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
   imports: [
-    CommonModule, 
-    ShipmentTileModule, 
-    MatIconModule, 
+    CommonModule,
+    ShipmentTileModule,
+    MatIconModule,
     MatFormFieldModule,
     MatDatepickerModule,
     MatDividerModule,
@@ -25,6 +30,11 @@ import { ShipmentSummaryComponent } from './shipment-summary.component';
     MatProgressSpinnerModule,
     MatNativeDateModule,
     EzisendDashboardUiCodOrderModule,
+    MatMenuModule,
+    MatButtonModule,
+    ChartsModule,
+    NgxChartsModule,
+    MatTableModule
   ],
   declarations: [ShipmentSummaryComponent],
   exports: [ShipmentSummaryComponent],
