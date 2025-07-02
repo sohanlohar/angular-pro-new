@@ -735,3 +735,17 @@
     cursor: default;
   }
 }
+
+@media screen and (max-width: 570px) {
+  .wrapper {
+    .tablewrapper {
+      table {
+        td.mat-cell {
+          &:last-child {
+            min-width: auto;
+          }
+        }
+      }
+    }
+  }
+}

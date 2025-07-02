@@ -107,7 +107,8 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
   protected _onDestroy = new Subject<void>();
   totalTrackingDetails: any;
   isLoading = true;
-  current_tab = ''
+  current_tab = '';
+  mobileFilterOpen = false;
 
   constructor(
     private router: Router,
@@ -137,8 +138,8 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
         // For API
-    this.end_date = moment().endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.start_date = moment().subtract(30, 'days').startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.end_date = moment().endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.start_date = moment().subtract(30, 'days').startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
 
     // For Date Picker UI (local time)
     const localEndDate = moment().endOf('day').toDate();
@@ -457,8 +458,8 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
   private get buildParams(): IShipmentParamFilter {
     return {
       uitab: 'live',
-      start_date: this.start_date,
-      end_date: this.end_date,
+      start_date:  moment(this.start_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      end_date: moment(this.end_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
       shipment_status: this.order_status,
       cod_type: this.cod_type,
       keyword: this.keyword,

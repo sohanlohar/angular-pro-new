@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -65,7 +65,7 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
   totalShipmentRecords = 0;
   totalBatchRequest = 0;
   currentBatchPageRequest = 0;
-  batchProcessingIds: number[] = []; 
+  batchProcessingIds: number[] = [];
   shipment_status = '';
   minSelectableDate = moment().subtract(3, 'months').toDate();
   maxSelectableDate = moment().add(3, 'months').toDate();
@@ -89,6 +89,7 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
     { value: 'drop off requested', viewValue: this.languageData.order_status_dropoff },
     // { value: 'pick up cancelled', viewValue: 'Pick Up Cancelled' },
   ];
+  mobileFilterOpen = false;
 
   constructor(
     public _commonService: CommonService,
@@ -123,8 +124,8 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.end_date = moment().add(30, 'days').endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.start_date = moment().startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.end_date = moment().add(30, 'days').endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.start_date = moment().startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
 
     // For Date Picker UI (local time)
     const localEndDate = moment().add(30, 'days').endOf('day').toDate();
@@ -403,27 +404,25 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
       event_action: 'Search Shipment',
       event_label: this.keyword,
     });
-  
+
     const query = `list?uitab=pending-pickup&keyword=${this.keyword}&page=${this.currentPage}&limit=100`;
     const params: any = {
       activeTab: 'pending-pickup',
     };
-  
+
     if (this.toggleValue.value === 'view-by-orders') {
       params['viewBy'] = 'view-by-orders';
     }
-  
+
     this._commonService.fetchList('shipments', query).subscribe((data) => {
       // Check if the `total` field is greater than 0
       if (data?.data?.total > 0) {
         const regexPattern = /^[a-zA-Z]{2}.*[a-zA-Z]{2}$/;
-  
         // Reload table data
         this.fetchShipments();
-  
         // Extract the pickup number safely
         const pickupNumber = data.data.shipments[0]?.pickup_details?.pickup_number;
-  
+
         if (pickupNumber) {
           if (regexPattern.test(search.trim())) {
             params['keyword'] = search.trim();
@@ -437,13 +436,11 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
-  
 
   onDateRangePickerFormChange(event: any) {
     if (event && event.start_date && event.end_date) {
-      this.start_date = moment(event.start_date).startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
-      this.end_date = moment(event.end_date).endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+      this.start_date = moment(event.start_date).startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
+      this.end_date = moment(event.end_date).endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
       const eventDetails = {
         event: 'filter_section',
         event_category:
@@ -503,8 +500,8 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
 
     const baseParams: IShipmentParamFilter = {
       uitab: 'pending-pickup', // isViewByOrders ? 'live' : 'pending-pickup',
-      pickup_start_date: this.start_date,
-      pickup_end_date: this.end_date,
+      pickup_start_date: moment(this.start_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      pickup_end_date: moment(this.end_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
       pickup_status: this.pickup_status,
       keyword: this.keyword,
       page: +this.currentPage,
@@ -520,7 +517,6 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
     this.columns = isViewByOrders
       ? ['select', 'trackingDetail', 'pickupNo', 'status','pickupTime', 'recipient', 'deliveryDetail', 'type', 'action']
       : ['select', 'pickupNo', 'status', 'pickupTime', 'pickupAddress', 'quantity', 'weight', 'action'];
-
     return baseParams;
   }
 

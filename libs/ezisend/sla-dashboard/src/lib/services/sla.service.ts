@@ -69,4 +69,16 @@ export class SlaService {
       `${environment.sppUatUrl}dashboard/v1/rto`
     );
   }
+
+  getDownloadFile(type: 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex', startDate: string, endDate: string): Observable<any> {
+    const params = new HttpParams()
+      .set('type', type)
+      .set('startDate', startDate)
+      .set('endDate', endDate);
+
+    return this.http.get(environment.sppUatUrl + `dashboard/v1/sla/file/download`, {
+      params,
+      responseType: 'blob'
+    })
+  }
 }

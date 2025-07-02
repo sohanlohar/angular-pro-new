@@ -281,7 +281,10 @@
                 <div class="return_success">{{languageData.processing_return}}</div>
               </ng-container>
               <ng-container *ngIf="data.status === 'return-initiated'">
-                <div class="return_success">{{languageData.return_initiated}}</div>
+                <div class="in-transit return_initiated">{{languageData.return_initiated}}</div>
+              </ng-container>
+              <ng-container *ngIf="data.status === 'return_failed'">
+                <div class="return_failed failed">{{languageData.return_failed}}</div>
               </ng-container>
               <ng-container *ngIf="data.status === 'in-transit-return'">
                 <div class="return_success">{{languageData.out_for_return}}</div>
@@ -301,7 +304,10 @@
                 <div class="return_success">{{languageData.processing_return}}</div>
               </ng-container>
               <ng-container *ngIf="data.status === 'return-initiated'">
-                <div class="return_success">{{languageData.return_initiated}}</div>
+                <div class="in-transit return_initiated">{{languageData.return_initiated}}</div>
+              </ng-container>
+              <ng-container *ngIf="data.status === 'return_failed'">
+                <div class="return_failed failed">{{languageData.return_failed}}</div>
               </ng-container>
               <ng-container *ngIf="data.status === 'in-transit-return'">
                 <div class="return_success">{{languageData.out_for_return}}</div>
@@ -495,113 +501,131 @@
 
             <ng-container *ngIf="iconActions.length" >
 
-              <span *ngFor="let action of iconActions">
-                <mat-icon
-                    *ngIf="action !== 'download' && action !== 'reschedule-pick-up' && action !== 'close' && action !== 'cancel' &&
-                        action !== 'edit' && action !== 'print'"
-                  [matTooltip]="getAction(action)"
+              <ng-container *ngIf="!this.commonService.checkIfMobile()">
+                <span *ngFor="let action of iconActions">
+                  <mat-icon
+                      *ngIf="action !== 'download' && action !== 'reschedule-pick-up' && action !== 'close' && action !== 'cancel' &&
+                          action !== 'edit' && action !== 'print'"
+                    [matTooltip]="getAction(action)"
+                    matTooltipPosition="above"
+                    matTooltipClass="tooltipStyle"
+                    [class.action-icon_disabled]="data?.pickup_details?.pickup_status === 'pending-cancellation' || data?.pickup_details?.pickup_status === 'cancelled' || editActions(activeTab, action, data, data.channel_order | keyvalue)"
+                    class="material-symbols-outlined action-icon"
+                    (click)="actionHandler(data, action)">
+                      {{ action === "deleteStore" ? 'delete' : action }}
+                  </mat-icon>
+  
+                  <span
+                    class="print-button"
+                    *ngIf="action === 'print'"
+                    [matTooltip]="checkingPrint(data, activeTab) ? '' : (data.printed ? 'Printed' : 'Print')"
+                    matTooltipPosition="above"
+                    matTooltipClass="tooltipStyle"
+                    [class.disabled]="checkingPrint(data, activeTab)"
+                    (click)="handlePrint(data, editActions(activeTab, action, data, data.channel_order))"
+                  >
+                    <span class="checked" *ngIf="!checkingPrint(data, activeTab) && data.printed">
+                      <mat-icon>check</mat-icon>
+                    </span>
+                    <span class="print-icon">
+                      <mat-icon>print</mat-icon>
+                    </span>
+                  </span>
+  
+                  <mat-icon
+                    *ngIf="action === 'cancel'"
+                    [matTooltip]="getAction(action)"
+                    matTooltipPosition="above"
+                    matTooltipClass="tooltipStyle"
+                    [class.action-icon_disabled]="editActions(activeTab, action, data, data.channel_order | keyvalue)"
+                    class="material-symbols-outlined action-icon"
+                    [class.action-icon_disabled]="disableCancelShipment(data.status, data.children, data.tracking_details.tracking_id)"
+                    (click)="actionHandler(data, action)">
+                    delete
+                  </mat-icon>
+  
+                  <mat-icon
+                    *ngIf="action === 'edit'"
+                    [matTooltip]="getAction(action)"
+                    matTooltipPosition="above"
+                    matTooltipClass="tooltipStyle"
+                    class="material-symbols-outlined action-icon"
+                    [class.action-icon_disabled]="disableEditShipment(data?.status)"
+                    (click)="actionHandler(data, action)">
+                    edit
+                  </mat-icon>
+  
+                  <mat-icon
+                    *ngIf="action === 'download'"
+                    [matTooltip]="getAction(action)"
+                    matTooltipPosition="above"
+                    matTooltipClass="tooltipStyle"
+                    class="material-symbols-outlined action-icon"
+                    [class.action-icon_disabled]="data.tracking_details.tracking_id === '' || data.pickup_details.pickup_status === 'cancelled' || data.pickup_details.pickup_status === 'pending-cancellation'"
+                    [matMenuTriggerFor]="menuDownload">
+                    {{ action }}
+                  </mat-icon>
+  
+                  <mat-menu #menuDownload="matMenu">
+                    <button
+                      mat-menu-item
+                      (click)="actionHandler(data, 'tallysheet')">
+                      {{languageData.tallysheet}} (.prn)
+                    </button>
+                    <button
+                      mat-menu-item
+                      [class.action-icon_disabled]="data.type !== 'INTERNATIONAL'"
+                      (click)="actionHandler(data, 'commercialinvoice')">
+                      {{languageData.commercial_invoice}}
+                    </button>
+                  </mat-menu>
+  
+                  <mat-icon
+                  *ngIf="activeTab === 'pending' && action === 'reschedule-pick-up'"
+                  (click)="actionHandler(data, 'reschedule-pick-up')"
+                  [matTooltip]="getAction('reschedule-pick-up')"
                   matTooltipPosition="above"
                   matTooltipClass="tooltipStyle"
-                  [class.action-icon_disabled]="data?.pickup_details?.pickup_status === 'pending-cancellation' || data?.pickup_details?.pickup_status === 'cancelled' || editActions(activeTab, action, data, data.channel_order | keyvalue)"
                   class="material-symbols-outlined action-icon"
-                  (click)="actionHandler(data, action)">
-                    {{ action === "deleteStore" ? 'delete' : action }}
+                  [class.action-icon_disabled]="disableReschedulePickup(
+                    data.status,
+                    data.pickup_details?.pickup_status || '',
+                    activeTab === 'pending' && data.shipment_statuses ? data.shipment_statuses : [],
+                    data.tracking_event_reason_code
+                  )">
+                  history
                 </mat-icon>
-
-                <span
-                  class="print-button"
-                  *ngIf="action === 'print'"
-                  [matTooltip]="checkingPrint(data, activeTab) ? '' : (data.printed ? 'Printed' : 'Print')"
-                  matTooltipPosition="above"
-                  matTooltipClass="tooltipStyle"
-                  [class.disabled]="checkingPrint(data, activeTab)"
-                  (click)="handlePrint(data, editActions(activeTab, action, data, data.channel_order))"
-                >
-                  <span class="checked" *ngIf="!checkingPrint(data, activeTab) && data.printed">
-                    <mat-icon>check</mat-icon>
-                  </span>
-                  <span class="print-icon">
-                    <mat-icon>print</mat-icon>
-                  </span>
+  
+  
+                  <mat-icon
+                    *ngIf="activeTab === 'pending' && action === 'close'"
+                    (click)="actionHandler(data, 'close')"
+                    [matTooltip]="getAction('close')"
+                    matTooltipPosition="above"
+                    matTooltipClass="tooltipStyle"
+                    class="material-symbols-outlined action-icon"
+                    [class.action-icon_disabled]="disableClose(data.pickup_details.pickup_status)"
+                    >
+                    close
+                  </mat-icon>
                 </span>
-
-                <mat-icon
-                  *ngIf="action === 'cancel'"
-                  [matTooltip]="getAction(action)"
-                  matTooltipPosition="above"
-                  matTooltipClass="tooltipStyle"
-                  [class.action-icon_disabled]="editActions(activeTab, action, data, data.channel_order | keyvalue)"
-                  class="material-symbols-outlined action-icon"
-                  [class.action-icon_disabled]="disableCancelShipment(data.status, data.children, data.tracking_details.tracking_id)"
-                  (click)="actionHandler(data, action)">
-                  delete
-                </mat-icon>
-
-                <mat-icon
-                  *ngIf="action === 'edit'"
-                  [matTooltip]="getAction(action)"
-                  matTooltipPosition="above"
-                  matTooltipClass="tooltipStyle"
-                  class="material-symbols-outlined action-icon"
-                  [class.action-icon_disabled]="disableEditShipment(data?.status)"
-                  (click)="actionHandler(data, action)">
-                  edit
-                </mat-icon>
-
-                <mat-icon
-                  *ngIf="action === 'download'"
-                  [matTooltip]="getAction(action)"
-                  matTooltipPosition="above"
-                  matTooltipClass="tooltipStyle"
-                  class="material-symbols-outlined action-icon"
-                  [class.action-icon_disabled]="data.tracking_details.tracking_id === '' || data.pickup_details.pickup_status === 'cancelled' || data.pickup_details.pickup_status === 'pending-cancellation'"
-                  [matMenuTriggerFor]="menuDownload">
-                  {{ action }}
-                </mat-icon>
-
-                <mat-menu #menuDownload="matMenu">
-                  <button
-                    mat-menu-item
-                    (click)="actionHandler(data, 'tallysheet')">
-                    {{languageData.tallysheet}} (.prn)
-                  </button>
-                  <button
-                    mat-menu-item
-                    [class.action-icon_disabled]="data.type !== 'INTERNATIONAL'"
-                    (click)="actionHandler(data, 'commercialinvoice')">
-                    {{languageData.commercial_invoice}}
+              </ng-container>
+              
+              <ng-container *ngIf="this.commonService.checkIfMobile()">
+                <button mat-icon-button [matMenuTriggerFor]="mobileActionMenu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+            
+                <mat-menu #mobileActionMenu="matMenu">
+                  <button mat-menu-item *ngFor="let action of iconActions"
+                          (click)="actionHandler(data, action)">
+                    <mat-icon class="material-symbols-outlined" style="margin-right: 8px;">
+                      {{ getActionIcon(action) }}
+                    </mat-icon>
+                    {{ getAction(action) }}
                   </button>
                 </mat-menu>
-
-                <mat-icon
-                *ngIf="activeTab === 'pending' && action === 'reschedule-pick-up'"
-                (click)="actionHandler(data, 'reschedule-pick-up')"
-                [matTooltip]="getAction('reschedule-pick-up')"
-                matTooltipPosition="above"
-                matTooltipClass="tooltipStyle"
-                class="material-symbols-outlined action-icon"
-                [class.action-icon_disabled]="disableReschedulePickup(
-                  data.status,
-                  data.pickup_details?.pickup_status || '',
-                  activeTab === 'pending' && data.shipment_statuses ? data.shipment_statuses : [],
-                  data.tracking_event_reason_code
-                )">
-                history
-              </mat-icon>
-
-
-                <mat-icon
-                  *ngIf="activeTab === 'pending' && action === 'close'"
-                  (click)="actionHandler(data, 'close')"
-                  [matTooltip]="getAction('close')"
-                  matTooltipPosition="above"
-                  matTooltipClass="tooltipStyle"
-                  class="material-symbols-outlined action-icon"
-                  [class.action-icon_disabled]="disableClose(data.pickup_details.pickup_status)"
-                  >
-                  close
-                </mat-icon>
-              </span>
+              </ng-container>
             </ng-container>
 
             <ng-container *ngIf="activeTab === 'request-pickup'">

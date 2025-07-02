@@ -29,6 +29,7 @@
         <button
           mat-flat-button
           color="primary"
+          *ngIf="(selectedMultipleData.length ) || isSelectAllOrders"
           [class.action-disabled]="(!selectedMultipleData.length ) && !isSelectAllOrders"
           (click)="onActionButtonIcon('gen-connote-v2', true)">
           {{languageData.create_consignment}} <span *ngIf="selectedMultipleData.length && !isSelectAllOrders">({{selectedMultipleData.length}})</span>
@@ -85,6 +86,7 @@
         <button
           mat-flat-button
           color="primary"
+          *ngIf="selectedMultipleData.length || isSelectAllOrders"
           [class.action-disabled]="
             !selectedMultipleData.length && !isSelectAllOrders
           "

@@ -75,6 +75,7 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
   protected _onDestroy = new Subject<void>();
   isLoading = true;
   current_tab = '';
+  mobileFilterOpen = false;
 
   constructor(
     private router: Router,
@@ -101,8 +102,8 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
       this.current_tab = params['t']
     })
     // For API
-     this.end_date = moment().endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.start_date = moment().subtract(30, 'days').startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.end_date = moment().endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.start_date = moment().subtract(30, 'days').startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
     // For Date Picker UI (local time)
     const localEndDate = moment().endOf('day').toDate();
     const localStartDate = moment().subtract(30, 'days').startOf('day').toDate();
@@ -380,8 +381,8 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
   private get buildParams(): IShipmentParamFilter {
     return {
       uitab: 'failed-delivery',
-      start_date: this.start_date,
-      end_date: this.end_date,
+      start_date: moment(this.start_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      end_date: moment(this.end_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
       cod_type: this.cod_type,
       keyword: this.keyword,
       page: +this.currentPage,

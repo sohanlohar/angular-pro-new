@@ -224,7 +224,6 @@ export class ReportsComponent implements OnInit {
  *   - If `allSelected` is true, indicating that "all" was previously selected, it clears the form control by setting it to an empty array. Otherwise, it sets the form control to the currently selected values and ensures that `allSelected` is set to false.
  */
   private handleOtherOptionsSelected(otherValuesSelected: string[]) {
-    console.log(this.dateRangePickerForm.controls,"this.dateRangePickerForm.controls")
     this.dateRangePickerForm.controls['status'].patchValue(
       this.allSelected ? [] : otherValuesSelected
     );
@@ -438,7 +437,7 @@ export class ReportsComponent implements OnInit {
           },
         });
     } else {
-      console.log('please fill the form');
+      // console.log('please fill the form');
     }
   }
 

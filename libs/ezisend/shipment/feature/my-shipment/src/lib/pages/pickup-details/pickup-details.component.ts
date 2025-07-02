@@ -874,7 +874,7 @@ export class PickupDetailsComponent implements OnInit, OnDestroy {
       });
 
       dialogRef.afterClosed().subscribe(() => {
-        console.log('modal closed')
+        // console.log('modal closed')
       });
   }
 

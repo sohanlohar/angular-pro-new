@@ -361,7 +361,7 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
   }
 
   onDownloadAsAndPrintButton(shipmentId:number | undefined) {
-    let shipmentIds = [shipmentId];
+    const shipmentIds = [shipmentId];
     const query = `connote/print`;
 
     this.commonService.isLoading(true);
@@ -426,7 +426,7 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
   //   this.showPODImage = !this.showPODImage;
   // }
   onDownloadAsAndPrint(event: string, isMultiple = false) {
-    let shipmentIds: any = [];
+    const shipmentIds: any = [];
     if (!isMultiple) {
       shipmentIds.push(this.detail?.id);
     }
@@ -692,7 +692,7 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
       });
 
       dialogRef.afterClosed().subscribe(() => {
-        console.log('modal closed')
+        // console.log('modal closed')
       });
   }
 
@@ -875,7 +875,7 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
       });
 
       dialogRef.afterClosed().subscribe(() => {
-        console.log('modal closed')
+        // console.log('modal closed')
       });
   }
 

@@ -3,6 +3,8 @@ import {
   Component,
   Input,
   OnInit,
+  ViewChild,
+  ElementRef,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BreadcrumbItem } from '@pos/ezisend/shared/data-access/models';
@@ -11,16 +13,23 @@ import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { Label } from 'ng2-charts';
 import { SlaService } from '../../services/sla.service';
 import { CommonService } from '@pos/ezisend/shared/data-access/services';
-import { finalize } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'pos-sla-dashboard-page',
   templateUrl: './sla-dashboard-page.component.html',
   styleUrls: ['./sla-dashboard-page.component.scss'],
 })
-export class SlaDashboardPageComponent
-  implements OnInit, AfterViewInit
-{
+export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
+  @ViewChild('dashboardContainer', { static: false })
+  dashboardContainer!: ElementRef;
+  @ViewChild('statusChart', { static: false }) statusChart!: ElementRef;
+  @ViewChild('categoryChart', { static: false }) categoryChart!: ElementRef;
+  @ViewChild('stateChart', { static: false }) stateChart!: ElementRef;
+  @ViewChild('dexChart', { static: false }) dexChart!: ElementRef;
+
   @Input() datePicker: { startDate: string; endDate: string } = {
     startDate: '',
     endDate: '',
@@ -269,7 +278,7 @@ export class SlaDashboardPageComponent
       .subscribe((res) => {
         this.last_updated.push(res.data.last_updated);
         this.last_updated.push(res.data.last_updated);
-        const sla_status = res.data.sla_status || [];
+        const sla_status = res.data.sla_statuses || [];
         this.statusPieLabels = sla_status.map(
           (item) => item.label + ' (' + item.value + ')'
         );
@@ -292,10 +301,10 @@ export class SlaDashboardPageComponent
         this.last_updated.push(res.data.last_updated);
         const copyResponse = { ...res };
         const maxValueSuccess = Math.max(
-          ...copyResponse.data.sla_category.map((item) => item.total_success)
+          ...copyResponse.data.sla_categories.map((item) => item.total_success)
         );
         const maxValueFailed = Math.max(
-          ...copyResponse.data.sla_category.map((item) => item.total_failed)
+          ...copyResponse.data.sla_categories.map((item) => item.total_failed)
         );
         const maxValue = Math.max(maxValueSuccess, maxValueFailed);
 
@@ -323,7 +332,7 @@ export class SlaDashboardPageComponent
           },
         };
 
-        const sla_category = res.data.sla_category || [];
+        const sla_category = res.data.sla_categories || [];
         this.catBarLabels = sla_category.map((item) => item.label);
 
         this.catBarData = [
@@ -393,7 +402,7 @@ export class SlaDashboardPageComponent
   // }
 
   onDateRangePickerFormChange(event: any) {
-    if(!event.start_date || !event.end_date) return;
+    if (!event.start_date || !event.end_date) return;
 
     this.dateRangePickerForm.patchValue({
       start_date: event.start_date,
@@ -422,7 +431,7 @@ export class SlaDashboardPageComponent
   }
 
   get endDate() {
-    const end_date = this.dateRangePickerForm.value.end_date
+    const end_date = this.dateRangePickerForm.value.end_date;
     return moment(end_date).format('YYYY-MM-DD');
   }
 
@@ -435,5 +444,741 @@ export class SlaDashboardPageComponent
     const max = Math.max(...this.shipmentData.map((d) => d.shipments));
     if (max === 0) return 0;
     return (value / max) * 100;
+  }
+
+  async downloadAllFile() {
+    this.commonService.isLoading(true);
+
+    const downloadRequests = [
+      this.slaService.getDownloadFile(
+        'sla_status',
+        this.startDate,
+        this.endDate
+      ),
+      this.slaService.getDownloadFile(
+        'sla_category',
+        this.startDate,
+        this.endDate
+      ),
+      this.slaService.getDownloadFile(
+        'sla_state',
+        this.startDate,
+        this.endDate
+      ),
+      this.slaService.getDownloadFile('sla_dex', this.startDate, this.endDate),
+    ];
+
+    forkJoin(downloadRequests)
+      .pipe(finalize(() => this.commonService.isLoading(false)))
+      .subscribe({
+        next: (responses: any[]) => {
+          const fileTypes = [
+            'sla_status',
+            'sla_category',
+            'sla_state',
+            'sla_dex',
+          ];
+
+          responses.forEach((res: any, index: number) => {
+            const type = fileTypes[index];
+            const fileName = `${type.toUpperCase()}_${moment().format(
+              'YYYY-MM-DD_HH-mm'
+            )}.xlsx`;
+            const blob = new Blob([res], {
+              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            window.URL.revokeObjectURL(url);
+          });
+        },
+        error: (err: any) => {
+          console.error('Error downloading all files:', err);
+        },
+      });
+  }
+
+  async downloadAllFileSequential() {
+    this.commonService.isLoading(true);
+
+    const types: Array<
+      'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex'
+    > = ['sla_status', 'sla_category', 'sla_state', 'sla_dex'];
+
+    for (const type of types) {
+      await this.downloadSingleFile(type);
+      // Wait 1 second between downloads to avoid browser blocking
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
+    this.commonService.isLoading(false);
+  }
+
+  private async downloadSingleFile(
+    type: 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex'
+  ) {
+    return new Promise<void>((resolve, reject) => {
+      this.slaService
+        .getDownloadFile(type, this.startDate, this.endDate)
+        .subscribe({
+          next: (res) => {
+            this.downloadWithFileName(type, res);
+            resolve();
+          },
+          error: (err) => {
+            console.error(`Error downloading ${type}:`, err);
+            resolve(); // Continue with next file even if one fails
+          },
+        });
+    });
+  }
+
+  downloadFile(type: 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex') {
+    this.commonService.isLoading(true);
+    this.slaService
+      .getDownloadFile(type, this.startDate, this.endDate)
+      .pipe(finalize(() => this.commonService.isLoading(false)))
+      .subscribe({
+        next: (res) => {
+          this.downloadWithFileName(type, res);
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
+  }
+
+  private downloadWithFileName(
+    type: 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex',
+    resp: any
+  ) {
+    const fileName = `${type.toUpperCase()}_${moment().format(
+      'YYYY-MM-DD_HH-mm'
+    )}.xlsx`;
+    const blob = new Blob([resp], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  async downloadAllAsPDF() {
+    if (!this.dashboardContainer) {
+      return;
+    }
+
+    this.commonService.isLoading(true);
+
+    try {
+      // Wait for charts to be fully rendered
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Check if all chart elements are available
+      if (
+        !this.statusChart ||
+        !this.categoryChart ||
+        !this.stateChart ||
+        !this.dexChart
+      ) {
+        // Wait a bit more and try again
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
+
+      // Create PDF
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      // Add title and metadata
+      pdf.setFontSize(20);
+      pdf.text('SLA Dashboard Report', 105, 20, { align: 'center' });
+      pdf.setFontSize(12);
+      pdf.text(
+        `Generated on: ${moment().format('DD MMM YYYY, hh:mm A')}`,
+        105,
+        30,
+        { align: 'center' }
+      );
+      pdf.text(
+        `Date Range: ${moment(this.startDate).format('DD MMM YYYY')} - ${moment(
+          this.endDate
+        ).format('DD MMM YYYY')}`,
+        105,
+        40,
+        { align: 'center' }
+      );
+
+      let currentY = 50;
+      let chartsProcessed = 0;
+
+      // Download each chart and add to the same PDF
+      const charts = [
+        { type: 'status', title: 'SLA Status', element: this.statusChart },
+        {
+          type: 'category',
+          title: 'SLA Type (D+1 to D+5)',
+          element: this.categoryChart,
+        },
+        {
+          type: 'state',
+          title: 'SLA by Destination',
+          element: this.stateChart,
+        },
+        { type: 'dex', title: 'Delivery Exceptions', element: this.dexChart },
+      ];
+
+      for (const chart of charts) {
+        if (!chart.element) {
+          console.error(`${chart.type} chart element not found`);
+          continue;
+        }
+
+        const element = chart.element.nativeElement;
+        // Configure html2canvas options for chart only
+        const canvas = await html2canvas(element, {
+          allowTaint: true,
+          useCORS: true,
+          scale: 2, // Higher quality
+          backgroundColor: '#ffffff',
+          width: element.scrollWidth,
+          height: element.scrollHeight,
+          scrollX: 0,
+          scrollY: 0,
+          windowWidth: element.scrollWidth,
+          windowHeight: element.scrollHeight,
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = 180; // Leave some margin
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        // Check if we need a new page
+        if (currentY + imgHeight + 50 > 270) {
+          // 50 for title and table
+          pdf.addPage();
+          currentY = 20;
+        }
+
+        // Add chart title
+        pdf.setFontSize(14);
+        pdf.text(chart.title, 20, currentY);
+        currentY += 10;
+
+        // Calculate position to center the image
+        const xPosition = (210 - imgWidth) / 2; // Center horizontally
+
+        // Add the chart image
+        pdf.addImage(imgData, 'PNG', xPosition, currentY, imgWidth, imgHeight);
+        currentY += imgHeight + 10;
+
+        // Add detailed table
+        currentY = this.addDetailTableToPDF(pdf, chart.type, currentY);
+
+        // Add some space between charts
+        currentY += 20;
+
+        chartsProcessed++;
+      }
+
+      console.log(
+        `Total charts processed: ${chartsProcessed} out of ${charts.length}`
+      );
+
+      // Save the PDF
+      const fileName = `SLA_Dashboard_Complete_${moment().format(
+        'YYYY-MM-DD_HH-mm'
+      )}.pdf`;
+      pdf.save(fileName);
+    } catch (error) {
+      console.error('Error generating complete PDF:', error);
+    } finally {
+      this.commonService.isLoading(false);
+    }
+  }
+
+  async downloadChartAsPDF(chartType: 'status' | 'category' | 'state' | 'dex') {
+    console.log(`Starting download for ${chartType} chart...`);
+
+    let chartElement: ElementRef | undefined;
+    let title = '';
+    let fileName = '';
+
+    // Get the appropriate chart element and set title
+    switch (chartType) {
+      case 'status':
+        chartElement = this.statusChart;
+        title = 'SLA Status';
+        fileName = `SLA_Status_${moment().format('YYYY-MM-DD_HH-mm')}.pdf`;
+        break;
+      case 'category':
+        chartElement = this.categoryChart;
+        title = 'SLA Type (D+1 to D+5)';
+        fileName = `SLA_Category_${moment().format('YYYY-MM-DD_HH-mm')}.pdf`;
+        break;
+      case 'state':
+        chartElement = this.stateChart;
+        title = 'SLA by Destination';
+        fileName = `SLA_State_${moment().format('YYYY-MM-DD_HH-mm')}.pdf`;
+        break;
+      case 'dex':
+        chartElement = this.dexChart;
+        title = 'Delivery Exceptions';
+        fileName = `SLA_DEX_${moment().format('YYYY-MM-DD_HH-mm')}.pdf`;
+        break;
+    }
+
+    if (!chartElement) {
+      console.error(`${chartType} chart element not found`);
+      return;
+    }
+
+    console.log(
+      `Chart element found for ${chartType}, proceeding with download...`
+    );
+
+    // Only show loading if this is a single chart download
+    const isSingleDownload = !this.commonService.isLoading;
+    if (isSingleDownload) {
+      this.commonService.isLoading(true);
+    }
+
+    try {
+      // Wait for chart to be fully rendered
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const element = chartElement.nativeElement;
+
+      // Configure html2canvas options for chart only
+      const canvas = await html2canvas(element, {
+        allowTaint: true,
+        useCORS: true,
+        scale: 2, // Higher quality
+        backgroundColor: '#ffffff',
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
+      });
+
+      // Create PDF
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      const imgWidth = 180; // Leave some margin
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // Calculate position to center the image
+      const xPosition = (210 - imgWidth) / 2; // Center horizontally
+      const yPosition = 40; // Start below title
+
+      // Add title and metadata
+      pdf.setFontSize(18);
+      pdf.text(title, 105, 20, { align: 'center' });
+      pdf.setFontSize(10);
+      pdf.text(
+        `Generated on: ${moment().format('DD MMM YYYY, hh:mm A')}`,
+        105,
+        30,
+        { align: 'center' }
+      );
+      pdf.text(
+        `Date Range: ${moment(this.startDate).format('DD MMM YYYY')} - ${moment(
+          this.endDate
+        ).format('DD MMM YYYY')}`,
+        105,
+        35,
+        { align: 'center' }
+      );
+
+      // Add the chart image
+      pdf.addImage(imgData, 'PNG', xPosition, yPosition, imgWidth, imgHeight);
+
+      // Add detailed table based on chart type
+      const tableYPosition = yPosition + imgHeight + 20;
+      this.addDetailTable(pdf, chartType, tableYPosition);
+
+      // Save the PDF
+      pdf.save(fileName);
+      console.log(`Successfully downloaded ${fileName}`);
+    } catch (error) {
+      console.error(`Error generating PDF for ${chartType}:`, error);
+    } finally {
+      if (isSingleDownload) {
+        this.commonService.isLoading(false);
+      }
+    }
+  }
+
+  private addDetailTable(pdf: jsPDF, chartType: string, startY: number) {
+    pdf.setFontSize(12);
+    pdf.text('Detailed Data', 20, startY);
+
+    const currentY = startY + 10;
+
+    switch (chartType) {
+      case 'status':
+        this.addStatusTable(pdf, currentY);
+        break;
+      case 'category':
+        this.addCategoryTable(pdf, currentY);
+        break;
+      case 'state':
+        this.addStateTable(pdf, currentY);
+        break;
+      case 'dex':
+        this.addDexTable(pdf, currentY);
+        break;
+    }
+  }
+
+  private addDetailTableToPDF(
+    pdf: jsPDF,
+    chartType: string,
+    startY: number
+  ): number {
+    pdf.setFontSize(12);
+    pdf.text('Detailed Data', 20, startY);
+
+    let currentY = startY + 10;
+
+    switch (chartType) {
+      case 'status':
+        currentY = this.addStatusTableToPDF(pdf, currentY);
+        break;
+      case 'category':
+        currentY = this.addCategoryTableToPDF(pdf, currentY);
+        break;
+      case 'state':
+        currentY = this.addStateTableToPDF(pdf, currentY);
+        break;
+      case 'dex':
+        currentY = this.addDexTableToPDF(pdf, currentY);
+        break;
+    }
+
+    return currentY;
+  }
+
+  private addStatusTable(pdf: jsPDF, startY: number) {
+    // Get status data from the chart
+    const statusData = this.statusPieLabels.map((label, index) => {
+      const data = this.statusPieData[0]?.data?.[index];
+      const numericData = typeof data === 'number' ? data : 0;
+      return {
+        label: label.replace(/\([^)]*\)/g, '').trim(), // Remove count from label
+        percentage: numericData,
+        count: parseInt(label.match(/\((\d+)\)/)?.[1] || '0'),
+      };
+    });
+
+    // Table headers
+    pdf.setFontSize(10);
+    pdf.setFillColor(240, 240, 240);
+    pdf.rect(20, startY, 170, 8);
+    pdf.text('Status', 25, startY + 6);
+    pdf.text('Count', 100, startY + 6);
+    pdf.text('Percentage', 140, startY + 6);
+
+    // Table data
+    let currentY = startY + 8;
+    statusData.forEach((item, index) => {
+      if (currentY > 270) {
+        // Check if we need a new page
+        pdf.addPage();
+        currentY = 20;
+      }
+
+      const fillColor = index % 2 === 0 ? 248 : 255;
+      pdf.setFillColor(fillColor, fillColor, fillColor);
+      pdf.rect(20, currentY, 170, 8);
+      pdf.text(item.label, 25, currentY + 6);
+      pdf.text(item.count.toString(), 100, currentY + 6);
+      pdf.text(`${item.percentage.toFixed(2)}%`, 140, currentY + 6);
+
+      currentY += 8;
+    });
+  }
+
+  private addCategoryTable(pdf: jsPDF, startY: number) {
+    // Get category data from the chart
+    const categoryData = this.catBarLabels.map((label, index) => {
+      const successData = this.catBarData[0]?.data?.[index];
+      const failedData = this.catBarData[1]?.data?.[index];
+      const success = typeof successData === 'number' ? successData : 0;
+      const failed = typeof failedData === 'number' ? failedData : 0;
+      return {
+        label: label,
+        success: success,
+        failed: failed,
+        total: success + failed,
+      };
+    });
+
+    // Table headers
+    pdf.setFontSize(10);
+    pdf.setFillColor(240, 240, 240);
+    pdf.rect(20, startY, 170, 8);
+    pdf.text('SLA Type', 25, startY + 6);
+    pdf.text('Success', 80, startY + 6);
+    pdf.text('Failed', 120, startY + 6);
+    pdf.text('Total', 160, startY + 6);
+
+    // Table data
+    let currentY = startY + 8;
+    categoryData.forEach((item, index) => {
+      if (currentY > 270) {
+        pdf.addPage();
+        currentY = 20;
+      }
+
+      const fillColor = index % 2 === 0 ? 248 : 255;
+      pdf.setFillColor(fillColor, fillColor, fillColor);
+      pdf.rect(20, currentY, 170, 8);
+      pdf.text(item.label, 25, currentY + 6);
+      pdf.text(item.success.toString(), 80, currentY + 6);
+      pdf.text(item.failed.toString(), 120, currentY + 6);
+      pdf.text(item.total.toString(), 160, currentY + 6);
+
+      currentY += 8;
+    });
+  }
+
+  private addStateTable(pdf: jsPDF, startY: number) {
+    // Table headers
+    pdf.setFontSize(10);
+    pdf.setFillColor(240, 240, 240);
+    pdf.rect(20, startY, 170, 8);
+    pdf.text('Destination', 25, startY + 6);
+    pdf.text('Shipments', 100, startY + 6);
+    pdf.text('SLA %', 140, startY + 6);
+
+    // Table data
+    let currentY = startY + 8;
+    this.shipmentData.forEach((item, index) => {
+      if (currentY > 270) {
+        pdf.addPage();
+        currentY = 20;
+      }
+
+      const fillColor = index % 2 === 0 ? 248 : 255;
+      pdf.setFillColor(fillColor, fillColor, fillColor);
+      pdf.rect(20, currentY, 170, 8);
+      pdf.text(item.state, 25, currentY + 6);
+      pdf.text(item.shipments.toString(), 100, currentY + 6);
+      pdf.text(`${item.percentage.toFixed(2)}%`, 140, currentY + 6);
+
+      currentY += 8;
+    });
+
+    // Add total row
+    if (currentY > 270) {
+      pdf.addPage();
+      currentY = 20;
+    }
+
+    const totalY = currentY;
+    pdf.setFillColor(220, 220, 220);
+    pdf.rect(20, totalY, 170, 8);
+    pdf.setFontSize(10);
+    pdf.text('Total', 25, totalY + 6);
+    pdf.text(this.getTotalShipments().toString(), 100, totalY + 6);
+    pdf.text('', 140, totalY + 6);
+  }
+
+  private addDexTable(pdf: jsPDF, startY: number) {
+    // Table headers
+    pdf.setFontSize(10);
+    pdf.setFillColor(240, 240, 240);
+    pdf.rect(20, startY, 170, 8);
+    pdf.text('Exception Type', 25, startY + 6);
+    pdf.text('Count', 120, startY + 6);
+    pdf.text('Percentage', 150, startY + 6);
+
+    // Table data
+    let currentY = startY + 8;
+    this.dexSourceData.forEach((item, index) => {
+      if (currentY > 270) {
+        pdf.addPage();
+        currentY = 20;
+      }
+
+      const fillColor = index % 2 === 0 ? 248 : 255;
+      pdf.setFillColor(fillColor, fillColor, fillColor);
+      pdf.rect(20, currentY, 170, 8);
+      pdf.text(item.label, 25, currentY + 6);
+      pdf.text(item.count.toString(), 120, currentY + 6);
+      pdf.text(`${item.percentage}%`, 150, currentY + 6);
+
+      currentY += 8;
+    });
+  }
+
+  private addStatusTableToPDF(pdf: jsPDF, startY: number): number {
+    // Get status data from the chart
+    const statusData = this.statusPieLabels.map((label, index) => {
+      const data = this.statusPieData[0]?.data?.[index];
+      const numericData = typeof data === 'number' ? data : 0;
+      return {
+        label: label.replace(/\([^)]*\)/g, '').trim(), // Remove count from label
+        percentage: numericData,
+        count: parseInt(label.match(/\((\d+)\)/)?.[1] || '0'),
+      };
+    });
+
+    // Table headers
+    pdf.setFontSize(10);
+    pdf.setFillColor(240, 240, 240);
+    pdf.rect(20, startY, 170, 8);
+    pdf.text('Status', 25, startY + 6);
+    pdf.text('Count', 100, startY + 6);
+    pdf.text('Percentage', 140, startY + 6);
+
+    // Table data
+    let currentY = startY + 8;
+    statusData.forEach((item, index) => {
+      if (currentY > 270) {
+        // Check if we need a new page
+        pdf.addPage();
+        currentY = 20;
+      }
+
+      const fillColor = index % 2 === 0 ? 248 : 255;
+      pdf.setFillColor(fillColor, fillColor, fillColor);
+      pdf.rect(20, currentY, 170, 8);
+      pdf.text(item.label, 25, currentY + 6);
+      pdf.text(item.count.toString(), 100, currentY + 6);
+      pdf.text(`${item.percentage.toFixed(2)}%`, 140, currentY + 6);
+
+      currentY += 8;
+    });
+
+    return currentY;
+  }
+
+  private addCategoryTableToPDF(pdf: jsPDF, startY: number): number {
+    // Get category data from the chart
+    const categoryData = this.catBarLabels.map((label, index) => {
+      const successData = this.catBarData[0]?.data?.[index];
+      const failedData = this.catBarData[1]?.data?.[index];
+      const success = typeof successData === 'number' ? successData : 0;
+      const failed = typeof failedData === 'number' ? failedData : 0;
+      return {
+        label: label,
+        success: success,
+        failed: failed,
+        total: success + failed,
+      };
+    });
+
+    // Table headers
+    pdf.setFontSize(10);
+    pdf.setFillColor(240, 240, 240);
+    pdf.rect(20, startY, 170, 8);
+    pdf.text('SLA Type', 25, startY + 6);
+    pdf.text('Success', 80, startY + 6);
+    pdf.text('Failed', 120, startY + 6);
+    pdf.text('Total', 160, startY + 6);
+
+    // Table data
+    let currentY = startY + 8;
+    categoryData.forEach((item, index) => {
+      if (currentY > 270) {
+        pdf.addPage();
+        currentY = 20;
+      }
+
+      const fillColor = index % 2 === 0 ? 248 : 255;
+      pdf.setFillColor(fillColor, fillColor, fillColor);
+      pdf.rect(20, currentY, 170, 8);
+      pdf.text(item.label, 25, currentY + 6);
+      pdf.text(item.success.toString(), 80, currentY + 6);
+      pdf.text(item.failed.toString(), 120, currentY + 6);
+      pdf.text(item.total.toString(), 160, currentY + 6);
+
+      currentY += 8;
+    });
+
+    return currentY;
+  }
+
+  private addStateTableToPDF(pdf: jsPDF, startY: number): number {
+    // Table headers
+    pdf.setFontSize(10);
+    pdf.setFillColor(240, 240, 240);
+    pdf.rect(20, startY, 170, 8);
+    pdf.text('Destination', 25, startY + 6);
+    pdf.text('Shipments', 100, startY + 6);
+    pdf.text('SLA %', 140, startY + 6);
+
+    // Table data
+    let currentY = startY + 8;
+    this.shipmentData.forEach((item, index) => {
+      if (currentY > 270) {
+        pdf.addPage();
+        currentY = 20;
+      }
+
+      const fillColor = index % 2 === 0 ? 248 : 255;
+      pdf.setFillColor(fillColor, fillColor, fillColor);
+      pdf.rect(20, currentY, 170, 8);
+      pdf.text(item.state, 25, currentY + 6);
+      pdf.text(item.shipments.toString(), 100, currentY + 6);
+      pdf.text(`${item.percentage.toFixed(2)}%`, 140, currentY + 6);
+
+      currentY += 8;
+    });
+
+    // Add total row
+    if (currentY > 270) {
+      pdf.addPage();
+      currentY = 20;
+    }
+
+    const totalY = currentY;
+    pdf.setFillColor(220, 220, 220);
+    pdf.rect(20, totalY, 170, 8);
+    pdf.setFontSize(10);
+    pdf.text('Total', 25, totalY + 6);
+    pdf.text(this.getTotalShipments().toString(), 100, totalY + 6);
+    pdf.text('', 140, totalY + 6);
+
+    return totalY + 8;
+  }
+
+  private addDexTableToPDF(pdf: jsPDF, startY: number): number {
+    // Table headers
+    pdf.setFontSize(10);
+    pdf.setFillColor(240, 240, 240);
+    pdf.rect(20, startY, 170, 8);
+    pdf.text('Exception Type', 25, startY + 6);
+    pdf.text('Count', 120, startY + 6);
+    pdf.text('Percentage', 150, startY + 6);
+
+    // Table data
+    let currentY = startY + 8;
+    this.dexSourceData.forEach((item, index) => {
+      if (currentY > 270) {
+        pdf.addPage();
+        currentY = 20;
+      }
+
+      const fillColor = index % 2 === 0 ? 248 : 255;
+      pdf.setFillColor(fillColor, fillColor, fillColor);
+      pdf.rect(20, currentY, 170, 8);
+      pdf.text(item.label, 25, currentY + 6);
+      pdf.text(item.count.toString(), 120, currentY + 6);
+      pdf.text(`${item.percentage}%`, 150, currentY + 6);
+
+      currentY += 8;
+    });
+
+    return currentY;
   }
 }

@@ -9,27 +9,73 @@
         </pos-search-input>
       </div>
     </div>
-    <!-- date range field -->
-    <div class="container date-range-picker">
-      <label class="container-label text-label">{{languageData.date_range}}</label>
-      <div class="container-action date-range-picker">
-        <form [formGroup]="dateRangePickerForm">
-          <pos-date-range-picker (formChange)="onDateRangePickerFormChange($event)" [minDate]="minSelectableDate" [maxDate]="maxSelectableDate" class="px-3"></pos-date-range-picker>
-        </form>
+    <ng-container *ngIf="!this._commonService.checkIfMobile()">
+<!-- date range field -->
+<div class="container date-range-picker">
+  <label class="container-label text-label">{{languageData.date_range}}</label>
+  <div class="container-action date-range-picker">
+    <form [formGroup]="dateRangePickerForm">
+      <pos-date-range-picker (formChange)="onDateRangePickerFormChange($event)" [minDate]="minSelectableDate" [maxDate]="maxSelectableDate" class="px-3"></pos-date-range-picker>
+    </form>
+  </div>
+</div>
+<!-- dropdown Order Type field -->
+<div class="container" *ngIf="(_commonService.isCOD | async) === true">
+  <label class="container-label text-label">{{languageData.order_type}}</label>
+  <div class="container-action">
+    <pos-dropdown-input  [placeholder]="languageData.select_order_type" [options]="dropdownOptions"
+      (selectionChange)="onSelectChange($event)" class="px-3"></pos-dropdown-input>
+  </div>
+</div>
+    </ng-container>
+
+        <!-- MOBILE VIEW -->
+<div *ngIf="this._commonService.checkIfMobile()" class="mobile-filter-trigger">
+  <button class="filter-btn" mat-icon-button (click)="mobileFilterOpen = true">
+    <span>Filters</span><mat-icon>filter_list</mat-icon>
+  </button>
+
+  <div>
+    <span *ngIf="start_date && end_date" class="custom-chip">{{start_date | date}}-{{end_date| date}}</span>
+    <span *ngIf="cod_type" class="custom-chip">{{cod_type}}</span>
+  </div>
+
+
+  <!-- This stays in the DOM and is toggled via [hidden]/[class] -->
+  <div class="mobile-filter-overlay" [class.show]="mobileFilterOpen">
+    <div class="mobile-filter-popup">
+      <h3>Filters For Delivered Shipment</h3>
+
+      <!-- date range field -->
+<div class="container date-range-picker">
+  <label class="container-label text-label">{{languageData.date_range}}</label>
+  <div class="container-action date-range-picker">
+    <form [formGroup]="dateRangePickerForm">
+      <pos-date-range-picker (formChange)="onDateRangePickerFormChange($event)" [minDate]="minSelectableDate" [maxDate]="maxSelectableDate" class="px-3"></pos-date-range-picker>
+    </form>
+  </div>
+</div>
+<!-- dropdown Order Type field -->
+<div class="container" *ngIf="(_commonService.isCOD | async) === true">
+  <label class="container-label text-label">{{languageData.order_type}}</label>
+  <div class="container-action">
+    <pos-dropdown-input  [placeholder]="languageData.select_order_type" [options]="dropdownOptions"
+      (selectionChange)="onSelectChange($event)" class="px-3"></pos-dropdown-input>
+  </div>
+</div>
+
+      <div class="actions">
+        <button mat-flat-button color="primary" (click)="mobileFilterOpen = false">Close</button>
       </div>
     </div>
-    <!-- dropdown Order Type field -->
-    <div class="container" *ngIf="(_commonService.isCOD | async) === true">
-      <label class="container-label text-label">{{languageData.order_type}}</label>
-      <div class="container-action">
-        <pos-dropdown-input  [placeholder]="languageData.select_order_type" [options]="dropdownOptions"
-          (selectionChange)="onSelectChange($event)" class="px-3"></pos-dropdown-input>
-      </div>
-    </div>
+  </div>
+</div>
+    
     <div class="container container-right">
       <button
           mat-flat-button
           color="primary"
+          *ngIf="selectedMultipleData.length > 0"
           [class.action-disabled]="(!selectedMultipleData.length || totalShipmentNotRequestPickup === 0 || isPlugins) && !isSelectAllOrders"
           (click)="onActionButtonIcon('print', true)">
           {{languageData.print_label}} <span *ngIf="selectedMultipleData.length && !isSelectAllOrders">({{totalShipmentNotRequestPickup}})</span>
@@ -38,6 +84,7 @@
       <button
         mat-flat-button
         color="primary"
+        *ngIf="selectedMultipleData.length > 0"
         [class.action-disabled]="
           (!selectedMultipleData.length
           && !isSelectAllOrders)

@@ -306,6 +306,8 @@ export const bm = {
       ready_to_collect:'SEDIA UNTUK KUMPUL',
       processing_return:"MEMPROSES PEMULANGAN",
       return_initiated:"KEMBALI DIMULAKAN",
+      return_failed: 'PEMULANGAN GAGAL', 
+
 
       request_pickup: {
         search_tracking: 'Cari ID pengesanan penghantaran',

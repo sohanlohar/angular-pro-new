@@ -202,8 +202,8 @@ export class MyShipmentTableComponent implements OnInit, OnChanges, OnDestroy {
   languageData:any = this.languageObj.myShipments;
     qty = 0;
 
-  isLoading:boolean = false;
-  currentIndex:number = -1;
+  isLoading = false;
+  currentIndex = -1;
 
   constructor(private cdr: ChangeDetectorRef, public commonService: CommonService,
     private translate: TranslationService, private router: Router,
@@ -247,9 +247,8 @@ export class MyShipmentTableComponent implements OnInit, OnChanges, OnDestroy {
       this.pageSize = size;
       this.triggerPaginationEvent();
     });
-
-
   }
+
   triggerPaginationEvent() {
     this.onPageEvent({
       pageSize: this.pageSize,
@@ -347,7 +346,7 @@ export class MyShipmentTableComponent implements OnInit, OnChanges, OnDestroy {
       // Ensure this runs after the DOM has updated due to data changes
       Promise.resolve().then(() => {
         this.checkAndUpdateHeightRules();
-        this.cdr.markForCheck(); 
+        this.cdr.markForCheck();
       });
     };
     if (this.shipment$) {
@@ -898,10 +897,10 @@ export class MyShipmentTableComponent implements OnInit, OnChanges, OnDestroy {
 
   disableEditShipment(status: string): boolean {
     // activeTab='pending' is pending tab and 'pickup details' is view-by-pickup shipment page
-    return (status !== 'pickup-requested' && status !== 'pickup-rescheduled' && status !== 'order-created') && 
+    return (status !== 'pickup-requested' && status !== 'pickup-rescheduled' && status !== 'order-created') &&
       (this.activeTab === 'pending' || this.activeTab === 'pickup details');
   }
-  
+
 
   disableCancelShipment(status: string | undefined, children?: any, trackingId?: string): boolean{
     if(this.fromMps){
@@ -971,5 +970,26 @@ export class MyShipmentTableComponent implements OnInit, OnChanges, OnDestroy {
       'Shopify': platform ==='Shopify',
     };
   }
+
+  getActionIcon(action: string): string {
+    switch (action) {
+      case 'deleteStore':
+      case 'cancel':
+        return 'delete';
+      case 'edit':
+        return 'edit';
+      case 'print':
+        return 'print';
+      case 'download':
+        return 'download';
+      case 'reschedule-pick-up':
+        return 'history';
+      case 'close':
+        return 'close';
+      default:
+        return action;
+    }
+  }
+  
 
 }

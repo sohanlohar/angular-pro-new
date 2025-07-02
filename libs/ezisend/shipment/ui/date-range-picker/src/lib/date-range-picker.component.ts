@@ -66,7 +66,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
   @Input() autoApply = false;
   @Input() initialStartDate?: string;
   @Input() initialEndDate?: string;
-  @Input() initialRange: 'last30' | 'next30' = 'last30';
+  @Input() initialRange: 'last30' | 'next30' | null | undefined = 'last30';
   form!: FormGroup;
   @Output() formChange = new EventEmitter();
   @Output() pickerStateChanged = new EventEmitter<boolean>(); // New Output
@@ -99,7 +99,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
     ['Month to Date']: [moment().startOf('month'), moment()],
     // added this new label to make it clickable for mobile view and custom range coming from date picker hided with the css last-child
     ['Custom Range']: [moment().subtract(7, 'days'), moment()],
-  };  
+  };
 
   data: any =
     localStorage.getItem('language') &&
@@ -156,7 +156,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
       startDate: start.toDate(),
       endDate: end.toDate()
     };
-    console.log('Date-range-picker UI: Initializing display with local dates:', { start: start.toDate(), end: end.toDate() });
+    // console.log('Date-range-picker UI: Initializing display with local dates:', { start: start.toDate(), end: end.toDate() });
     this.form.patchValue({
       start_date: start.toDate(), // Use local Date object for UI display
       end_date: end.toDate()      // Use local Date object for UI display
@@ -224,7 +224,7 @@ rangeClicked(range: any): void {
     if (actualDuration.asDays() > maxDuration.asDays()) {
      this._snackBar.open(`${this.languageData.three_months_limit}`,'ok'),{
       duration: 4000,
-      verticalPosition: 'top', 
+      verticalPosition: 'top',
       horizontalPosition: 'center'
     };
 
@@ -267,7 +267,7 @@ rangeClicked(range: any): void {
   }
 
   chosenDateTime(e: any): void {
-    console.log(e);
+    // console.log(e);
     this.inlineDateTime = e;
   }
 
@@ -284,14 +284,14 @@ rangeClicked(range: any): void {
   private formatDate() {
     const start_date: string | null = moment(this.form.value.start_date)
       .startOf('day')
-      .utc()
+      // .utc()
       .format('YYYY-MM-DDTHH:mm:ss[Z]');
 
     const end_date: string | null = moment(this.form.value.end_date)
       .endOf('day')
-      .utc()
+      // .utc()
       .format('YYYY-MM-DDTHH:mm:ss[Z]');
-    console.log('Date-range-picker Payload: Formatting dates to UTC for API', { start_date, end_date });
+    // console.log('Date-range-picker Payload: Formatting dates to UTC for API', { start_date, end_date });
     return { start_date, end_date };
   }
 
@@ -316,7 +316,7 @@ rangeClicked(range: any): void {
  *     the width of the calendar container to match the width of the input field.
  */
  onPickerOpened() {
-    this.pickerStateChanged.emit(true); 
+    this.pickerStateChanged.emit(true);
 if (!this.isMobileView) return;
   this.picker.open();
     this.setWidthContainerCalendar();

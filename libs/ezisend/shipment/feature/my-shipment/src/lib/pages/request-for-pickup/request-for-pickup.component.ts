@@ -98,8 +98,8 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // For API
-     this.end_date = moment().endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.start_date = moment().subtract(30, 'days').startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+     this.end_date = moment().endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.start_date = moment().subtract(30, 'days').startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
 
     // For Date Picker UI (local time)
     const localEndDate = moment().endOf('day').toDate();
@@ -611,9 +611,9 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
       data: {
         title: this.languageData.print_title,
         descriptions: this.languageData.description2,
-        genCannotV3: true,
-        successCount: this.conNoteV3Response.count_of_success,
-        failedCount: this.conNoteV3Response.count_of_failed,
+        // genCannotV3: true,
+        // successCount: this.conNoteV3Response.count_of_success,
+        // failedCount: this.conNoteV3Response.count_of_failed,
         icon: 'print',
         confirmEvent: true,
         closeEvent: true,
@@ -843,8 +843,8 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
   private get buildParams(): IShipmentParamFilter {
     return {
       uitab: 'request-pickup',
-      start_date: this.start_date,
-      end_date: this.end_date,
+      start_date: moment(this.start_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      end_date: moment(this.end_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
       keyword: this.keyword,
       page: +this.currentPage,
       limit: +this.pageSize,

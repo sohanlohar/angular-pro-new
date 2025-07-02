@@ -258,7 +258,7 @@ export class NavHeaderComponent implements OnInit{
   }
 
   onSelectChange(value: any, control: any) {
-    console.log(value, control);
+    // console.log(value, control);
   }
 
   updateActions() {

@@ -322,6 +322,7 @@ export const en = {
       out_for_return: 'OUT FOR RETURN',
       pick_up_assigned: 'PICK UP ASSIGNED',
       ready_to_collect: 'READY TO COLLECT',
+      return_failed: 'RETURN FAILED',
 
       request_pickup: {
         search_tracking: 'Search Tracking ID',

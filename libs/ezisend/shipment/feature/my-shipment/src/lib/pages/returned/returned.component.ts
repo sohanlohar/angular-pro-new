@@ -77,6 +77,7 @@ export class ReturnedComponent implements OnInit {
   totalTrackingDetails: any;
   isLoading = true;
   current_tab = '';
+  mobileFilterOpen = false;
 
   constructor(
     public _commonService: CommonService,
@@ -103,8 +104,8 @@ export class ReturnedComponent implements OnInit {
       this.current_tab = params['t'];
     })
     // For API
-     this.end_date = moment().endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.start_date = moment().subtract(30, 'days').startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+     this.end_date = moment().endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.start_date = moment().subtract(30, 'days').startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
 
     // For Date Picker UI (local time)
     const localEndDate = moment().endOf('day').toDate();
@@ -339,8 +340,8 @@ export class ReturnedComponent implements OnInit {
   private get buildParams(): IShipmentParamFilter {
     return {
       uitab: 'returned',
-      start_date: this.start_date,
-      end_date: this.end_date,
+      start_date: moment(this.start_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      end_date: moment(this.end_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
       order_type: this.order_type,
       cod_type: this.cod_type,
       keyword: this.keyword,

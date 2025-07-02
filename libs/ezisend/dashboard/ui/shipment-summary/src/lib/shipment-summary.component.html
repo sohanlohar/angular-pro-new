@@ -21,11 +21,6 @@
       <div class="wrapper-column">
         <div class="column">
           <ng-container
-            *ngIf="
-              (commonService.isCOD | async) ||
-              ((commonService.isCOD | async) === true &&
-                (commonService.isCODUbat | async) === false)
-            "
           >
             <label class="container__orders-title">{{
               data?.dashboard?.my_cod
@@ -35,14 +30,14 @@
               icon="done"
               [label]="data?.dashboard?.collected"
               [status]="'delivered'"
-              [price]="$total_cod | async"
+              [price]="($total_cod | async) ?? 0"
             ></pos-cod-order>
             <pos-cod-order
               theme="blue"
               icon="more_horiz"
               [label]="data?.dashboard?.pending_collection"
               [status]="'live'"
-              [price]="$total_pending | async"
+              [price]="($total_pending | async) ?? 0"
             >
             </pos-cod-order>
             <pos-cod-order
@@ -50,7 +45,7 @@
               icon="error_outline"
               [label]="data?.dashboard?.failed_collect"
               [status]="'failed'"
-              [price]="$total_failed | async"
+              [price]="($total_failed | async) ?? 0"
             >
             </pos-cod-order>
           </ng-container>

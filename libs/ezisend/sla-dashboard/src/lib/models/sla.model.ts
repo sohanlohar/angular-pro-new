@@ -6,7 +6,7 @@ export interface IGlobalSlaResponse<T> {
 
 export interface ISlaStatusData {
   last_updated: string
-  sla_status: {
+  sla_statuses: {
     label: string
     percentage: number
     value: number
@@ -15,7 +15,7 @@ export interface ISlaStatusData {
 
 export interface ISlaCategoryStatusData {
   last_updated: string
-  sla_category: {
+  sla_categories: {
     label: string
     total_success: number
     total_failed: number

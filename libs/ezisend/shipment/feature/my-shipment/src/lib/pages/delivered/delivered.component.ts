@@ -77,6 +77,7 @@ export class DeliveredComponent implements OnInit, OnDestroy {
   isLoading = true;
   callv2 = false;
   is_select_all = false;
+  mobileFilterOpen = false;
 
   dropdownOptions = [
     { value: '', viewValue: this.languageData.all },
@@ -119,15 +120,15 @@ export class DeliveredComponent implements OnInit, OnDestroy {
       else if (localStorage.getItem("language") == "my") {
         this.languageData = bm.data.myShipments.delivered_tab
       }
-      this.dropdownOptions[0].viewValue = this.languageData.all; 
-      this.dropdownOptions[2].viewValue = this.languageData.non_cod; 
+      this.dropdownOptions[0].viewValue = this.languageData.all;
+      this.dropdownOptions[2].viewValue = this.languageData.non_cod;
     })
   }
 
   ngOnInit(): void {
     //For API
-    this.end_date = moment().endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.start_date = moment().subtract(30, 'days').startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.end_date = moment().endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.start_date = moment().subtract(30, 'days').startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
     // For Date Picker UI (local time)
     const localEndDate = moment().endOf('day').toDate();
     const localStartDate = moment().subtract(30, 'days').startOf('day').toDate();
@@ -499,8 +500,8 @@ checkGlobalSearchParamsAndFetchShipments() {
 
   private get buildParams(): IShipmentParamFilter {
     const baseParams: IShipmentParamFilter = {
-      start_date: moment(this.start_date).startOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
-      end_date: moment(this.end_date).endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      start_date: moment(this.start_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      end_date: moment(this.end_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
       cod_type: this.cod_type,
       keyword: this.keyword,
       product_type: this.product_type,

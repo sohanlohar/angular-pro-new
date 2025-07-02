@@ -440,3 +440,34 @@ a.download-report-button{
     }
   }
 }
+
+// No data message styles
+.no-data-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  background-color: #f9f9f9;
+  border-radius: 0 0 8px 8px ;
+  border: 1px solid #ddd;
+  border-top: none;
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #666;
+  }
+}
+
+.no-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+}

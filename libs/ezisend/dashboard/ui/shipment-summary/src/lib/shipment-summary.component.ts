@@ -5,9 +5,6 @@ import {
   ChangeDetectorRef,
   OnDestroy,
   HostListener,
-  Output,
-  EventEmitter,
-  Input,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SummaryTile } from '@pos/ezisend/dashboard/data-access/models';
@@ -15,13 +12,9 @@ import { CommonService } from '@pos/ezisend/shared/data-access/services';
 import * as moment from 'moment';
 import {
   BehaviorSubject,
-  Observable,
   Subject,
   Subscription,
   catchError,
-  finalize,
-  forkJoin,
-  map,
   takeUntil,
   tap,
 } from 'rxjs';
@@ -46,7 +39,11 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
   end_date = '';
   boxHeight = 'auto';
   protected _onDestroy = new Subject<void>();
-
+  // Date Range
+  dateRangePickerForm: FormGroup = this.fb.group({
+    start_date: [moment().subtract(1, 'month')],
+    end_date: [moment()],
+  });
   public doughnutChartLabels: Label[] = ['COD', 'NON COD'];
   public doughnutChartData: SingleDataSet = [];
   public doughnutChartType: ChartType = 'doughnut';
@@ -180,40 +177,14 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
     private translate: TranslationService
   ) {}
 
-  // Date Range
-  dateRangePickerForm: FormGroup = this.fb.group({
-    start_date: [moment().subtract(1, 'month')],
-    end_date: [moment()],
-  });
-
   ngOnInit() {
     this.fetchConfig();
-    this.fetchDashboardSummary(
-      moment(this.dateRangePickerForm.value.start_date)
-        .startOf('day')
-        .utc()
-        .format('YYYY-MM-DDTHH:mm:ss[Z]'),
-      moment(this.dateRangePickerForm.value.end_date)
-        .endOf('day')
-        .utc()
-        .format('YYYY-MM-DDTHH:mm:ss[Z]')
-    );
     this.translate.buttonClick$.subscribe(() => {
       if (localStorage.getItem('language') == 'en') {
         this.data = en.data;
       } else if (localStorage.getItem('language') == 'my') {
         this.data = bm.data;
       }
-      this.fetchDashboardSummary(
-        moment(this.dateRangePickerForm.value.start_date)
-          .startOf('day')
-          .utc()
-          .format('YYYY-MM-DDTHH:mm:ss[Z]'),
-        moment(this.dateRangePickerForm.value.end_date)
-          .endOf('day')
-          .utc()
-          .format('YYYY-MM-DDTHH:mm:ss[Z]')
-      );
     });
 
     this.fetchShipmentByPaymentType();
@@ -251,11 +222,9 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
     if (event) {
       this.start_date = moment(event.start_date)
         .startOf('day')
-        .utc()
         .format('YYYY-MM-DDTHH:mm:ss[Z]');
       this.end_date = moment(event.end_date)
         .endOf('day')
-        .utc()
         .format('YYYY-MM-DDTHH:mm:ss[Z]');
       this.commonService.googleEventPush({
         event: 'filter_section',
@@ -268,109 +237,6 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
       this.end_date = '';
     }
 
-    this.fetchDashboardSummary(this.start_date, this.end_date);
-  }
-
-  fetchDashboardSummary(startDate?: string, endDate?: string) {
-    // create observable for all status
-    const query = `count-shipments?status=`;
-    const date =
-      startDate !== '' ? `&start_date=${startDate}&end_date=${endDate}` : '';
-    const requests$: Observable<any>[] = this.statusList.map((el) => {
-      this.isLoadingStatus[el] = true;
-      const newQuery = query + el;
-      return this.commonService.fetchList('dashboard', newQuery + date).pipe(
-        map((response) => ({
-          status: el,
-          count: response.data.count,
-          sum_cod: response.data.sum_cod,
-        })),
-        finalize(() => {
-          this.isLoadingStatus[el] = false;
-        }),
-        takeUntil(this._onDestroy)
-      );
-    });
-
-    //join all observable status and subscribe once
-    forkJoin(requests$).subscribe({
-      next: (responses) => {
-        responses.forEach((res: any) => {
-          this.mappingDataStatus(res);
-        });
-
-        if (this.commonService.isCOD.getValue()) {
-          this.commonService.isCOD
-            .pipe(takeUntil(this._onDestroy))
-            .subscribe(() => {
-              const pendingPickup = responses.find(
-                (el) => el.status === 'delivered'
-              );
-              const findTotalFailed = responses.find(
-                (el) => el.status === 'failed-delivery'
-              );
-              const findTotalPending = responses.find(
-                (el) => el.status === 'live'
-              );
-
-              if (pendingPickup) {
-                this.$total_cod.next(pendingPickup.sum_cod);
-              }
-
-              if (findTotalFailed) {
-                this.$total_failed.next(findTotalFailed.sum_cod);
-              }
-
-              if (findTotalPending) {
-                this.$total_pending.next(findTotalPending.sum_cod);
-              }
-            });
-        }
-
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        this.commonService.openErrorDialog();
-        this.cdr.detectChanges();
-      },
-    });
-  }
-
-  // create mapping data for result subscribe
-  private mappingDataStatus(res: {
-    count: number;
-    sum: number;
-    status: string;
-  }) {
-    switch (res.status) {
-      case 'pending-pickup':
-        this.summaryTiles[0].count = res.count;
-        this.summaryTiles[0].title = this.data.dashboard?.pending_pickup;
-        break;
-
-      case 'live':
-        this.summaryTiles[1].count = res.count;
-        this.summaryTiles[1].title = this.data.dashboard?.live_shipments;
-        break;
-
-      case 'delivered':
-        this.summaryTiles[2].count = res.count;
-        this.summaryTiles[2].title = this.data.dashboard?.delivered;
-        break;
-
-      case 'failed-delivery':
-        this.summaryTiles[3].count = res.count;
-        this.summaryTiles[3].title = this.data.dashboard?.failed_deliveries;
-        break;
-
-      case 'returned':
-        this.summaryTiles[4].count = res.count;
-        this.summaryTiles[4].title = this.data.dashboard?.returns;
-        break;
-
-      default:
-        console.log(`Unexpected status: ${res.status}`);
-    }
   }
 
   allStatusLoadingState(): boolean {
@@ -380,7 +246,6 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
   }
 
   fetchShipmentByPaymentType() {
-    console.log('fetchShipmentByPaymentType')
     this.commonService
       .fetchList(
         'dashboard',
@@ -389,8 +254,6 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this._onDestroy),
         tap((data: any) => {
-          console.log('insight', data)
-
           let codTotal = 0;
           let nonCodTotal = 0;
 
