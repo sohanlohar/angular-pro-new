@@ -60,7 +60,10 @@
         border-radius: 5px;
         padding: 0.4rem 0.8rem;
       }
-      ::ng-deep .mat-form-field-wrapper .mat-form-field-flex .mat-form-field-infix {
+      ::ng-deep
+        .mat-form-field-wrapper
+        .mat-form-field-flex
+        .mat-form-field-infix {
         border-top: 0 !important;
       }
     }
@@ -127,6 +130,9 @@
       width: 100% !important;
     }
   }
+  .wrapper-column {
+    flex-direction: column;
+  }
 }
 
 :host ::ng-deep {
@@ -162,45 +168,47 @@
   align-items: center;
 }
 
-.mat-flat-button.mat-primary, .mat-raised-button.mat-primary, .mat-fab.mat-primary, .mat-mini-fab.mat-primary {
+.mat-flat-button.mat-primary,
+.mat-raised-button.mat-primary,
+.mat-fab.mat-primary,
+.mat-mini-fab.mat-primary {
   background-color: #034d91 !important;
   color: #fff !important;
 
   &:disabled {
-    background-color: #e0e0e0!important;
-    color: #000!important;
-    cursor: not-allowed!important;
+    background-color: #e0e0e0 !important;
+    color: #000 !important;
+    cursor: not-allowed !important;
   }
 }
 
+.pieTable {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 
-  .pieTable {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
+  .description {
+    margin-top: 30px;
+  }
 
-    .description {
-      margin-top: 30px;
+  ::ng-deep .mat-table {
+    box-shadow: none;
+    border: 1px solid #e1e1e1;
+    text-align: center;
+    border-radius: 5px;
+    // height: 100%;
+
+    .mat-header-cell {
+      color: #5e5873;
+      background-color: #f4f4f4;
+      text-align: center;
     }
 
-    ::ng-deep .mat-table {
-      box-shadow: none;
-      border: 1px solid #E1E1E1;
-      text-align: center;
-      border-radius: 5px;
-      // height: 100%;
-
-      .mat-header-cell {
-        color: #5E5873;
-        background-color: #F4F4F4;
-        text-align: center;
-      }
-
-      .mat-row {
-        // height: 80px;
-      }
+    .mat-row {
+      // height: 80px;
     }
   }
+}
 
 .box-color {
   display: flex;
@@ -232,10 +240,10 @@
   margin-bottom: 2.5rem;
   display: flex;
   width: 100%;
-  color: #5E5873;
+  color: #5e5873;
   line-height: 24px;
   .end {
-    color: #5E5873;
+    color: #5e5873;
     font-size: 14px;
   }
 }
@@ -244,7 +252,6 @@
   margin-top: 30px;
   padding-bottom: 30px;
 }
-
 
 .wrapper-column {
   width: 100%;

@@ -13,10 +13,10 @@
     padding-bottom: 0.5em;
   }
   // .container-right {
-    // margin-left: auto;
-    // display: flex;
-    // flex-direction: row;
-    // padding-top: 40px;
+  // margin-left: auto;
+  // display: flex;
+  // flex-direction: row;
+  // padding-top: 40px;
   // }
   .container-label {
     width: 10px;
@@ -127,7 +127,7 @@
   //   width: 362px;
   // }
   // .container .container-action {
-    // height: 3rem !important ;
+  // height: 3rem !important ;
   // }
   .my-shipment-wrapper .container {
     padding-top: 10px;
@@ -146,12 +146,21 @@
 //     width: 300px;
 //   }
 // }
-@media screen and (max-width: 760px) {
-  // ::ng-deep {
-  //   .search-input .mat-form-field-infix {
-  //     height: 21px !important;
-  //   }
-  // }
+@media screen and (max-width: 768px) {
+  .mobile-filter-trigger .filter-btn {
+    border: 1px solid #cbcbcb;
+    padding: 0 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    color: #5e5873;
+    margin-top: 10px;
+    height: auto;
+    ::ng-deep .mat-button-wrapper {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+  }
   .my-shipment-wrapper .container {
     width: 100%;
     .container-action {
@@ -174,16 +183,15 @@
 }
 
 @media screen and (max-width: 570px) {
-
-  .my-shipment-wrapper .container button{
+  .my-shipment-wrapper .container button {
     flex: 1;
   }
 
-  ::ng-deep .mat-tab-header-pagination{
+  ::ng-deep .mat-tab-header-pagination {
     z-index: 1 !important;
   }
 
-  .actions{
+  .actions {
     display: flex;
     justify-content: center;
     margin-top: 10px;
@@ -232,17 +240,16 @@
 
 .custom-chip {
   display: inline-block;
-  padding: 4px 12px;
+  padding: 5px 12px;
   font-size: 13px;
   border-radius: 16px;
-  background-color: #e0e0e0;
-  color: #333;
+  background-color: #3993E5;
+  color: #FFFFFF;
   font-weight: 500;
   margin: 4px;
-  line-height: 1;
   white-space: nowrap;
 }
 
-.filter-btn{
+.filter-btn {
   width: auto !important;
 }

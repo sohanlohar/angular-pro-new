@@ -1,3 +1,250 @@
+.mat-fields-wrapper {
+  display: flex;
+  align-items: end;
+  gap: 15px;
+  flex-wrap: wrap;
+  .mat-field-container {
+    flex: 1 1 auto;
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    ::ng-deep .mat-form-field {
+      .mat-form-field-flex {
+        padding: 0;
+      }
+      .mat-form-field-infix {
+        border-top: 0;
+        width: 100%;
+        padding: 12px 10px;
+        .mat-error.non_txtarea {
+          left: 0;
+        }
+      }
+    }
+  }
+  .mat-icon-container {
+    width: fit-content !important;
+  }
+  .weight-field {
+    position: relative;
+    .volumetric-calculator {
+      position: absolute;
+      bottom: -20px;
+    }
+  }
+}
+
+.rate-calc__ui .form-group__address-group-1.shipment-details {
+  display: inline-block;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.important-note ul {
+  padding-left: 15px !important;
+}
+
+.estimation-total {
+  .container {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-direction: row;
+    .important-note {
+      flex: 1 1 50%;
+      background-color: #ffefef;
+      padding: 1rem;
+      border: 1px solid #ffe082;
+      border-radius: 8px;
+    }
+
+    .estimation {
+      flex: 1 1 50%;
+      border-radius: 8px;
+      .estimation-ul {
+        padding-left: 0;
+      }
+    }
+  }
+}
+.rate-calc__ui {
+  .rate-calc__ui__rate-card {
+    .container {
+      display: flex;
+      justify-content: space-between;
+      gap: 2rem;
+      .important-note {
+        flex: 1 1 40%;
+        background-color: #ffefef;
+        padding: 1rem;
+        border: 1px solid #ffe082;
+        border-radius: 8px;
+      }
+
+      .zones-calculations {
+        flex: 1 1 60%;
+        overflow-x: auto;
+      }
+    }
+  }
+}
+
+// ----------------------
+
+.zone-card {
+  width: 100%;
+}
+
+.table-zone {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  min-width: 500px;
+  .zone-section {
+    &.lightColor {
+      td {
+        &:nth-child(2) {
+          background-color: #e7f2ff;
+        }
+        &:nth-child(3) {
+          background-color: #f3ffe9;
+        }
+        &:nth-child(4) {
+          background-color: #ffeff5;
+        }
+      }
+    }
+    td {
+      pointer-events: none;
+      &:first-child {
+        background-color: #fcfafa;
+      }
+      &:nth-child(2) {
+        background-color: #d9eaff;
+      }
+      &:nth-child(3) {
+        background-color: #eaffd2;
+      }
+      &:nth-child(4) {
+        background-color: #ffdee9;
+      }
+      &.edit-td {
+        pointer-events: auto;
+      }
+    }
+    .mat-form-field {
+      width: 100%;
+    }
+    ::ng-deep {
+      .mat-form-field-wrapper {
+        padding-bottom: 0;
+        .mat-form-field-infix {
+          padding: 0 !important;
+          border-top: 0 !important;
+          width: 50px !important;
+        }
+        .mat-form-field-underline {
+          display: none;
+        }
+      }
+    }
+    td {
+      padding: 5px 10px !important;
+      border: 1px solid black;
+      width: 60px;
+      height: 38.4px;
+      position: relative;
+      ::ng-deep {
+        .mat-form-field-outline-start,
+        .mat-form-field-outline-end {
+          border: 0;
+          outline: none;
+        }
+        .mat-error {
+          font-size: 12px;
+          position: absolute;
+          top: 39px;
+        }
+      }
+    }
+  }
+  .price-tr {
+    ::ng-deep {
+      .mat-form-field-flex {
+        padding: 0;
+      }
+    }
+  }
+}
+
+.table-zone td {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+}
+
+/* Buttons */
+.zones-calculations .buttons {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+  gap: 1rem;
+
+  button {
+    padding: 0.6rem 1.8rem;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    border: 1px solid #004c89;
+    transition: 0.4s;
+  }
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 1024px) {
+  .form-group__address-group-2 .container {
+    flex-direction: column-reverse;
+  }
+
+  .important-note,
+  .zones-calculations {
+    flex: 1 1 100%;
+  }
+
+  .zones-calculations {
+    overflow-x: auto;
+  }
+
+  .table-zone {
+    min-width: 100%;
+  }
+
+  .mat-form-field {
+    width: 100%;
+  }
+
+  .mat-form-field-infix {
+    width: 100% !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .estimation-total {
+    .container {
+      flex-direction: column;
+    }
+  }
+
+  .table-zone td {
+    padding: 0.4rem;
+    font-size: 0.85rem;
+  }
+
+  .important-note ul li {
+    font-size: 0.9rem;
+  }
+}
+
+// ----------------------
 .ml-1rem {
   margin-left: 1rem;
 }
@@ -77,13 +324,7 @@
         }
       }
     }
-    .weight-td {
-      ::ng-deep {
-        .mat-form-field-infix::after {
-          // right: -11px;
-        }
-      }
-    }
+
     .edit-td {
       background-color: #fff !important;
       &.weight-td {
@@ -100,39 +341,15 @@
       font-weight: 500;
       padding-bottom: 1.8rem;
     }
-    .fields-div {
-      display: flex;
-      align-items: center;
+    .mat-fields-wrapper {
       mat-label {
         line-height: 2;
       }
-      ::ng-deep {
-        @media screen and (max-width: 1600px) {
-          ::ng-deep {
-            .mat-form-field-infix {
-              width: 10.4rem;
-            }
-          }
-        }
-      }
     }
-    .shipment-details {
-      display: flex;
-      align-items: center;
-      .generate-quote-btn {
-        margin-left: 1rem;
-      }
-      ::ng-deep {
-        .mat-form-field {
-          .mat-form-field-flex {
-            background: #fff;
-          }
-        }
-      }
-    }
+
     // shipment-details
     .shipment-dimensions {
-      .fields-div {
+      .mat-fields-wrapper {
         background: #fcfafa;
         align-items: center;
         display: flex;
@@ -162,11 +379,6 @@
           }
         }
       }
-      ::ng-deep {
-        .mat-form-field-infix {
-          width: 9.375rem;
-        }
-      }
     }
     input[type='number'] {
       -moz-appearance: textfield;
@@ -177,16 +389,7 @@
       -webkit-appearance: none;
     }
     .mat-field-container {
-      display: inline-flex;
-      flex-direction: column;
-      justify-content: center;
-      margin-right: 1rem;
-      &.mat-icon-container {
-        color: #00498d;
-      }
       &.weight-field {
-        margin-left: 1rem;
-        position: relative;
         ::ng-deep .mat-form-field-wrapper {
           padding-bottom: 0;
         }
@@ -211,7 +414,7 @@
       }
       .generate-quote-btn {
         button {
-          padding: 0 2rem;
+          padding: 0 1rem;
         }
       }
       ::ng-deep {
@@ -225,13 +428,7 @@
             opacity: 0;
           }
         }
-        .mat-form-field-appearance-outline {
-          .mat-form-field-infix {
-            padding: 0.158em 0 0.7em 0;
-          }
-        }
       }
-      // ::ng-deep
     }
     .blue-border {
       hr {
@@ -242,15 +439,7 @@
       }
     }
     .estimation-total {
-      .container {
-        display: grid;
-        grid-template-columns: 50% 50%;
-      }
       .important-note {
-        background: #ffefef;
-        padding: 2rem;
-        border-radius: 10px;
-        max-width: 80%;
         .note-title {
           color: #ff0000;
           font-weight: 500;
@@ -266,14 +455,13 @@
       }
       // .important-note
       .estimation-ul {
-        max-width: 90%;
         li {
           list-style-type: none;
           font-size: 14px;
           list-style-type: none;
           display: flex;
           justify-content: space-between;
-          padding: 0 1.5rem 0.5rem;
+
           .estimation-title {
             font-weight: 600;
           }
@@ -291,109 +479,24 @@
         }
       }
     }
-    //   estimation-total
+
     &__rate-card {
       ::ng-deep {
         .mat-expansion-panel {
           margin-top: 1rem !important;
         }
       }
-      .container {
-        grid-template-columns: 40% 60% !important;
-      }
+
       .important-note {
-        background: #eef5ff !important;
         .note-title {
           color: #5e5873 !important;
         }
       }
       .zones-calculations {
-        display: flex;
-        align-items: center;
         .zone-card {
           width: 100%;
         }
         .table-zone {
-          td {
-            padding: 0 1rem !important;
-            border: 1px solid black;
-            min-width: 160px;
-            height: 38.4px;
-            position: relative;
-            ::ng-deep {
-              .mat-form-field-outline-start,
-              .mat-form-field-outline-end {
-                border: 0;
-                outline: none;
-              }
-              .mat-error {
-                font-size: 12px;
-                position: absolute;
-                top: 39px;
-              }
-            }
-          }
-          .zone-section {
-            &.lightColor {
-              td {
-                &:nth-child(2) {
-                  background-color: #e7f2ff;
-                }
-                &:nth-child(3) {
-                  background-color: #f3ffe9;
-                }
-                &:nth-child(4) {
-                  background-color: #ffeff5;
-                }
-              }
-            }
-            td {
-              pointer-events: none;
-              &:first-child {
-                background-color: #fcfafa;
-              }
-              &:nth-child(2) {
-                background-color: #d9eaff;
-              }
-              &:nth-child(3) {
-                background-color: #eaffd2;
-              }
-              &:nth-child(4) {
-                background-color: #ffdee9;
-              }
-              &.edit-td {
-                pointer-events: auto;
-              }
-            }
-            .mat-form-field {
-              width: 100%;
-            }
-            ::ng-deep {
-              .mat-form-field-wrapper {
-                padding-bottom: 0;
-                .mat-form-field-underline {
-                  display: none;
-                }
-                .mat-form-field-infix {
-                  width: auto;
-                  max-width: 180px;
-                  padding: 0.1em 0 0.5em;
-                }
-              }
-            }
-          }
-          .price-tr {
-            ::ng-deep {
-              .mat-form-field-infix {
-                width: auto;
-                padding: 0.3rem 0 1em 0;
-              }
-              .mat-form-field-flex {
-                max-height: 40px;
-                padding: 0;
-              }
-            }
-          }
           .mat-form-field-disabled {
             ::ng-deep {
               .mat-form-field-outline-end,
@@ -413,34 +516,7 @@
         .mt-2 {
           margin-top: 1rem;
         }
-        .buttons {
-          display: flex;
-          justify-content: end;
-          margin-top: 1rem;
-          button {
-            outline: none;
-            border: 1px solid #004c89;
-            border-radius: 5px;
-            padding: 0.51rem 2rem;
-            transition: 0.4s;
-            margin: 0 8px;
-          }
-        }
-        .edit {
-          background-color: transparent;
-          cursor: pointer;
-        }
-        .save {
-          background-color: #004c89;
-          color: white;
-          cursor: pointer;
-          &:disabled {
-            background: #e0e0e0 !important;
-            border-color: #e0e0e0 !important;
-            pointer-events: none;
-            color: #777 !important;
-          }
-        }
+
         input[type='number']::-webkit-inner-spin-button,
         input[type='number']::-webkit-outer-spin-button {
           -webkit-appearance: none;
@@ -458,154 +534,64 @@
       }
     }
   }
-  // ui
 }
 
 .asterisk-color {
   color: #f86262;
 }
 
-.fields-mob-view {
-  display: flex;
+@media (max-width: 1404px) {
+  .mat-fields-wrapper {
+    .mat-field-container {
+      flex: 1 1 auto;
+      width: 30%;
+    }
+  }
 }
-
 @media (max-width: 768px) {
-  .important-note ul {
-    padding-left: 0px !important;
-  }
-
-  .rate-calc__ui .estimation-total .container {
-    grid: none !important;
-    display: block;
-  }
-
-  .rate-calc__ui .fields-div,
-  .rate-calc__ui .shipment-details {
-    display: block !important;
-  }
-
-  .fields-mob-view {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
   .rate-calc__ui .mat-field-container .generate-quote-btn button {
     width: 100% !important;
-  }
-
-  .rate-calc__ui .mat-field-container.weight-field,
-  .rate-calc__ui .shipment-details .generate-quote-btn {
-    margin-left: 0px !important;
-  }
-
-  .rate-calc__ui .estimation-total .estimation-ul {
-    padding-left: 0px !important;
-  }
-
-  .rate-calc__ui__rate-card .zones-calculations .buttons {
-    justify-content: start;
   }
 
   .rate-calc__ui__rate-card .zones-calculations .table-zone td {
     min-width: auto !important;
   }
 
-  // .rate-calc__ui__rate-card .zones-calculations .zone-card {
-  //   width: 50%;
-  //   overflow: scroll;
-  // }
   .rate-calc__ui .mat-field-container {
     margin-right: 0 !important;
+  }
+  .mat-fields-wrapper {
+    flex-direction: row;
+  }
+
+  .mat-field-container {
+    flex: 1 1 100%;
+    width: 100% !important;
+    margin-bottom: 10px;
+  }
+  .weight-field {
+    position: relative;
+    .volumetric-calculator {
+      position: inherit !important;
+      bottom: auto !important;
+    }
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
-  .important-note ul {
-    padding-left: 0px !important;
-  }
-
-  .rate-calc__ui .estimation-total .container {
-    grid: none !important;
-    display: block;
-  }
-
-  .rate-calc__ui .fields-div,
-  .rate-calc__ui .shipment-details {
-    display: block !important;
-  }
-
-  .fields-mob-view {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
   .rate-calc__ui .mat-field-container .generate-quote-btn button {
     width: 100% !important;
-  }
-
-  .rate-calc__ui .mat-field-container.weight-field,
-  .rate-calc__ui .shipment-details .generate-quote-btn {
-    margin-left: 0px !important;
-  }
-
-  .rate-calc__ui .estimation-total .estimation-ul {
-    padding-left: 0px !important;
   }
 
   .rate-calc__ui__rate-card .zones-calculations .table-zone td {
     min-width: auto !important;
   }
-
-  // .rate-calc__ui__rate-card .zones-calculations .zone-card {
-  //   width: 50%;
-  //   overflow: scroll;
-  // }
 }
 
 @media (min-width: 820px) and (max-width: 1180px) {
-  .important-note ul {
-    padding-left: 0px !important;
-  }
-
-  .rate-calc__ui .estimation-total .container {
-    grid: none !important;
-    display: block;
-  }
-
-  .rate-calc__ui .fields-div,
-  .rate-calc__ui .shipment-details {
-    display: block !important;
-  }
-
-  .fields-mob-view {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
   .rate-calc__ui .mat-field-container .generate-quote-btn button {
     width: 100% !important;
   }
-
-  .rate-calc__ui .mat-field-container.weight-field,
-  .rate-calc__ui .shipment-details .generate-quote-btn {
-    margin-left: 0px !important;
-  }
-
-  .rate-calc__ui .estimation-total .estimation-ul {
-    padding-left: 0px !important;
-  }
-
-  .rate-calc__ui__rate-card .zones-calculations .table-zone td {
-    min-width: auto !important;
-  }
-
-  // .rate-calc__ui__rate-card .zones-calculations .zone-card {
-  //   width: 50%;
-  //   overflow: scroll;
-  // }
 }
 
 .download-button {
