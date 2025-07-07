@@ -126,6 +126,7 @@
     width: 100%;
   }
   ::ng-deep .dashboard-datepicker {
+    width: 100% !important;
     > form {
       width: 100% !important;
     }

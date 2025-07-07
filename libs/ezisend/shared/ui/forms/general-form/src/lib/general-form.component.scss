@@ -31,7 +31,7 @@
   .form-group {
     width: 100%;
     display: grid;
-    grid-template-columns: 24% 23% 23% 23%;
+    grid-template-columns: 24% 24% 24% 24%;
     grid-template-areas:
       'search search . .'
       'name name nickName nickName'
@@ -154,8 +154,9 @@
 @media screen and (max-width: 780px) {
   .form-container {
     background-color: unset;
-    height: 500px;
+    // height: 500px;
     gap: 0.1rem 1rem;
+    padding: 20px;
     .title {
       // padding: 8px;
       // margin-left: 45px;
