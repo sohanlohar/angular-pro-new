@@ -8,6 +8,9 @@
     color: #5e5873;
     margin-bottom: 1.06rem;
   }
+  .mat-form-field{
+    margin-bottom: 15px !important;
+  }
 
   .mat-form-field {
     margin-bottom: 15px !important;
@@ -127,7 +130,7 @@
 
 .button-next {
   grid-area: button-next;
-  margin-top: 25px;
+  margin-top: 20px;
 }
 
 @media screen and (min-width: 40rem) {
