@@ -74,7 +74,7 @@ export class CommonService {
   _selectedTab = {
     index: 0
   };
-  
+
   getCurrentRecipientData$ = this.getRecipientData.asObservable();
   getHSC$!: Observable<any>;
   countryList$!: Observable<any>;
@@ -130,7 +130,7 @@ export class CommonService {
   reportAuthApi = environment.reportUrl.reportAuthApi;
   reportClientId = environment.reportUrl.clientId;
   reportClientSecret = environment.reportUrl.clientSecret;
-  
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -140,7 +140,7 @@ export class CommonService {
     private translate: TranslationService,
     @Inject(DOCUMENT) private document: Document
   ) {
-    this.clock = interval(1000).pipe(map(() => 
+    this.clock = interval(1000).pipe(map(() =>
     {
       const getDt = new Date(new Date().toLocaleString("en-US", {
         timeZone: "Asia/Kuala_Lumpur"
@@ -150,7 +150,6 @@ export class CommonService {
       });
       return getLocal;
     }
-    
     ));
 
     this.translate.buttonClick$.subscribe(() => {
@@ -163,9 +162,9 @@ export class CommonService {
     })
   }
   isMobile: any = false;
- 
+
   public checkIfMobile() {
-    this.isMobile = window.innerWidth < 768; 
+    this.isMobile = window.innerWidth < 768;
     return this.isMobile;
   }
 
@@ -177,10 +176,10 @@ export class CommonService {
   fetchLinkedAccountUser(endpoint: string, query: string,accessToken: any){
     const headers = new HttpHeaders({
       Authorization: accessToken,
-      'Content-Type': 'application/octet-stream', 
+      'Content-Type': 'application/octet-stream',
     });
     return this.http
-    .get(`${this.SPPAPI}${endpoint}/v1/${query}`, { 
+    .get(`${this.SPPAPI}${endpoint}/v1/${query}`, {
       headers
     })
     .pipe(share());
@@ -202,10 +201,10 @@ export class CommonService {
   accountPermissionUser(endpoint: string, query: string,accessToken: any, userId:any){
     const headers = new HttpHeaders({
       Authorization: accessToken,
-      'Content-Type': 'application/octet-stream', 
+      'Content-Type': 'application/octet-stream',
     });
     return this.http
-    .get(`${this.SPPAPI}${endpoint}/v1/${query}?user_id=${userId}`, { 
+    .get(`${this.SPPAPI}${endpoint}/v1/${query}?user_id=${userId}`, {
       headers
     })
   }
@@ -367,12 +366,12 @@ export class CommonService {
   downloadReceipt (accessToken: string, id: string) {
     const headers = new HttpHeaders({
       Authorization: accessToken,
-      'Content-Type': 'application/octet-stream', 
+      'Content-Type': 'application/octet-stream',
     });
 
     return this.http.get<any>(
       `${this.invoiceApi}/${id}`,
-      { 
+      {
         headers, responseType: 'blob' as 'json', observe: 'response' // Set the responseType to 'blob' to handle binary data
       }
     );
@@ -414,17 +413,17 @@ export class CommonService {
     const headers = new HttpHeaders({
       Authorization: accessToken,
       filename: filename
-      // 'Content-Type': 'application/octet-stream', 
+      // 'Content-Type': 'application/octet-stream',
     });
 
     return this.http.get<any>(
       `${this.reportApi}${accountNumber}/report/download`,
-      { 
+      {
         headers, responseType: 'blob' as 'json', observe: 'response' // Set the responseType to 'blob' to handle binary data
       }
     );
   }
-  
+
   getAPI(endpoint: string, query: string, withDelay = 0) {
     /* BASE URL HAVE TO MOVE TO ENVIRONMENT */
     return this.http
@@ -612,27 +611,26 @@ export class CommonService {
         });
 
       const backdropClickSubscription = dialogRef.backdropClick().subscribe(() => {
-        if (err?.error?.status === 403 && err?.error?.error?.code === 'E2002') { 
+        if (err?.error?.status === 403 && err?.error?.error?.code === 'E2002') {
           this.logout();
         }
         backdropClickSubscription.unsubscribe();
       })
 
       const afterClosedSubscription = dialogRef.afterClosed().subscribe(() => {
-        if (err?.error?.status === 403 && err?.error?.error?.code === 'E2002') { 
+        if (err?.error?.status === 403 && err?.error?.error?.code === 'E2002') {
           this.logout();
         }
         afterClosedSubscription.unsubscribe();
       })
 
       const dialogSubmitSubscription = dialogRef.componentInstance.confirmEvent.subscribe(() => {
-        if (err?.error?.status === 403 && err?.error?.error?.code === 'E2002') { 
+        if (err?.error?.status === 403 && err?.error?.error?.code === 'E2002') {
           this.logout();
         }
         dialogSubmitSubscription.unsubscribe();
         dialogRef.close();
       });
-      
     }
   }
 
@@ -641,7 +639,6 @@ export class CommonService {
   }
 
   openSnackBar(message: string, action: string) {
-    
     this._snackBar.open(message, action, {
       duration: 2000,
       panelClass: 'custom-snackbar'
@@ -651,7 +648,7 @@ export class CommonService {
   logout() {
     return this.http.post<any>(`${this.SPPAPI}user/v1/logout`,null);
   }
-  
+
   errorMessageTranslate(errorResp: string) {
     const translations: any = {
       // Map error messages to their translations
@@ -667,21 +664,21 @@ export class CommonService {
   }
  /**
  * Method Name: hideSenderAddress
- * 
+ *
  * Input Parameters:
  *   - payload ({ hide: boolean }): An object containing a boolean value that determines whether the sender's address should be hidden.
- * 
+ *
  * Output Parameters:
  *   - Observable<any>: Returns an observable that emits the result of the HTTP POST request.
- * 
+ *
  * Purpose:
  *   - To update the user's address settings on the server, specifically whether the sender's address should be hidden.
- * 
+ *
  * Author:
  *   - Ilyas Ahmed
- * 
+ *
  * Description:
- *   - This method sends a POST request to update the address setting on the server. 
+ *   - This method sends a POST request to update the address setting on the server.
  *   - The request body is created using the `hide` property from the input payload, and the request is sent with `Content-Type: application/json` in the headers.
  *   - The method handles potential errors using `catchError`, which logs the error to the console and returns the error as an observable.
  */
@@ -710,8 +707,8 @@ export class CommonService {
     return this.http
       .get(`${this.SPPAPI}${endpoint}/v1/refreshtoken`, { headers: headers })
       .pipe(share());
-    }
-    
+  }
+
   /**
    * Method Name: copyToClipboard
    *
@@ -749,7 +746,7 @@ export class CommonService {
   // Method to update global search parameters
   updateGlobalSearchParams(params: any) {
     this.globalSearchParamsSubject.next(params);
-} 
+}
 // to convert email and phone number to hash string
 convertToHashSHA256(value: string): Promise<string> {
   const encoder = new TextEncoder();

@@ -61,6 +61,9 @@
 }
 .date-range-form-wrapper {
   min-width: 240px;
+  ::ng-deep .mat-form-field-underline {
+    display: none !important;
+ }
 }
 ::ng-deep .date-range-form-wrapper .mat-form-field-wrapper .mat-form-field-infix {
   padding: 10px 0;

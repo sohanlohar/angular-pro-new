@@ -1,5 +1,5 @@
 <mat-form-field class="example-form-field w-100 date-range-form-wrapper" appearance="standard">
-  <input matInput readonly type="text" ngxDaterangepickerMd #pickerDirective [(ngModel)]="selected"
+  <input matInput readonly type="text" ngxDaterangepickerMd #pickerDirective [(ngModel)]="selected" placeholder="Start Date - End Date"
     [showCustomRangeLabel]="true" [alwaysShowCalendars]="alwaysShowCalendars" [ranges]="ranges"
     [showClearButton]="false" [showCancel]="true" [linkedCalendars]="true" [isTooltipDate]="isTooltipDate"
     [isInvalidDate]="isInvalidDate" [showDropdowns]="true" [locale]="{ applyLabel: 'Apply', format: 'DD MMM YY' }"
@@ -9,7 +9,6 @@
   <div class="custom-button-icon">
     <button *ngIf="selected && selected.startDate && selected.endDate" matSuffix mat-icon-button
       (click)="form.reset(); onClearDate()" class="custom-icon-button-2 custom-icon-button">
-
     </button>
     <button matSuffix class="ngx-daterangepicker-action custom-icon-button" (click)="openDate()">
     </button>

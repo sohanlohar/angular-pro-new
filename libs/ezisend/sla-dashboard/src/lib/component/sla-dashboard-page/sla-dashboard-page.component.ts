@@ -11,11 +11,16 @@ import { BreadcrumbItem } from '@pos/ezisend/shared/data-access/models';
 import * as moment from 'moment';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { Label } from 'ng2-charts';
+import * as Chart from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { SlaService } from '../../services/sla.service';
 import { CommonService } from '@pos/ezisend/shared/data-access/services';
 import { finalize, forkJoin } from 'rxjs';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+
+// Register the datalabels plugin
+Chart.plugins.register(ChartDataLabels);
 
 @Component({
   selector: 'pos-sla-dashboard-page',
@@ -75,12 +80,15 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     total_failed: number;
   }[] = [];
 
+  catBarRawData: { success: number[]; failed: number[] } = { success: [], failed: [] };
+
   catBarOptions: ChartOptions = {
     responsive: true,
     scales: {
       yAxes: [
         {
-          display: false, // <--- Fully hides Y axis including ticks & line
+          stacked: true,
+          display: true,
           gridLines: {
             display: false,
             drawBorder: false,
@@ -89,12 +97,17 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
           },
           ticks: {
             beginAtZero: true,
+            max: 100,
+            callback: function(value: number) {
+              return value + '%';
+            },
           },
         },
       ],
       xAxes: [
         {
-          display: false, // <--- Fully hides X axis including ticks & line
+          stacked: true,
+          display: false,
           gridLines: {
             display: false,
             drawBorder: false,
@@ -104,17 +117,44 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         },
       ],
     },
+    plugins: {
+      datalabels: {
+        display: true,
+        color: '#fff',
+        font: {
+          weight: 'bold',
+          size: 14
+        },
+        formatter: (value: number) => value.toFixed(1) + '%',
+      },
+    },
+    tooltips: {
+      callbacks: {
+        label: (tooltipItem: any, data: any) => {
+          // Use raw data for tooltip
+          const idx = tooltipItem.index;
+          const dsIdx = tooltipItem.datasetIndex;
+          const comp = data.datasets[dsIdx].label === 'Success' ? 'success' : 'failed';
+          const rawVal = this.catBarRawData[comp][idx];
+          return `${data.datasets[dsIdx].label}: ${rawVal}`;
+        }
+      }
+    }
   };
 
   catBarLabels: Label[] = [];
   catBarType: ChartType = 'bar';
   catBarLegend = true;
+  catBarPlugins = [ChartDataLabels];
 
   catBarData: ChartDataSets[] = [];
+  isEmptyType = true;
 
   //status pie chart
   statusPieLabels: string[] = [];
   statusPieData: ChartDataSets[] = [];
+  isStatusEmpty = true;
+  statusPiePlugins = [ChartDataLabels];
   statusPieOptions: ChartOptions = {
     responsive: true,
     maintainAspectRatio: true,
@@ -125,6 +165,19 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       animateScale: true,
       animateRotate: true,
     },
+    plugins: {
+      datalabels: {
+        display: true,
+        color: '#fff',
+        font: {
+          weight: 'bold',
+          size: 14
+        },
+        formatter: (value: number) => {
+          return value.toFixed(1) + '%';
+        }
+      }
+    }
   };
 
   // dex pie chart data
@@ -148,6 +201,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
 
   dexChartLabels: string[] = [];
   dexChartData: number[] = [];
+  isEmptyDex = true;
   dexChartType = 'pie';
   dexChartBackgroundColor: string[] = [
     '#36A2EB',
@@ -247,6 +301,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
   compleate = 0;
   totalShipmentState = 0;
   last_updated: string[] = [];
+  isEmptyRow = () => true;
 
   constructor(
     private fb: FormBuilder,
@@ -290,6 +345,9 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
             borderWidth: 2,
           },
         ];
+
+        this.isStatusEmpty = sla_status.length === 0 || sla_status.every(item => item.value === 0);
+
       });
   }
 
@@ -311,21 +369,16 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         this.catBarOptions = {
           ...this.catBarOptions,
           scales: {
+            ...this.catBarOptions.scales,
             yAxes: [
               {
+                ...((this.catBarOptions.scales && this.catBarOptions.scales.yAxes) ? this.catBarOptions.scales.yAxes[0] : {}),
                 ticks: {
-                  beginAtZero: true,
-                  max: maxValue + 1000,
-                },
-                gridLines: {
-                  display: false,
-                },
-              },
-            ],
-            xAxes: [
-              {
-                gridLines: {
-                  display: false,
+                  ...((this.catBarOptions.scales && this.catBarOptions.scales.yAxes) ? this.catBarOptions.scales.yAxes[0]?.ticks : {}),
+                  max: 100,
+                  callback: function(value: number) {
+                    return value + '%';
+                  },
                 },
               },
             ],
@@ -335,21 +388,38 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         const sla_category = res.data.sla_categories || [];
         this.catBarLabels = sla_category.map((item) => item.label);
 
+        // Store raw data
+        this.catBarRawData.success = sla_category.map((item) => item.total_success);
+        this.catBarRawData.failed = sla_category.map((item) => item.total_failed);
+
+        // Calculate percent for each bar
+        const percentSuccess = sla_category.map((item) => {
+          const total = item.total_success + item.total_failed;
+          return total > 0 ? (item.total_success / total) * 100 : 0;
+        });
+        const percentFailed = sla_category.map((item) => {
+          const total = item.total_success + item.total_failed;
+          return total > 0 ? (item.total_failed / total) * 100 : 0;
+        });
+
         this.catBarData = [
           {
-            label: 'Success',
-            data: sla_category.map((item) => item.total_success),
-            backgroundColor: '#1AC9E6',
-            borderColor: '#1AC9E6',
+            label: 'Failed',
+            data: percentFailed,
+            backgroundColor: '#eb4d5f',
+            borderColor: '#eb4d5f',
+            borderWidth: 2,
+            stack: 'a',
           },
           {
-            label: 'Failed',
-            data: sla_category.map((item) => item.total_failed),
-            backgroundColor: '#DB4C82',
-            borderColor: '#DB4C82',
-            borderWidth: 2,
+            label: 'Success',
+            data: percentSuccess,
+            backgroundColor: '#3478cb',
+            borderColor: '#3478cb',
+            stack: 'a',
           },
         ];
+        this.isEmptyType = sla_category.length === 0 || sla_category.every(item => item.total_success === 0 && item.total_failed === 0);
       });
   }
 
@@ -358,9 +428,11 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       .getStateList(this.startDate, this.endDate)
       .pipe(finalize(() => this.checLoading(1)))
       .subscribe((res) => {
-        const sortedData = res.data.sla_states.sort(
-          (a, b) => b.percentage - a.percentage
-        );
+        const sortedData = res.data.sla_states
+          .filter(item => item.total > 0)
+          .sort(
+            (a, b) => b.percentage - a.percentage
+          );
 
         this.shipmentData = sortedData.map((item) => ({
           state: item.label,
@@ -391,6 +463,8 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
             percentage: Number(item.percentage.toFixed(2)),
             color: this.dexChartBackgroundColor[index],
           }));
+
+        this.isEmptyDex = dex.length === 0 || dex.every(item => item.total === 0);
       });
   }
 
@@ -427,12 +501,12 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
 
   get startDate() {
     const start_date = this.dateRangePickerForm.value.start_date;
-    return moment(start_date).format('YYYY-MM-DD');
+    return moment.utc(start_date).format('YYYY-MM-DD');
   }
 
   get endDate() {
     const end_date = this.dateRangePickerForm.value.end_date;
-    return moment(end_date).format('YYYY-MM-DD');
+    return moment.utc(end_date).format('YYYY-MM-DD');
   }
 
   getTotalShipments(): number {
@@ -449,51 +523,20 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
   async downloadAllFile() {
     this.commonService.isLoading(true);
 
-    const downloadRequests = [
-      this.slaService.getDownloadFile(
-        'sla_status',
-        this.startDate,
-        this.endDate
-      ),
-      this.slaService.getDownloadFile(
-        'sla_category',
-        this.startDate,
-        this.endDate
-      ),
-      this.slaService.getDownloadFile(
-        'sla_state',
-        this.startDate,
-        this.endDate
-      ),
-      this.slaService.getDownloadFile('sla_dex', this.startDate, this.endDate),
-    ];
-
-    forkJoin(downloadRequests)
+    this.slaService.getDownloadFile('sla_all', this.startDate, this.endDate)
       .pipe(finalize(() => this.commonService.isLoading(false)))
       .subscribe({
-        next: (responses: any[]) => {
-          const fileTypes = [
-            'sla_status',
-            'sla_category',
-            'sla_state',
-            'sla_dex',
-          ];
-
-          responses.forEach((res: any, index: number) => {
-            const type = fileTypes[index];
-            const fileName = `${type.toUpperCase()}_${moment().format(
-              'YYYY-MM-DD_HH-mm'
-            )}.xlsx`;
-            const blob = new Blob([res], {
-              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            a.click();
-            window.URL.revokeObjectURL(url);
+        next: (res: any) => {
+          const fileName = `SLA_ALL_${moment().format('YYYY-MM-DD_HH-mm')}.xlsx`;
+          const blob = new Blob([res], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
           });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          a.click();
+          window.URL.revokeObjectURL(url);
         },
         error: (err: any) => {
           console.error('Error downloading all files:', err);
@@ -501,42 +544,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       });
   }
 
-  async downloadAllFileSequential() {
-    this.commonService.isLoading(true);
-
-    const types: Array<
-      'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex'
-    > = ['sla_status', 'sla_category', 'sla_state', 'sla_dex'];
-
-    for (const type of types) {
-      await this.downloadSingleFile(type);
-      // Wait 1 second between downloads to avoid browser blocking
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-
-    this.commonService.isLoading(false);
-  }
-
-  private async downloadSingleFile(
-    type: 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex'
-  ) {
-    return new Promise<void>((resolve, reject) => {
-      this.slaService
-        .getDownloadFile(type, this.startDate, this.endDate)
-        .subscribe({
-          next: (res) => {
-            this.downloadWithFileName(type, res);
-            resolve();
-          },
-          error: (err) => {
-            console.error(`Error downloading ${type}:`, err);
-            resolve(); // Continue with next file even if one fails
-          },
-        });
-    });
-  }
-
-  downloadFile(type: 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex') {
+  downloadFile(type: 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex' | 'sla_all') {
     this.commonService.isLoading(true);
     this.slaService
       .getDownloadFile(type, this.startDate, this.endDate)
@@ -552,7 +560,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
   }
 
   private downloadWithFileName(
-    type: 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex',
+    type: 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex' | 'sla_all',
     resp: any
   ) {
     const fileName = `${type.toUpperCase()}_${moment().format(

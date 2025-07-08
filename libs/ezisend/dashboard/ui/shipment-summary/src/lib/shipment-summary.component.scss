@@ -183,33 +183,34 @@
   }
 }
 
-.pieTable {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
 
-  .description {
-    margin-top: 30px;
-  }
+  // .pieTable {
+  //   display: flex;
+  //   flex-direction: column;
+  //   flex: 1;
 
-  ::ng-deep .mat-table {
-    box-shadow: none;
-    border: 1px solid #e1e1e1;
-    text-align: center;
-    border-radius: 5px;
-    // height: 100%;
+  //   .description {
+  //     margin-top: 30px;
+  //   }
 
-    .mat-header-cell {
-      color: #5e5873;
-      background-color: #f4f4f4;
-      text-align: center;
-    }
+  //   ::ng-deep .mat-table {
+  //     box-shadow: none;
+  //     border: 1px solid #E1E1E1;
+  //     text-align: center;
+  //     border-radius: 5px;
+  //     // height: 100%;
 
-    .mat-row {
-      // height: 80px;
-    }
-  }
-}
+  //     .mat-header-cell {
+  //       color: #5E5873;
+  //       background-color: #F4F4F4;
+  //       text-align: center;
+  //     }
+
+  //     .mat-row {
+  //       // height: 80px;
+  //     }
+  //   }
+  // }
 
 .box-color {
   display: flex;
@@ -265,5 +266,68 @@
     display: flex;
     flex-direction: column;
     gap: 32px;
+  }
+}
+
+
+.no-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #1c4888;
+  background-color: #fafafa;
+  width: 100%;
+  min-height: 250px;
+  border-radius: 8px;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.custom-table thead th {
+  font-size: 14px;
+  font-weight: 400;
+  color: #5E5873;
+}
+
+.custom-table th, .custom-table td {
+  border: 1px solid #e0e0e0;
+  padding: 12px 8px;
+  text-align: left;
+}
+.custom-table th {
+  background: #f4f4f4;
+  color: #5E5873;
+  font-weight: 600;
+}
+
+.box-color {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  text-align: start;
+  gap: 5px;
+  .color-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    margin-right: 5px;
+  }
+}
+
+
+.no-available {
+  height: 150px;
+
+  td {
+    text-align: center!important;
   }
 }

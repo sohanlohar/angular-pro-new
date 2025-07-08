@@ -1,5 +1,11 @@
 /* eslint-disable no-case-declarations */
-import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IResponse } from '@pos/ezisend/shared/data-access/models';
@@ -54,17 +60,22 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
     'type',
     'action',
   ];
-  actions = ['print','my_location'];
+  actions = ['print', 'my_location'];
   shipment$: Observable<IResponse<IShipment>> | undefined;
-  totalTrackingDetails:any;
+  totalTrackingDetails: any;
   // Date Range
   dateRangePickerForm: FormGroup = this.fb.group({
     start_date: [''],
     end_date: [''],
   });
-  languageData: any = (localStorage.getItem("language") && localStorage.getItem("language") === 'en') ? en.data.myShipments.failed_deliveries :
-  (localStorage.getItem("language") && localStorage.getItem("language") === 'my') ? bm.data.myShipments.failed_deliveries :
-    en.data.myShipments.failed_deliveries;
+  languageData: any =
+    localStorage.getItem('language') &&
+    localStorage.getItem('language') === 'en'
+      ? en.data.myShipments.failed_deliveries
+      : localStorage.getItem('language') &&
+        localStorage.getItem('language') === 'my'
+      ? bm.data.myShipments.failed_deliveries
+      : en.data.myShipments.failed_deliveries;
   // Select Dropdown
   dropdownOptions = [
     { value: '', viewValue: this.languageData.all },
@@ -86,27 +97,34 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
     private translate: TranslationService
   ) {
     this.translate.buttonClick$.subscribe(() => {
-      if (localStorage.getItem("language") == "en") {
-        this.languageData = en.data.myShipments.failed_deliveries
-      }
-      else if (localStorage.getItem("language") == "my") {
-        this.languageData = bm.data.myShipments.failed_deliveries
+      if (localStorage.getItem('language') == 'en') {
+        this.languageData = en.data.myShipments.failed_deliveries;
+      } else if (localStorage.getItem('language') == 'my') {
+        this.languageData = bm.data.myShipments.failed_deliveries;
       }
       this.dropdownOptions[0].viewValue = this.languageData.all;
       this.dropdownOptions[2].viewValue = this.languageData.non_cod;
-    })
+    });
   }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      this.current_tab = params['t']
-    })
+    this.route.queryParams.subscribe((params) => {
+      this.current_tab = params['t'];
+    });
     // For API
-    this.end_date = moment().endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.start_date = moment().subtract(30, 'days').startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.end_date = moment()
+      .endOf('day')
+      .utc()
+      .format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.start_date = moment()
+      .subtract(1, 'month')
+      .startOf('day')
+      .utc()
+      .format('YYYY-MM-DDTHH:mm:ss[Z]');
+
     // For Date Picker UI (local time)
-    const localEndDate = moment().endOf('day').toDate();
-    const localStartDate = moment().subtract(30, 'days').startOf('day').toDate();
+    const localEndDate = moment().endOf('day');
+    const localStartDate = moment().subtract(1, 'month').startOf('day');
 
     this.dateRangePickerForm = this.fb.group({
       start_date: [localStartDate],
@@ -118,7 +136,7 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
       event_category: 'SendParcel Pro - My Shipments - Failed Deliveries',
       event_action: 'Tab To Section',
       event_label: 'Failed Deliveries',
-    };// Log for debugging
+    };
     this._commonService.googleEventPush(eventDetails);
     this.fetchShipments();
   }
@@ -139,43 +157,38 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
     )}`;
     this.shipment$ = this._commonService.fetchList('shipments', query);
     this.shipment$.subscribe({
-      next:(res)=>{
-        this.totalTrackingDetails=res.data.total;
-        if(res){
-          this.isLoading= false;
+      next: (res) => {
+        this.totalTrackingDetails = res.data.total;
+        if (res) {
+          this.isLoading = false;
         }
         this.cdr.detectChanges();
-      }
-    })
+      },
+    });
   }
 
   onActionEvent(event: { data: IDataShipment; actionType: string }) {
     this.selectedSingleData = event.data;
-    const urlPathDetails = event?.data?.tracking_details?.category?.toLowerCase() === 'mps'
-    ? 'my-shipment/mps-details'
-    : 'my-shipment/order-details';
-  const urlDetails = `${urlPathDetails}/${event.data.id}?activeTab=${this.current_tab}`;
+    const urlPathDetails =
+      event?.data?.tracking_details?.category?.toLowerCase() === 'mps'
+        ? 'my-shipment/mps-details'
+        : 'my-shipment/order-details';
+    const urlDetails = `${urlPathDetails}/${event.data.id}?activeTab=${this.current_tab}`;
     switch (event.actionType) {
       case 'my_location':
-        const eventDetails ={
+        const eventDetails = {
           event: 'track_order',
           event_category: 'SendParcel Pro - My Shipments - Failed Deliveries',
           event_action: 'Track Order',
           event_label: 'Track Order - ' + event.data.tracking_details.tracking_id,
         };
-        this._commonService.googleEventPush(eventDetails)
-      window.open(urlDetails);
+        this._commonService.googleEventPush(eventDetails);
+        window.open(urlDetails);
         return;
       case 'print':
         this.onActionButtonIcon('print', false);
         return;
       case 'order-details':
-        // this._commonService.googleEventPush({
-        //   event: 'track_order',
-        //   event_category: 'SendParcel Pro - My Shipments - Failed Deliveries',
-        //   event_action: 'Track Order',
-        //   event_label: 'Track Order -' + event.data.tracking_details.tracking_id,
-        // });
         const eventDetailsOrderDetails = {
           event: 'view_order_details',
           event_category: 'SendParcel Pro - My Shipments - Failed Deliveries',
@@ -200,7 +213,7 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
           insured_shipping_insurance: event.data.sum_insured ? 'Yes' : 'No',
           shipment_type: event.data.type,
         };
-        this._commonService.googleEventPush(eventDetailsOrderDetails)
+        this._commonService.googleEventPush(eventDetailsOrderDetails);
         window.open(urlDetails);
         return;
       default:
@@ -218,8 +231,9 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
     this.selectedMultipleData = data;
 
     this.isPlugins = data.some(
-      (shipment : IDataShipment) =>  Object.keys(shipment.channel_order).length !== 0
-    )
+      (shipment: IDataShipment) =>
+        Object.keys(shipment.channel_order).length !== 0
+    );
 
     this.isShowCommercialinvoiceButton = this.selectedMultipleData.some(
       (order: IDataShipment) => order.type === 'INTERNATIONAL'
@@ -235,12 +249,8 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
 
     this.isSelectedShipmentsNoTrackingId = this.selectedMultipleData.every(
       (shipment: IDataShipment) => shipment.tracking_details.tracking_id === ''
-    )
-    // console.log('this.selectedMultipleData =',this.selectedMultipleData)
-    // console.log('this.isSelectedShipmentsNoTrackingId =',this.isSelectedShipmentsNoTrackingId)
-
+    );
   }
-
 
   onActionButtonIcon(event: string, isMultiple = false) {
     let shipmentIds: number[] = [];
@@ -319,7 +329,15 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
         this.onActionButtonIcon('print', false);
         return;
       case 'order-details':
-        this.router.navigate([event.data.tracking_details.category.toLowerCase() === 'mps' ? 'my-shipment/mps-details' :'my-shipment/order-details', event.data.id], { queryParams: {activeTab: 'failed-deliver'} });
+        this.router.navigate(
+          [
+            event.data.tracking_details.category.toLowerCase() === 'mps'
+              ? 'my-shipment/mps-details'
+              : 'my-shipment/order-details',
+            event.data.id,
+          ],
+          { queryParams: { activeTab: 'failed-deliver' } }
+        );
         return;
       default:
         return;
@@ -339,8 +357,7 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
     this.keyword = search.trim();
     this._commonService.googleEventPush({
       event: 'search_order',
-      event_category:
-        'SendParcel Pro - My Shipments - Failed Deliveries',
+      event_category: 'SendParcel Pro - My Shipments - Failed Deliveries',
       event_action: 'Search Order',
       event_label: this.keyword,
     });
@@ -353,8 +370,7 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
       this.end_date = event.end_date;
       this._commonService.googleEventPush({
         event: 'filter_section',
-        event_category:
-          'SendParcel Pro - My Shipments - Failed Deliveries',
+        event_category: 'SendParcel Pro - My Shipments - Failed Deliveries',
         event_action: 'Filter Section',
         event_label: this.start_date + ' - ' + this.end_date,
       });
@@ -367,13 +383,12 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
 
   onSelectChange(orderType: string) {
     this.cod_type = orderType;
-    const orderTypeLabel = orderType?.trim() || "all";
+    const orderTypeLabel = orderType?.trim() || 'all';
     this._commonService.googleEventPush({
       event: 'filter_section',
-      event_category:
-        'SendParcel Pro - My Shipments - Failed Deliveries',
+      event_category: 'SendParcel Pro - My Shipments - Failed Deliveries',
       event_action: 'Filter Section',
-      event_label: "Order Type – " + orderTypeLabel,
+      event_label: 'Order Type – ' + orderTypeLabel,
     });
     this.fetchShipments();
   }
@@ -381,8 +396,8 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
   private get buildParams(): IShipmentParamFilter {
     return {
       uitab: 'failed-delivery',
-      start_date: moment(this.start_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
-      end_date: moment(this.end_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      start_date: this.start_date,
+      end_date: this.end_date,
       cod_type: this.cod_type,
       keyword: this.keyword,
       page: +this.currentPage,
@@ -501,16 +516,13 @@ export class FailDeliverComponent implements OnInit, OnDestroy {
     this._commonService
       .submitData('shipments', query, {
         ids: shipmentIds,
-        includeChildren: true
+        includeChildren: true,
       })
       .pipe(
         tap((response: IResponse<{ link: string }>) => {
           this._commonService.isLoading(false);
           window.open(
-            `${environment.sppUatUrl.replace(
-              '/api/',
-              ''
-            )}${response.data.link}`
+            `${environment.sppUatUrl.replace('/api/', '')}${response.data.link}`
           );
           if (this.isSelectAllOrders) {
             this.currentBatchPageRequest += 1;

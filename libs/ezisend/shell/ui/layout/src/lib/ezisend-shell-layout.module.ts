@@ -9,6 +9,7 @@ import { EzisendShellUiNavFooterModule } from '@pos/ezisend/shell/ui/nav-footer'
 
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   imports: [
@@ -18,7 +19,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     NavSidebarModule,
     RouterModule,
     MatProgressSpinnerModule,
-    EzisendShellUiNavFooterModule
+    EzisendShellUiNavFooterModule,
+    MatIconModule
   ],
   declarations: [LayoutComponent],
   exports: [LayoutComponent],

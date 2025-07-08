@@ -40,7 +40,8 @@ export class LayoutComponent {
     this.listenWidthScreen();
     const storedSidebar = this.getLocalStorage();
     this.sidebarActive = storedSidebar === 'true';
-    this.hasToggledSidebar = storedSidebar !== null;
+    // Always allow sidebar interaction for both new and returning users
+    this.hasToggledSidebar = true;
   }
 
   navItemClick(menu: string) {
@@ -87,14 +88,14 @@ export class LayoutComponent {
   }
 
   expandMenu() {
-   this.sidebarActive = !this.sidebarActive;
-  this.hasToggledSidebar = true;
-  this.setLocalStorage();
-}
+    this.sidebarActive = !this.sidebarActive;
+    this.hasToggledSidebar = true;
+    this.setLocalStorage();
+  }
 
 onSidebarHover(state: boolean) {
-  // Only trigger hover-expand when user has clicked to collapse
-  if (!this.sidebarActive && this.hasToggledSidebar) {
+  // Only trigger hover-expand when sidebar is collapsed
+  if (!this.sidebarActive) {
     this.hoveringSidebar = state;
   }
 }

@@ -1,22 +1,14 @@
-<form
-  class="form-group rate-calc__ui shipmentForm"
-  [formGroup]="RateCalcUi"
-  (ngSubmit)="OnFormSubmit()"
-  *ngIf="showShipmentCalculator"
->
+<form class="form-group rate-calc__ui shipmentForm" [formGroup]="RateCalcUi" (ngSubmit)="OnFormSubmit()"
+  *ngIf="showShipmentCalculator">
   <div class="title pb-2">{{ languageData.shipment_details }}</div>
   <div class="form-group__address-group-1 shipment-details">
     <div class="mat-fields-wrapper">
       <div class="mat-field-container">
         <!-- FIELD POSTCODE -->
-        <mat-label
-          >{{ languageForm.postcode }}
-          <span class="asterisk-color">*</span></mat-label
-        >
+        <mat-label>{{ languageForm.postcode }}
+          <span class="asterisk-color">*</span></mat-label>
         <mat-form-field class="postcode" appearance="outline">
-          <pos-form-control-wrapper
-            [name]="'PostcodePickup'"
-            [control]="RateCalcUi.controls['PostcodePickup']"
+          <pos-form-control-wrapper [name]="'PostcodePickup'" [control]="RateCalcUi.controls['PostcodePickup']"
             [customErrorMessages]="{
               required: languageForm.required_receipent_postcode,
               pattern: languageForm.required_valid_postcode,
@@ -27,16 +19,9 @@
                 ' ' +
                 languageForm.characters,
               postcode_not_found: languageForm.invalid_postcode
-            }"
-          >
-            <input
-              pattern="[0-9]\d*"
-              matInput
-              (ngModelChange)="getValidPostcodeFrom($event)"
-              minlength="5"
-              maxlength="5"
-              formControlName="PostcodePickup"
-            />
+            }">
+            <input pattern="[0-9]\d*" matInput (ngModelChange)="getValidPostcodeFrom($event)" minlength="5"
+              maxlength="5" formControlName="PostcodePickup" />
           </pos-form-control-wrapper>
         </mat-form-field>
       </div>
@@ -44,9 +29,7 @@
         <!-- FIELD STATE -->
         <mat-label>{{ languageForm.state_from }}</mat-label>
         <mat-form-field class="state disabled" appearance="outline">
-          <pos-form-control-wrapper
-            [name]="'stateFrom'"
-            [control]="RateCalcUi.controls['stateFrom']"
+          <pos-form-control-wrapper [name]="'stateFrom'" [control]="RateCalcUi.controls['stateFrom']"
             [customErrorMessages]="{
               required: languageForm.required_state,
               minlength:
@@ -55,14 +38,9 @@
                 languageForm.three +
                 ' ' +
                 languageForm.characters
-            }"
-          >
-            <mat-select
-              formControlName="stateFrom"
-              [disabled]="true"
-              [(ngModel)]="stateSelected"
-              (selectionChange)="getCitiesByStateFrom($event.value)"
-            >
+            }">
+            <mat-select formControlName="stateFrom" [disabled]="true" [(ngModel)]="stateSelected"
+              (selectionChange)="getCitiesByStateFrom($event.value)">
               <mat-option *ngFor="let state of states?.data" [value]="state">
                 {{ state.state_name }}
               </mat-option>
@@ -75,15 +53,11 @@
       </div>
       <div class="mat-field-container">
         <!-- FIELD POSTCODE -->
-        <mat-label
-          >{{ languageForm.postcode }}
-          <span class="asterisk-color">*</span></mat-label
-        >
+        <mat-label>{{ languageForm.postcode }}
+          <span class="asterisk-color">*</span></mat-label>
         <mat-form-field class="PostcodeDestination" appearance="outline">
-          <pos-form-control-wrapper
-            [name]="'PostcodeDestination'"
-            [control]="RateCalcUi.controls['PostcodeDestination']"
-            [customErrorMessages]="{
+          <pos-form-control-wrapper [name]="'PostcodeDestination'"
+            [control]="RateCalcUi.controls['PostcodeDestination']" [customErrorMessages]="{
               required: languageForm.required_receipent_postcode,
               pattern: languageForm.required_valid_postcode,
               minlength:
@@ -93,16 +67,9 @@
                 ' ' +
                 languageForm.characters,
               postcode_not_found: languageForm.invalid_postcode
-            }"
-          >
-            <input
-              pattern="[0-9]\d*"
-              matInput
-              (ngModelChange)="getValidPostcode($event)"
-              minlength="5"
-              maxlength="5"
-              formControlName="PostcodeDestination"
-            />
+            }">
+            <input pattern="[0-9]\d*" matInput (ngModelChange)="getValidPostcode($event)" minlength="5" maxlength="5"
+              formControlName="PostcodeDestination" />
           </pos-form-control-wrapper>
         </mat-form-field>
       </div>
@@ -110,10 +77,7 @@
         <!-- FIELD STATE -->
         <mat-label>{{ languageForm.state_to }}</mat-label>
         <mat-form-field class="state disabled" appearance="outline">
-          <pos-form-control-wrapper
-            [name]="'state'"
-            [control]="RateCalcUi.controls['state']"
-            [customErrorMessages]="{
+          <pos-form-control-wrapper [name]="'state'" [control]="RateCalcUi.controls['state']" [customErrorMessages]="{
               required: languageForm.required_state,
               minlength:
                 languageForm.minlength +
@@ -121,14 +85,9 @@
                 languageForm.three +
                 ' ' +
                 languageForm.characters
-            }"
-          >
-            <mat-select
-              formControlName="state"
-              [disabled]="true"
-              [(ngModel)]="stateFrom"
-              (selectionChange)="getCitiesByState($event.value)"
-            >
+            }">
+            <mat-select formControlName="state" [disabled]="true" [(ngModel)]="stateFrom"
+              (selectionChange)="getCitiesByState($event.value)">
               <mat-option *ngFor="let state of states?.data" [value]="state">
                 {{ state.state_name }}
               </mat-option>
@@ -137,34 +96,20 @@
         </mat-form-field>
       </div>
       <div class="mat-field-container weight-field">
-        <mat-label
-          >{{ languageForm.weigth }}
-          <span class="asterisk-color">*</span></mat-label
-        >
+        <mat-label>{{ languageForm.weigth }}
+          <span class="asterisk-color">*</span></mat-label>
         <mat-form-field class="dimensionWidth" appearance="outline">
           <pos-form-control-wrapper name="'weightKG'">
-            <input
-              type="number"
-              matInput
-              formControlName="weightKG"
-              max="30"
-              min="1"
-            />
+            <input type="number" matInput formControlName="weightKG" max="30" min="1" />
           </pos-form-control-wrapper>
         </mat-form-field>
         <div class="volumetric-calculator max-weight-text">
           {{ languageForm.max_weight_30kg }}
         </div>
-        <mat-error
-          *ngIf="RateCalcUi.get('weightKG')?.hasError('max')"
-          class="error-message"
-        >
+        <mat-error *ngIf="RateCalcUi.get('weightKG')?.hasError('max')" class="error-message">
           {{ languageForm.max_weight }}
         </mat-error>
-        <mat-error
-          *ngIf="RateCalcUi.get('weightKG')?.hasError('min')"
-          class="error-message maxContentWidth"
-        >
+        <mat-error *ngIf="RateCalcUi.get('weightKG')?.hasError('min')" class="error-message maxContentWidth">
           {{ languageForm.required_weight_more_than_0 }}
         </mat-error>
         <!-- <div class="volumetric-calculator opacity-0" (click)="toggleShipmentDimensions()">Volumetric Calculator</div> -->
@@ -172,34 +117,24 @@
       <div class="mat-field-container">
         <div class="generate-quote-btn">
           <!-- <button mat-flat-button color="primary" [disabled]="!RateCalcUi.valid" (click)="generateQuote()">Generate Quote</button> -->
-          <button
-            mat-flat-button
-            color="primary"
-            *ngIf="isLoadingQuote; else generateQuoteButton"
-            class="loading-indicator"
-            [disabled]="isLoadingQuote"
-          >
+          <button mat-flat-button color="primary" *ngIf="isLoadingQuote; else generateQuoteButton"
+            class="loading-indicator" [disabled]="isLoadingQuote">
             {{ languageData.calculating }}
           </button>
           <ng-template #generateQuoteButton>
-            <!-- <button mat-flat-button color="primary" (click)="onGenerateQuote()" 
-                [disabled]="!RateCalcUi.get('PostcodePickup')?.value || 
-                !RateCalcUi.get('PostcodeDestination')?.value || 
+            <!-- <button mat-flat-button color="primary" (click)="onGenerateQuote()"
+                [disabled]="!RateCalcUi.get('PostcodePickup')?.value ||
+                !RateCalcUi.get('PostcodeDestination')?.value ||
                 !RateCalcUi.get('weightKG')?.value || isLoadingQuote">
                 Generate Quote
               </button> -->
-            <button
-              mat-flat-button
-              color="primary"
-              (click)="onGenerateQuote()"
-              [disabled]="
+            <button mat-flat-button color="primary" (click)="onGenerateQuote()" [disabled]="
                 !RateCalcUi.get('PostcodePickup')?.valid ||
                 !RateCalcUi.get('PostcodeDestination')?.valid ||
                 !RateCalcUi.get('weightKG')?.valid ||
                 invalidPostcodeError ||
                 isLoadingQuote
-              "
-            >
+              ">
               {{ languageData.generate_quote }}
             </button>
           </ng-template>
@@ -208,10 +143,7 @@
     </div>
   </div>
 
-  <div
-    class="form-group__address-group-1 shipment-dimensions shipment-details"
-    *ngIf="showShipmentDimensions"
-  >
+  <div class="form-group__address-group-1 shipment-dimensions shipment-details" *ngIf="showShipmentDimensions">
     <div class="fields-div">
       <ng-container *ngIf="showShipmentDimensions">
         <div class="mat-field-container">
@@ -219,13 +151,8 @@
           <mat-label>{{ languageForm.length }}</mat-label>
           <mat-form-field class="itemLength" appearance="outline">
             <pos-form-control-wrapper name="'itemLength'">
-              <input
-                pattern="[a-zA-Z0-9]+"
-                matInput
-                maxlength="10"
-                formControlName="itemLength"
-                (input)="calculateWeights()"
-              />
+              <input pattern="[a-zA-Z0-9]+" matInput maxlength="10" formControlName="itemLength"
+                (input)="calculateWeights()" />
             </pos-form-control-wrapper>
           </mat-form-field>
         </div>
@@ -238,13 +165,8 @@
           <mat-label>{{ languageForm.width }}</mat-label>
           <mat-form-field class="itemWidth" appearance="outline">
             <pos-form-control-wrapper name="'itemWidth'">
-              <input
-                pattern="[a-zA-Z0-9]+"
-                matInput
-                maxlength="10"
-                formControlName="itemWidth"
-                (input)="calculateWeights()"
-              />
+              <input pattern="[a-zA-Z0-9]+" matInput maxlength="10" formControlName="itemWidth"
+                (input)="calculateWeights()" />
             </pos-form-control-wrapper>
           </mat-form-field>
         </div>
@@ -257,29 +179,17 @@
           <mat-label>{{ languageForm.height }}</mat-label>
           <mat-form-field class="itemHeight" appearance="outline">
             <pos-form-control-wrapper name="'itemHeight'">
-              <input
-                pattern="[a-zA-Z0-9]+"
-                matInput
-                maxlength="10"
-                formControlName="itemHeight"
-                (input)="calculateWeights()"
-              />
+              <input pattern="[a-zA-Z0-9]+" matInput maxlength="10" formControlName="itemHeight"
+                (input)="calculateWeights()" />
             </pos-form-control-wrapper>
           </mat-form-field>
         </div>
         <!-- Height (cm) -->
         <div class="mat-field-container ml-1rem">
           <mat-label>{{ languageForm.volumetric_weight }}</mat-label>
-          <mat-form-field
-            class="volumetricWeightKG outline-none"
-            appearance="outline"
-          >
+          <mat-form-field class="volumetricWeightKG outline-none" appearance="outline">
             <pos-form-control-wrapper name="'volumetricWeightKG'">
-              <input
-                matInput
-                formControlName="volumetricWeightKG"
-                [disabled]="true"
-              />
+              <input matInput formControlName="volumetricWeightKG" [disabled]="true" />
             </pos-form-control-wrapper>
           </mat-form-field>
         </div>
@@ -288,16 +198,9 @@
     <div class="mat-field-container fields-div chargeable-weight">
       <!-- FIELD Chargeable Weight (kg) -->
       <mat-label>{{ languageForm.chargeable_weight }}</mat-label>
-      <mat-form-field
-        class="chargeable-weight outline-none"
-        appearance="outline"
-      >
+      <mat-form-field class="chargeable-weight outline-none" appearance="outline">
         <pos-form-control-wrapper name="'chargeableWeight'">
-          <input
-            matInput
-            formControlName="chargeableWeight"
-            [disabled]="true"
-          />
+          <input matInput formControlName="chargeableWeight" [disabled]="true" />
         </pos-form-control-wrapper>
       </mat-form-field>
     </div>
@@ -329,9 +232,9 @@
             </span>
             <span class="estimation-price">
               {{
-                shippingCost !== null
-                  ? 'RM ' + shippingCost.toFixed(2)
-                  : 'RM0.00'
+              shippingCost !== null
+              ? 'RM ' + shippingCost.toFixed(2)
+              : 'RM0.00'
               }}
             </span>
           </li>
@@ -354,7 +257,7 @@
             <span class="estimation-price">
               <strong>
                 {{
-                  totalCost !== null ? 'RM ' + totalCost.toFixed(2) : 'RM0.00'
+                totalCost !== null ? 'RM ' + totalCost.toFixed(2) : 'RM0.00'
                 }}
               </strong>
             </span>
@@ -369,12 +272,8 @@
     <ng-content select="[confirmButton]"></ng-content>
   </div>
 </form>
-<form
-  class="form-group rate-calc__ui rateCardForm"
-  [formGroup]="RateCalcUi"
-  (ngSubmit)="onSubmit()"
-  *ngIf="showRateCard"
->
+<form class="form-group rate-calc__ui rateCardForm" [formGroup]="RateCalcUi" (ngSubmit)="onSubmit()"
+  *ngIf="showRateCard">
   <div class="form-group__address-group-2 rate-calc__ui__rate-card">
     <div class="container">
       <div class="important-note">
@@ -419,91 +318,52 @@
             </tr>
             <tr class="zone-section weight-tr lightColor">
               <td>{{ languageForm.weigth }}</td>
-              <td
-                class="weight-td"
-                [ngClass]="{ 'edit-td': isEditModeEnabled }"
-              >
-                <mat-form-field
-                  [ngClass]="{
+              <td class="weight-td" [ngClass]="{ 'edit-td': isEditModeEnabled }">
+                <mat-form-field [ngClass]="{
                     'placeholder-class': isPlaceholder(
                       rate_cards[0].first_weight
                     )
-                  }"
-                >
-                  <select
-                    matNativeControl
-                    id="weightZone1"
-                    [(ngModel)]="rate_cards[0].first_weight"
-                    [ngModelOptions]="{ standalone: true }"
-                    [disabled]="!isEditModeEnabled"
-                  >
+                  }">
+                  <select matNativeControl id="weightZone1" [(ngModel)]="rate_cards[0].first_weight"
+                    [ngModelOptions]="{ standalone: true }" [disabled]="!isEditModeEnabled">
                     <option disabled selected>
                       {{ languageData.add_weight }}
                     </option>
-                    <option
-                      *ngFor="let item of weightLookUp"
-                      [value]="item.value"
-                    >
+                    <option *ngFor="let item of weightLookUp" [value]="item.value">
                       {{ item.title }}
                     </option>
                   </select>
                 </mat-form-field>
               </td>
-              <td
-                class="weight-td"
-                [ngClass]="{ 'edit-td': isEditModeEnabled }"
-              >
-                <mat-form-field
-                  [ngClass]="{
+              <td class="weight-td" [ngClass]="{ 'edit-td': isEditModeEnabled }">
+                <mat-form-field [ngClass]="{
                     'placeholder-class': isPlaceholder(
                       rate_cards[1].first_weight
                     )
-                  }"
-                >
-                  <select
-                    matNativeControl
-                    id="weightZone4"
-                    [(ngModel)]="rate_cards[1].first_weight"
-                    [ngModelOptions]="{ standalone: true }"
-                    [disabled]="!isEditModeEnabled"
-                  >
+                  }">
+                  <select matNativeControl id="weightZone4" [(ngModel)]="rate_cards[1].first_weight"
+                    [ngModelOptions]="{ standalone: true }" [disabled]="!isEditModeEnabled">
                     <option disabled selected>
                       {{ languageData.add_weight }}
                     </option>
-                    <option
-                      *ngFor="let item of weightLookUp"
-                      [value]="item.value"
-                    >
+                    <option *ngFor="let item of weightLookUp" [value]="item.value">
                       {{ item.title }}
                     </option>
                   </select>
                 </mat-form-field>
               </td>
-              <td
-                class="weight-td"
-                [ngClass]="{ 'edit-td': isEditModeEnabled }"
-              >
-                <mat-form-field
-                  [ngClass]="{
+              <td class="weight-td" [ngClass]="{ 'edit-td': isEditModeEnabled }">
+                <mat-form-field [ngClass]="{
                     'placeholder-class': isPlaceholder(
                       rate_cards[2].first_weight
                     )
-                  }"
-                >
-                  <select
-                    matNativeControl
-                    id="weightZone5"
-                    [(ngModel)]="rate_cards[2].first_weight"
-                    [ngModelOptions]="{ standalone: true }"
-                    [disabled]="!isEditModeEnabled"
-                  >
+                  }">
+                  <select matNativeControl id="weightZone5" [(ngModel)]="rate_cards[2].first_weight"
+                    [ngModelOptions]="{ standalone: true }" [disabled]="!isEditModeEnabled">
                     <option disabled selected>
                       {{ languageData.add_weight }}
                     </option>
-                    <option
-                      *ngFor="let item of weightLookUp"
-                      [value]="item.value"
-                    >
+                    <option *ngFor="let item of weightLookUp" [value]="item.value">
                       {{ item.title }}
                     </option>
                   </select>
@@ -515,94 +375,48 @@
               <td [ngClass]="{ 'edit-td price-td': isEditModeEnabled }">
                 <mat-form-field class="price-zone1" appearance="outline">
                   <pos-form-control-wrapper name="'itemPrice1'">
-                    <input
-                      type="number"
-                      matInput
-                      min="1"
-                      maxlength="100"
-                      step="0.10"
-                      matInput
-                      [placeholder]="languageData.set_price"
-                      name="'itemPrice'"
-                      matNativeControl
-                      id="itemPrice1"
-                      [(ngModel)]="rate_cards[0].first_price"
-                      [disabled]="!isEditModeEnabled"
-                      formControlName="itemPrice1"
-                      appTwoDecimalMask
-                    />
+                    <input type="number" matInput min="1" maxlength="100" step="0.10" matInput
+                      [placeholder]="languageData.set_price" name="'itemPrice'" matNativeControl id="itemPrice1"
+                      [(ngModel)]="rate_cards[0].first_price" [disabled]="!isEditModeEnabled"
+                      formControlName="itemPrice1" appTwoDecimalMask />
                   </pos-form-control-wrapper>
                 </mat-form-field>
-                <mat-error
-                  *ngIf="RateCalcUi.get('itemPrice1')?.hasError('max')"
-                >
+                <mat-error *ngIf="RateCalcUi.get('itemPrice1')?.hasError('max')">
                   {{ languageData.amount_exceed }}
                 </mat-error>
-                <mat-error
-                  *ngIf="RateCalcUi.get('itemPrice1')?.hasError('min')"
-                >
+                <mat-error *ngIf="RateCalcUi.get('itemPrice1')?.hasError('min')">
                   {{ languageData.min_amount }}
                 </mat-error>
               </td>
               <td [ngClass]="{ 'edit-td price-td': isEditModeEnabled }">
                 <mat-form-field class="price-zone4" appearance="outline">
                   <pos-form-control-wrapper name="'itemPrice4'">
-                    <input
-                      type="number"
-                      matInput
-                      min="1"
-                      maxlength="100"
-                      step="0.10"
-                      matNativeControl
-                      id="itemPrice4"
-                      [(ngModel)]="rate_cards[1].first_price"
-                      formControlName="itemPrice4"
-                      [placeholder]="languageData.set_price"
-                      name="'itemPrice'"
-                      [disabled]="!isEditModeEnabled"
-                      appTwoDecimalMask
-                    />
+                    <input type="number" matInput min="1" maxlength="100" step="0.10" matNativeControl id="itemPrice4"
+                      [(ngModel)]="rate_cards[1].first_price" formControlName="itemPrice4"
+                      [placeholder]="languageData.set_price" name="'itemPrice'" [disabled]="!isEditModeEnabled"
+                      appTwoDecimalMask />
                   </pos-form-control-wrapper>
                 </mat-form-field>
-                <mat-error
-                  *ngIf="RateCalcUi.get('itemPrice4')?.hasError('max')"
-                >
+                <mat-error *ngIf="RateCalcUi.get('itemPrice4')?.hasError('max')">
                   {{ languageData.amount_exceed }}
                 </mat-error>
-                <mat-error
-                  *ngIf="RateCalcUi.get('itemPrice4')?.hasError('min')"
-                >
+                <mat-error *ngIf="RateCalcUi.get('itemPrice4')?.hasError('min')">
                   {{ languageData.min_amount }}
                 </mat-error>
               </td>
               <td [ngClass]="{ 'edit-td price-td': isEditModeEnabled }">
                 <mat-form-field class="price-zone5" appearance="outline">
                   <pos-form-control-wrapper name="'itemPrice'">
-                    <input
-                      type="number"
-                      matInput
-                      min="1"
-                      maxlength="100"
-                      step="0.10"
-                      matNativeControl
-                      id="itemPrice5"
-                      [(ngModel)]="rate_cards[2].first_price"
-                      formControlName="itemPrice5"
-                      [placeholder]="languageData.set_price"
-                      name="'itemPrice'"
-                      [disabled]="!isEditModeEnabled"
-                      appTwoDecimalMask
-                    />
+                    <input type="number" matInput min="1" maxlength="100" step="0.10" matNativeControl id="itemPrice5"
+                      [(ngModel)]="rate_cards[2].first_price" formControlName="itemPrice5"
+                      [placeholder]="languageData.set_price" name="'itemPrice'" [disabled]="!isEditModeEnabled"
+                      appTwoDecimalMask />
                   </pos-form-control-wrapper>
                 </mat-form-field>
-                <mat-error
-                  *ngIf="RateCalcUi.get('itemPrice5')?.hasError('max')"
-                >
+                <mat-error *ngIf="RateCalcUi.get('itemPrice5')?.hasError('max')">
                   {{ languageData.amount_exceed }}
                 </mat-error>
-                <mat-error
-                  *ngIf="RateCalcUi.get('itemPrice5')?.hasError('min')"
-                >
+                <mat-error *ngIf="RateCalcUi.get('itemPrice5')?.hasError('min')">
                   {{ languageData.min_amount }}
                 </mat-error>
               </td>
@@ -611,24 +425,14 @@
           <table class="table-zone mt-2">
             <tr class="zone-section weight-tr lightColor">
               <td>{{ languageData.additional }}</td>
-              <td
-                class="weight-td"
-                [ngClass]="{ 'edit-td': isEditModeEnabled }"
-              >
-                <mat-form-field
-                  [ngClass]="{
+              <td class="weight-td" [ngClass]="{ 'edit-td': isEditModeEnabled }">
+                <mat-form-field [ngClass]="{
                     'placeholder-class': isPlaceholder(
                       rate_cards[0].additional_weight
                     )
-                  }"
-                >
-                  <select
-                    matNativeControl
-                    id="additionalKg1"
-                    [(ngModel)]="rate_cards[0].additional_weight"
-                    [ngModelOptions]="{ standalone: true }"
-                    [disabled]="!isEditModeEnabled"
-                  >
+                  }">
+                  <select matNativeControl id="additionalKg1" [(ngModel)]="rate_cards[0].additional_weight"
+                    [ngModelOptions]="{ standalone: true }" [disabled]="!isEditModeEnabled">
                     <option disabled selected>
                       {{ languageData.add_additional_weight }}
                     </option>
@@ -637,24 +441,14 @@
                   </select>
                 </mat-form-field>
               </td>
-              <td
-                class="weight-td"
-                [ngClass]="{ 'edit-td': isEditModeEnabled }"
-              >
-                <mat-form-field
-                  [ngClass]="{
+              <td class="weight-td" [ngClass]="{ 'edit-td': isEditModeEnabled }">
+                <mat-form-field [ngClass]="{
                     'placeholder-class': isPlaceholder(
                       rate_cards[1].additional_weight
                     )
-                  }"
-                >
-                  <select
-                    matNativeControl
-                    id="additionalKg4"
-                    [(ngModel)]="rate_cards[1].additional_weight"
-                    [ngModelOptions]="{ standalone: true }"
-                    [disabled]="!isEditModeEnabled"
-                  >
+                  }">
+                  <select matNativeControl id="additionalKg4" [(ngModel)]="rate_cards[1].additional_weight"
+                    [ngModelOptions]="{ standalone: true }" [disabled]="!isEditModeEnabled">
                     <option disabled selected>
                       {{ languageData.add_additional_weight }}
                     </option>
@@ -663,24 +457,14 @@
                   </select>
                 </mat-form-field>
               </td>
-              <td
-                class="weight-td"
-                [ngClass]="{ 'edit-td': isEditModeEnabled }"
-              >
-                <mat-form-field
-                  [ngClass]="{
+              <td class="weight-td" [ngClass]="{ 'edit-td': isEditModeEnabled }">
+                <mat-form-field [ngClass]="{
                     'placeholder-class': isPlaceholder(
                       rate_cards[2].additional_weight
                     )
-                  }"
-                >
-                  <select
-                    matNativeControl
-                    id="additionalKg5"
-                    [(ngModel)]="rate_cards[2].additional_weight"
-                    [ngModelOptions]="{ standalone: true }"
-                    [disabled]="!isEditModeEnabled"
-                  >
+                  }">
+                  <select matNativeControl id="additionalKg5" [(ngModel)]="rate_cards[2].additional_weight"
+                    [ngModelOptions]="{ standalone: true }" [disabled]="!isEditModeEnabled">
                     <option disabled selected>
                       {{ languageData.add_additional_weight }}
                     </option>
@@ -695,98 +479,52 @@
               <td [ngClass]="{ 'edit-td price-td': isEditModeEnabled }">
                 <mat-form-field class="addWeightPrice" appearance="outline">
                   <pos-form-control-wrapper name="'addWeightPrice1'">
-                    <input
-                      type="number"
-                      matInput
-                      min="1"
-                      step="0.01"
-                      maxlength="100"
-                      matNativeControl
-                      id="addWeightPrice1"
-                      [(ngModel)]="rate_cards[0].additional_price"
-                      formControlName="addWeightPrice1"
-                      [placeholder]="languageData.set_price"
-                      name="'addWeightPrice'"
-                      [disabled]="!isEditModeEnabled"
-                      [ngClass]="{
+                    <input type="number" matInput min="1" step="0.01" maxlength="100" matNativeControl
+                      id="addWeightPrice1" [(ngModel)]="rate_cards[0].additional_price"
+                      formControlName="addWeightPrice1" [placeholder]="languageData.set_price" name="'addWeightPrice'"
+                      [disabled]="!isEditModeEnabled" [ngClass]="{
                         'empty-input':
                           RateCalcUi.get('PostcodePickup')?.value === '' &&
                           RateCalcUi.get('PostcodePickup')?.touched
-                      }"
-                      appTwoDecimalMask
-                    />
+                      }" appTwoDecimalMask />
                   </pos-form-control-wrapper>
                 </mat-form-field>
-                <mat-error
-                  *ngIf="RateCalcUi.get('addWeightPrice1')?.hasError('max')"
-                >
+                <mat-error *ngIf="RateCalcUi.get('addWeightPrice1')?.hasError('max')">
                   {{ languageData.amount_exceed }}
                 </mat-error>
-                <mat-error
-                  *ngIf="RateCalcUi.get('addWeightPrice1')?.hasError('min')"
-                >
+                <mat-error *ngIf="RateCalcUi.get('addWeightPrice1')?.hasError('min')">
                   {{ languageData.min_amount }}
                 </mat-error>
               </td>
               <td [ngClass]="{ 'edit-td price-td': isEditModeEnabled }">
                 <mat-form-field class="addWeightPrice" appearance="outline">
                   <pos-form-control-wrapper name="'addWeightPrice4'">
-                    <input
-                      type="number"
-                      matInput
-                      min="1"
-                      step="0.10"
-                      maxlength="100"
-                      matNativeControl
-                      id="addWeightPrice4"
-                      [(ngModel)]="rate_cards[1].additional_price"
-                      formControlName="addWeightPrice4"
-                      [placeholder]="languageData.set_price"
-                      name="'addWeightPrice4'"
-                      [disabled]="!isEditModeEnabled"
-                      appTwoDecimalMask
-                    />
+                    <input type="number" matInput min="1" step="0.10" maxlength="100" matNativeControl
+                      id="addWeightPrice4" [(ngModel)]="rate_cards[1].additional_price"
+                      formControlName="addWeightPrice4" [placeholder]="languageData.set_price" name="'addWeightPrice4'"
+                      [disabled]="!isEditModeEnabled" appTwoDecimalMask />
                   </pos-form-control-wrapper>
                 </mat-form-field>
-                <mat-error
-                  *ngIf="RateCalcUi.get('addWeightPrice4')?.hasError('max')"
-                >
+                <mat-error *ngIf="RateCalcUi.get('addWeightPrice4')?.hasError('max')">
                   {{ languageData.amount_exceed }}
                 </mat-error>
-                <mat-error
-                  *ngIf="RateCalcUi.get('addWeightPrice4')?.hasError('min')"
-                >
+                <mat-error *ngIf="RateCalcUi.get('addWeightPrice4')?.hasError('min')">
                   {{ languageData.min_amount }}
                 </mat-error>
               </td>
               <td [ngClass]="{ 'edit-td price-td': isEditModeEnabled }">
                 <mat-form-field class="addWeightPrice" appearance="outline">
                   <pos-form-control-wrapper name="'addWeightPrice5'">
-                    <input
-                      type="number"
-                      matInput
-                      min="1"
-                      step="0.10"
-                      maxlength="100"
-                      matNativeControl
-                      id="addWeightPrice5"
-                      [(ngModel)]="rate_cards[2].additional_price"
-                      formControlName="addWeightPrice5"
-                      [placeholder]="languageData.set_price"
-                      name="'addWeightPrice5'"
-                      [disabled]="!isEditModeEnabled"
-                      appTwoDecimalMask
-                    />
+                    <input type="number" matInput min="1" step="0.10" maxlength="100" matNativeControl
+                      id="addWeightPrice5" [(ngModel)]="rate_cards[2].additional_price"
+                      formControlName="addWeightPrice5" [placeholder]="languageData.set_price" name="'addWeightPrice5'"
+                      [disabled]="!isEditModeEnabled" appTwoDecimalMask />
                   </pos-form-control-wrapper>
                 </mat-form-field>
-                <mat-error
-                  *ngIf="RateCalcUi.get('addWeightPrice5')?.hasError('max')"
-                >
+                <mat-error *ngIf="RateCalcUi.get('addWeightPrice5')?.hasError('max')">
                   {{ languageData.amount_exceed }}
                 </mat-error>
-                <mat-error
-                  *ngIf="RateCalcUi.get('addWeightPrice5')?.hasError('min')"
-                >
+                <mat-error *ngIf="RateCalcUi.get('addWeightPrice5')?.hasError('min')">
                   {{ languageData.min_amount }}
                 </mat-error>
               </td>
@@ -797,22 +535,15 @@
           <button class="edit" (click)="toggleEditMode(isEditModeEnabled)">
             {{ isEditModeEnabled ? languageForm.cancel : languageForm.edit }}
           </button>
-          <button
-            class="download-button save"
-            (click)="submitRateCalc()"
-            [disabled]="
+          <button class="download-button save" (click)="submitRateCalc()" [disabled]="
               !isEditModeEnabled ||
               hasMaxError() ||
               hasMinError() ||
               RateCalculatorService.isSubmitted
-            "
-          >
+            ">
             {{ languageForm.save_apply }}
-            <mat-spinner
-              *ngIf="RateCalculatorService.isSubmitted"
-              [diameter]="20"
-              class="login-loading-spinner"
-            ></mat-spinner>
+            <mat-spinner *ngIf="RateCalculatorService.isSubmitted" [diameter]="20"
+              class="login-loading-spinner"></mat-spinner>
           </button>
         </div>
       </div>

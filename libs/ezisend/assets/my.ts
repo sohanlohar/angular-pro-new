@@ -294,7 +294,7 @@ export const bm = {
       proof_of_delivery: 'Bukti Penghantaran',
       view_proof_of_delivery: 'Lihat Bukti Penghantaran',
       no_result_to_display: 'Tiada hasil ditemui',
-
+      prepare_to_deliver: 'BERSEDIA UNTUK MENGHANTAR',
       invalid_sender_postcode: 'Poskod penghantar tidak sah. Sila berikan poskod yang sah.',
       close: 'Tutup',
       pending_cancellation:'Menunggu Kelulusan Pembatalan',
@@ -306,7 +306,7 @@ export const bm = {
       ready_to_collect:'SEDIA UNTUK KUMPUL',
       processing_return:"MEMPROSES PEMULANGAN",
       return_initiated:"KEMBALI DIMULAKAN",
-      return_failed: 'PEMULANGAN GAGAL', 
+      return_failed: 'PEMULANGAN GAGAL',
 
 
       request_pickup: {

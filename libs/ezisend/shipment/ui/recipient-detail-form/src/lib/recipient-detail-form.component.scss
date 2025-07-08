@@ -9,6 +9,10 @@
     margin-bottom: 1.06rem;
   }
 
+  .mat-form-field {
+    margin-bottom: 15px !important;
+  }
+
   .form-group {
     width: 100%;
     display: grid;
@@ -38,7 +42,7 @@
 
     .save-contacts {
       text-align: right;
-      margin-top: 0.4rem;
+      margin-top: 25px;
     }
 
     .save_contact_label {
@@ -123,6 +127,7 @@
 
 .button-next {
   grid-area: button-next;
+  margin-top: 25px;
 }
 
 @media screen and (min-width: 40rem) {
@@ -205,9 +210,6 @@
       flex-direction: column;
       height: 500px;
       overflow: auto;
-      .save-contacts {
-        margin-top: 0px;
-      }
     }
   }
   .button-next {

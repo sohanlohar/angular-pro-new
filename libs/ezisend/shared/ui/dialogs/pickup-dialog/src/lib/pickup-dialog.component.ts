@@ -2,9 +2,9 @@ import { Component, Renderer2 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import {
-    MatDialog,
-    MatDialogConfig,
-    MatDialogRef
+  MatDialog,
+  MatDialogConfig,
+  MatDialogRef,
 } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -23,22 +23,27 @@ export class PickupDialogComponent {
   currentDate = moment(new Date()).startOf('day');
   showError = false;
   errorMessage = '';
-   date = '';
+  date = '';
   start_date = '';
   end_date = '';
   cutOff = moment().clone().hour(14).minute(30).second(0);
   today = moment().format('MM/DD/YYYY');
-  tomorrow = moment().add(1,'day').format('MM/DD/YYYY');
+  tomorrow = moment().add(1, 'day').format('MM/DD/YYYY');
 
-  releaseDate = new FormControl(moment("10-20-2020", "MM-DD-YYYY")); 
- // Date Range
- dateRangePickerForm: FormGroup = this.fb.group({
-  start_date: [''],
-  end_date: [''],
-});
-  languageData: any = (localStorage.getItem("language") && localStorage.getItem("language") === 'en') ? en.data.form_data :
-  (localStorage.getItem("language") && localStorage.getItem("language") === 'my') ? bm.data.form_data :
-    en.data.form_data;
+  releaseDate = new FormControl(moment('10-20-2020', 'MM-DD-YYYY'));
+  // Date Range
+  dateRangePickerForm: FormGroup = this.fb.group({
+    start_date: [''],
+    end_date: [''],
+  });
+  languageData: any =
+    localStorage.getItem('language') &&
+    localStorage.getItem('language') === 'en'
+      ? en.data.form_data
+      : localStorage.getItem('language') &&
+        localStorage.getItem('language') === 'my'
+      ? bm.data.form_data
+      : en.data.form_data;
 
   constructor(
     private matIconRegistry: MatIconRegistry,
@@ -57,64 +62,51 @@ export class PickupDialogComponent {
     );
     this.setDefaultDate();
 
-    
     this.translate.buttonClick$.subscribe(() => {
-      if (localStorage.getItem("language") == "en") {
-        this.languageData = en.data.form_data
+      if (localStorage.getItem('language') == 'en') {
+        this.languageData = en.data.form_data;
+      } else if (localStorage.getItem('language') == 'my') {
+        this.languageData = bm.data.form_data;
       }
-      else if (localStorage.getItem("language") == "my") {
-        this.languageData = bm.data.form_data
-      }
-    })
+    });
   }
   ngOnInit(): void {
-    const defaultDate = moment().isBefore(this.cutOff) ? moment() : moment().add(1, 'day');
-    this.dateRangePickerForm= this.fb.group({
+    const defaultDate = moment().isBefore(this.cutOff)
+      ? moment()
+      : moment().add(1, 'day');
+    this.dateRangePickerForm = this.fb.group({
       start_date: [defaultDate.toDate()],
       end_date: [defaultDate.toDate()],
     });
   }
   setDefaultDate() {
-    if(moment().isBefore(this.cutOff)) {
-      this.releaseDate.patchValue(moment(this.today, "MM/DD/YYYY")) 
-      this.date = moment(this.today).format('YYYY-MM-DDTHH:mm:ss[Z]')
+    if (moment().isBefore(this.cutOff)) {
+      this.releaseDate.patchValue(moment(this.today, 'MM/DD/YYYY'));
+      this.date = moment(this.today).format('YYYY-MM-DDTHH:mm:ss[Z]');
     } else {
-      this.releaseDate.patchValue(moment(this.tomorrow, "MM/DD/YYYY"));
-      this.date = moment(this.tomorrow).format('YYYY-MM-DDTHH:mm:ss[Z]')
-    }
-  };
-  onDateRangePickerFormChange(event: any) {
-     // This method is for a generic date-range-picker component.
-    // Since this dialog now uses a single date, we'll treat its event as a single date selection.
-    if (event && event.start_date) {
-      this.onDateSelected({ startDate: event.start_date });
-       const eventDetails ={
-        "event": "pick_up_select_date",
-        "event_category": "SendParcel Pro - My Shipments - Request For Pick Up",
-        "event_action": "Select Pick Up Date",
-        "event_label": "Pick Up Date"
-      };
-      this.commonService.googleEventPush(eventDetails)
-      } else {
-      this.start_date = '';
-      this.end_date = '';
+      this.releaseDate.patchValue(moment(this.tomorrow, 'MM/DD/YYYY'));
+      this.date = moment(this.tomorrow).format('YYYY-MM-DDTHH:mm:ss[Z]');
     }
   }
+
   isInvalidDate = (m: moment.Moment): boolean => {
     const todayMoment = moment().startOf('day');
     const selectedDate = m.startOf('day');
-  
+
     // Disallow past dates
     if (selectedDate.isBefore(todayMoment)) return true;
-  
+
     // If today and current time is past cutoff, disallow today
-    if (selectedDate.isSame(todayMoment, 'day') && moment().isAfter(this.cutOff)) {
+    if (
+      selectedDate.isSame(todayMoment, 'day') &&
+      moment().isAfter(this.cutOff)
+    ) {
       return true;
     }
-  
+
     return false;
   };
-  
+
   back() {
     this.dialogRef.close();
   }
@@ -125,44 +117,49 @@ export class PickupDialogComponent {
       this.errorMessage = this.languageData.required_date;
       return;
     }
-    
-      this.commonService.googleEventPush({
-      "event": "pick_up_submit_schedule_request",
-      "event_category": "SendParcel Pro - My Shipments - Request For Pick Up",
-      "event_action": "Submit Schedule Request",
-      "event_label": "Schedule Request - "+ this.date
+
+    this.commonService.googleEventPush({
+      event: 'pick_up_submit_schedule_request',
+      event_category: 'SendParcel Pro - My Shipments - Request For Pick Up',
+      event_action: 'Submit Schedule Request',
+      event_label: 'Schedule Request - ' + this.date,
     });
 
     this.showError = false;
     this.dialogRef.close(this.date);
   }
 
-  onDateSelected(event: any) {
-    if (event && event.startDate) {
-      this.date = moment(event.startDate).utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
-      this.showError = false;
-      this.errorMessage = '';
-    } else {
-      this.date = '';
+  dateEvent(event: MatDatepickerInputEvent<Date>) {
+    this.errorMessage = '';
+    this.date = '';
+    const date = moment(event.value).format('YYYY-MM-DDTHH:mm:ss[Z]');
+    if (date.indexOf('Invalid') > -1) {
+      this.errorMessage = this.languageData.required_valid_date;
+      return;
     }
-  
-      const eventDetails = {
-      "event": "pick_up_select_date",
-      "event_category": "SendParcel Pro - My Shipments - Request For Pick Up",
-      "event_action": "Select Pick Up Date",
-      "event_label": "Pick Up Date"
+
+    if (moment(event.value).isBefore(this.currentDate)) {
+      this.errorMessage = this.languageData.required_current_date;
+      return;
+    }
+    this.date = date;
+    const eventDetails = {
+      event: 'pick_up_select_date',
+      event_category: 'SendParcel Pro - My Shipments - Request For Pick Up',
+      event_action: 'Select Pick Up Date',
+      event_label: 'Pick Up Date',
     };
-    this.commonService.googleEventPush(eventDetails)
+    this.commonService.googleEventPush(eventDetails);
   }
 
-  editDate(){
-    const eventDetails ={
-      "event": "pick_up_edit_date",
-      "event_category": "SendParcel Pro - My Shipments - Request For Pick Up",
-      "event_action": "Edit Pick Up Date",
-      "event_label": "Pick Up Date"
+  editDate() {
+    const eventDetails = {
+      event: 'pick_up_edit_date',
+      event_category: 'SendParcel Pro - My Shipments - Request For Pick Up',
+      event_action: 'Edit Pick Up Date',
+      event_label: 'Pick Up Date',
     };
-    this.commonService.googleEventPush(eventDetails)
+    this.commonService.googleEventPush(eventDetails);
   }
   ngAfterViewInit() {
     const observer = new MutationObserver(() => {
@@ -173,7 +170,10 @@ export class PickupDialogComponent {
         if (drp && !targetParent.classList.contains('date-picker-shown')) {
           // Add the class when the date picker is shown
           this.renderer.addClass(targetParent, 'date-picker-shown');
-        } else if (!drp && targetParent.classList.contains('date-picker-shown')) {
+        } else if (
+          !drp &&
+          targetParent.classList.contains('date-picker-shown')
+        ) {
           // Remove the class when the date picker is not shown
           this.renderer.removeClass(targetParent, 'date-picker-shown');
         }
@@ -190,7 +190,6 @@ export class PickupDialogComponent {
 }
 
 export function openPickupDialog(dialog: MatDialog) {
-  
   const config = new MatDialogConfig();
 
   config.disableClose = true;

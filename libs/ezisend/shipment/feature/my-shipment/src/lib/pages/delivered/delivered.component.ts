@@ -1,5 +1,11 @@
 /* eslint-disable no-case-declarations */
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoginService } from '@pos/ezisend/auth/data-access/services';
@@ -32,8 +38,8 @@ export class DeliveredComponent implements OnInit, OnDestroy {
   shipmentType = '';
   cod_type = '';
   current_tab = '';
-  product_type = ''
-  shipmentStatus = ''
+  product_type = '';
+  shipmentStatus = '';
   // uiTab = 'delivered';
   @Input() uiTab = 'delivered';
   selectedMultipleData: IDataShipment[] = [];
@@ -68,9 +74,14 @@ export class DeliveredComponent implements OnInit, OnDestroy {
     start_date: [''],
     end_date: [''],
   });
-  languageData: any = (localStorage.getItem("language") && localStorage.getItem("language") === 'en') ? en.data.myShipments.delivered_tab :
-  (localStorage.getItem("language") && localStorage.getItem("language") === 'my') ? bm.data.myShipments.delivered_tab :
-    en.data.myShipments.delivered_tab;
+  languageData: any =
+    localStorage.getItem('language') &&
+    localStorage.getItem('language') === 'en'
+      ? en.data.myShipments.delivered_tab
+      : localStorage.getItem('language') &&
+        localStorage.getItem('language') === 'my'
+      ? bm.data.myShipments.delivered_tab
+      : en.data.myShipments.delivered_tab;
   protected _onDestroy = new Subject<void>();
   private isFetching = false;
   totalTrackingDetails: any;
@@ -111,27 +122,33 @@ export class DeliveredComponent implements OnInit, OnDestroy {
         this.pageSize = 100;
         this.checkGlobalSearchParamsAndFetchShipments(); // Fetch shipments based on updated conditions
       }
-
     });
     this.translate.buttonClick$.subscribe(() => {
-      if (localStorage.getItem("language") == "en") {
-        this.languageData = en.data.myShipments.delivered_tab
-      }
-      else if (localStorage.getItem("language") == "my") {
-        this.languageData = bm.data.myShipments.delivered_tab
+      if (localStorage.getItem('language') == 'en') {
+        this.languageData = en.data.myShipments.delivered_tab;
+      } else if (localStorage.getItem('language') == 'my') {
+        this.languageData = bm.data.myShipments.delivered_tab;
       }
       this.dropdownOptions[0].viewValue = this.languageData.all;
       this.dropdownOptions[2].viewValue = this.languageData.non_cod;
-    })
+    });
   }
 
   ngOnInit(): void {
     //For API
-    this.end_date = moment().endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.start_date = moment().subtract(30, 'days').startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.end_date = moment()
+      .endOf('day')
+      .utc()
+      .format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.start_date = moment()
+      .subtract(1, 'month')
+      .startOf('day')
+      .utc()
+      .format('YYYY-MM-DDTHH:mm:ss[Z]');
+
     // For Date Picker UI (local time)
-    const localEndDate = moment().endOf('day').toDate();
-    const localStartDate = moment().subtract(30, 'days').startOf('day').toDate();
+    const localEndDate = moment().endOf('day');
+    const localStartDate = moment().subtract(1, 'month').startOf('day');
 
     this.dateRangePickerForm = this.fb.group({
       start_date: [localStartDate],
@@ -140,7 +157,6 @@ export class DeliveredComponent implements OnInit, OnDestroy {
     this.route.queryParams.subscribe((res: any) => {
       this.cod_type = res.q;
       this.current_tab = res.t;
-
     });
     if (this.uiTab === 'delivered') {
       const eventDetails = {
@@ -164,25 +180,31 @@ export class DeliveredComponent implements OnInit, OnDestroy {
     // this.fetchParamsLoginService();
     this.checkGlobalSearchParamsAndFetchShipments();
   }
-triggerPaginationEvent() {
-  this.onPageEvent({
-    currentPage: this.currentPage,
-    pageSize: this.pageSize
-  });
-}
-checkGlobalSearchParamsAndFetchShipments() {
-  this._commonService.globalSearchParams$.pipe(take(1)).subscribe((params) => {
-    // Check if the parameters are available and valid
-    if (params && params.payment_type && params.shipment_status && params.product_type) {
-      this.callv2 = true;
-    } else {
-      this.callv2 = false;
-    }
+  triggerPaginationEvent() {
+    this.onPageEvent({
+      currentPage: this.currentPage,
+      pageSize: this.pageSize,
+    });
+  }
+  checkGlobalSearchParamsAndFetchShipments() {
+    this._commonService.globalSearchParams$
+      .pipe(take(1))
+      .subscribe((params) => {
+        // Check if the parameters are available and valid
+        if (
+          params &&
+          params.payment_type &&
+          params.shipment_status &&
+          params.product_type
+        ) {
+          this.callv2 = true;
+        } else {
+          this.callv2 = false;
+        }
 
-    this.fetchShipments();
-  });
-}
-
+        this.fetchShipments();
+      });
+  }
 
   ngOnDestroy(): void {
     this._onDestroy.next();
@@ -273,9 +295,7 @@ checkGlobalSearchParamsAndFetchShipments() {
       .pipe(
         tap((response: IResponse<{ link: string }>) => {
           window.open(
-            `${environment.sppUatUrl.replace('/api/', '')}${
-              response.data.link
-            }`
+            `${environment.sppUatUrl.replace('/api/', '')}${response.data.link}`
           );
         }),
         takeUntil(this._onDestroy)
@@ -288,7 +308,6 @@ checkGlobalSearchParamsAndFetchShipments() {
   }
 
   onActionIconEvent(event: { data: IDataShipment; actionType: string }) {
-
     this.selectedSingleData = event.data;
     switch (event.actionType) {
       case 'tallysheet':
@@ -322,8 +341,8 @@ checkGlobalSearchParamsAndFetchShipments() {
           cash_on_delivery_amount: event.data.order_amount,
           insured_shipping_insurance: event.data.sum_insured ? 'Yes' : 'No',
           shipment_type: event.data.type,
-       };
-                    this._commonService.googleEventPush(eventDetails);
+        };
+        this._commonService.googleEventPush(eventDetails);
         this.router.navigate(
           [
             event.data.tracking_details.category.toLowerCase() === 'mps'
@@ -347,10 +366,9 @@ checkGlobalSearchParamsAndFetchShipments() {
       this.buildParams
     )}`;
 
-
     this.shipment$ = this.callv2
-    ? this._commonService.fetchListv2('shipments', query)
-    : this._commonService.fetchList('shipments', query);
+      ? this._commonService.fetchListv2('shipments', query)
+      : this._commonService.fetchList('shipments', query);
     this.shipment$.subscribe({
       next: (res) => {
         this.totalTrackingDetails = res.data.total;
@@ -389,36 +407,31 @@ checkGlobalSearchParamsAndFetchShipments() {
     this.checkGlobalSearchParamsAndFetchShipments(); // Fetch shipments based on updated conditions
   }
   onActionEvent(event: { data: IDataShipment; actionType: string }) {
-    let tabValue = (this.uiTab === "all") ? "All" : "Delivered";
+    const tabValue = this.uiTab === 'all' ? 'All' : 'Delivered';
     this.selectedSingleData = event.data;
-    const urlPathDetails = event?.data?.tracking_details?.category?.toLowerCase() === 'mps'
-    ? 'my-shipment/mps-details'
-    : 'my-shipment/order-details';
+    const urlPathDetails =
+      event?.data?.tracking_details?.category?.toLowerCase() === 'mps'
+        ? 'my-shipment/mps-details'
+        : 'my-shipment/order-details';
 
-  // eslint-disable-next-line no-case-declarations
-  const urlDetails = `${urlPathDetails}/${event.data.id}?activeTab=${this.current_tab}`;
+    // eslint-disable-next-line no-case-declarations
+    const urlDetails = `${urlPathDetails}/${event.data.id}?activeTab=${this.current_tab}`;
     switch (event.actionType) {
       case 'my_location':
         const eventDetails = {
-          "event": "track_order",
-          "event_category": "SendParcel Pro - My Shipments - " + tabValue,
-          "event_action": "Track Order",
-          "event_label": "Track Order - "+ event?.data?.tracking_details?.tracking_id
+          event: 'track_order',
+          event_category: 'SendParcel Pro - My Shipments - ' + tabValue,
+          event_action: 'Track Order',
+          event_label:
+            'Track Order - ' + event?.data?.tracking_details?.tracking_id,
         };
-                     this._commonService.googleEventPush(eventDetails);
-      window.open(urlDetails);
+        this._commonService.googleEventPush(eventDetails);
+        window.open(urlDetails);
         return;
       case 'print':
         this.onActionButtonIcon('print', false);
         return;
       case 'order-details':
-        // this._commonService.googleEventPush({
-        //   event: 'track_order',
-        //   event_category: 'SendParcel Pro - My Shipments - ' + tabValue,
-        //   event_action: 'Track Order',
-        //   event_label: 'Track Order -' + event.data.tracking_details.tracking_id,
-        // });
-        // eslint-disable-next-line no-case-declarations
         const eventDetailsViewOrder = {
           event: 'view_order_details',
           event_category: 'SendParcel Pro - My Shipments - ' + tabValue,
@@ -443,7 +456,7 @@ checkGlobalSearchParamsAndFetchShipments() {
           insured_shipping_insurance: event.data.sum_insured ? 'Yes' : 'No',
           shipment_type: event.data.type,
         };
-            this._commonService.googleEventPush(eventDetailsViewOrder);
+        this._commonService.googleEventPush(eventDetailsViewOrder);
         window.open(urlDetails);
         return;
       default:
@@ -454,18 +467,21 @@ checkGlobalSearchParamsAndFetchShipments() {
   onPageEvent(event: { currentPage: number; pageSize: number }) {
     this.currentPage = event.currentPage;
     this.pageSize = event.pageSize;
-    const hasBuildParams = this.buildParams && Object.keys(this.buildParams).length > 0 ? true : false;
+    const hasBuildParams =
+      this.buildParams && Object.keys(this.buildParams).length > 0
+        ? true
+        : false;
 
-      const hasFilterParams =
-        (this.cod_type && this.cod_type !== '') ||
-        (this.product_type && this.product_type !== '') ||
-        (this.shipmentStatus && this.shipmentStatus !== '') ||
-        (this.start_date && this.start_date !== '') ||
-        (this.end_date && this.end_date !== '')
-          ? true
-          : false;
-      this.callv2 = hasBuildParams && hasFilterParams;
-      this.fetchShipments();
+    const hasFilterParams =
+      (this.cod_type && this.cod_type !== '') ||
+      (this.product_type && this.product_type !== '') ||
+      (this.shipmentStatus && this.shipmentStatus !== '') ||
+      (this.start_date && this.start_date !== '') ||
+      (this.end_date && this.end_date !== '')
+        ? true
+        : false;
+    this.callv2 = hasBuildParams && hasFilterParams;
+    this.fetchShipments();
   }
 
   onSearchEvent(search: string) {
@@ -484,15 +500,15 @@ checkGlobalSearchParamsAndFetchShipments() {
 
   onSelectChange(orderType: string) {
     this.cod_type = orderType;
-    const orderTypeLabel = orderType?.trim() || "all";
-    const eventDetails ={
+    const orderTypeLabel = orderType?.trim() || 'all';
+    const eventDetails = {
       event: 'filter_section',
       event_category:
         'Send Parcel Pro - My Shipments - ' + this.uiTab === 'all'
           ? 'All'
           : 'Delivered',
       event_action: 'Filter Section',
-      event_label: "Order Type – " + orderTypeLabel ,
+      event_label: 'Order Type – ' + orderTypeLabel,
     };
     this._commonService.googleEventPush(eventDetails);
     this.checkGlobalSearchParamsAndFetchShipments(); // Fetch shipments based on updated conditions
@@ -500,15 +516,14 @@ checkGlobalSearchParamsAndFetchShipments() {
 
   private get buildParams(): IShipmentParamFilter {
     const baseParams: IShipmentParamFilter = {
-      start_date: moment(this.start_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
-      end_date: moment(this.end_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      start_date: this.start_date,
+      end_date: this.end_date,
       cod_type: this.cod_type,
       keyword: this.keyword,
       product_type: this.product_type,
       shipment_status: this.shipmentStatus,
       page: +this.currentPage,
       limit: +this.pageSize,
-
     };
 
     if (this.uiTab !== 'all') {
@@ -638,9 +653,7 @@ checkGlobalSearchParamsAndFetchShipments() {
         tap((response: IResponse<{ link: string }>) => {
           this._commonService.isLoading(false);
           window.open(
-            `${environment.sppUatUrl.replace('/api/', '')}${
-              response.data.link
-            }`
+            `${environment.sppUatUrl.replace('/api/', '')}${response.data.link}`
           );
           if (this.isSelectAllOrders) {
             this.currentBatchPageRequest += 1;

@@ -46,6 +46,7 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
   });
   public doughnutChartLabels: Label[] = ['COD', 'NON COD'];
   public doughnutChartData: SingleDataSet = [];
+  public isEmptyDoughnutChart = true;
   public doughnutChartType: ChartType = 'doughnut';
   public doughnutColors: Color[] = [
     {
@@ -256,6 +257,7 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
         tap((data: any) => {
           let codTotal = 0;
           let nonCodTotal = 0;
+          this.isEmptyDoughnutChart = data.data.length === 0 || data.data.every((item: any) => item.Count === 0);
 
           data.data.forEach((item: { Key: string; Count: number }) => {
             if (item.Key === 'COD') {

@@ -98,16 +98,13 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
   isDisable: any;
 
   languageObj: any = (localStorage.getItem("language") && localStorage.getItem("language") === 'en') ? en.data :
-  (localStorage.getItem("language") && localStorage.getItem("language") === 'my') ? bm.data :
-    en.data;
-
+  (localStorage.getItem("language") && localStorage.getItem("language") === 'my') ? bm.data : en.data;
   languageData:any = this.languageObj.order_details
-
   breadcrumbItems: BreadcrumbItem[]  = [];
   routeParams:any;
   pickupId: any;
+  isDownloadSubmitting = false;
 
-  isDownloadSubmitting: boolean = false;
   constructor(
     public commonService: CommonService,
     private http: HttpClient,
@@ -270,7 +267,6 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
       this.activeTabRoute= params['activeTab']
       this.routeParams = params;
       // Access query parameters here
-
       this.RouteParams();
     });
     this.orderId = this.route.snapshot.params['id'];
@@ -288,15 +284,12 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
           this.pickupId= detail.sender_details.pickup_option_id
           this.isLoading = false;
           this.cdr.markForCheck();
-
           this.connoteDetails = trackingData !== null ? detail?.tracking_detail?.tracking_data[0] : trackingData;
           this.trackingData = this.extractTrackingDetailsData(this.detail);
           this.imgUrl = trackingData !== null ? detail?.tracking_detail?.tracking_data[0]?.epod : trackingData;
-
           this.trackingDetailDate = trackingData !== null ? detail?.tracking_detail?.tracking_data[0]?.date : trackingData;
           this.extractTrackingDate(this.trackingDetailDate);
           this.changeProductLabel();
-
         },
         error: (err) => {
           this.isLoading = false;
@@ -305,6 +298,7 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
         },
       });
   }
+
   changeProductLabel(): void {
     if (this.detail && this.detail?.parcel_details) {
       const product = this.detail?.parcel_details.product;
@@ -324,16 +318,19 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   ngOnDestroy(): void {
     this._onDestroy.next();
     this._onDestroy.complete();
   }
+
   isDisabled(): any {
-    if (!this.detail?.channel_order || Object.keys(this.detail?.channel_order).length> 0 || (this.activeTabRoute !== 'delivered' && this.activeTabRoute !== 'all') || (this.detail?.parcel_details?.category === 'MPS' || this.detail?.parcel_details?.category === 'Ubat' || this.detail?.parcel_details?.category === 'MelPlus' || this.detail?.parcel_details?.type === 'INTERNATIONAL')) {
+    if (!this.detail?.channel_order || Object.keys(this.detail?.channel_order).length> 0 || (this.activeTabRoute !== 'delivered' && this.activeTabRoute !== 'all') || (this.detail?.parcel_details?.category === 'MPS' || this.detail?.parcel_details?.category === 'Ubat' || this.detail?.parcel_details?.category === 'MelPlus' || this.detail?.parcel_details?.type === 'INTERNATIONAL') || this.detail?.status !== 'delivered') {
       return true;
     }
     return false;
   }
+
   getLogo(name:any) {
     return this.pluginList.find((x:any)=> x.name === name.toLowerCase())?.imgUrl
   }

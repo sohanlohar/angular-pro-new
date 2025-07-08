@@ -20,8 +20,7 @@
       <mat-divider></mat-divider>
       <div class="wrapper-column">
         <div class="column">
-          <ng-container
-          >
+          <ng-container>
             <label class="container__orders-title">{{
               data?.dashboard?.my_cod
             }}</label>
@@ -61,60 +60,50 @@
             [plugins]="doughnutChartPlugins"
             [legend]="doughnutChartLegend"
             [colors]="doughnutColors"
+            *ngIf="!isEmptyDoughnutChart"
           >
           </canvas>
-          <div class="pieTable scrollable">
-            <table
-              mat-table
-              [dataSource]="dataSource2"
-              class="mat-elevation-z8"
-            >
-              <ng-container matColumnDef="delivery_type">
-                <th mat-header-cell *matHeaderCellDef class="align-left">
-                  {{ languageData.delivery_type }}
-                </th>
-                <td
-                  mat-cell
-                  *matCellDef="let element"
-                  class="align-left nowrap"
-                >
-                  <div class="box-color">
-                    <div
-                      [ngStyle]="{
-                        background: element.color,
-                        width: '20px',
-                        height: '20px',
-                        borderRadius: '5px',
-                        marginRight: '5px'
-                      }"
-                    ></div>
-                    {{ element.name }}
-                  </div>
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="order_count">
-                <th class="nowrap" mat-header-cell *matHeaderCellDef>
-                  {{ languageData.order_count }}
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ element.value }}
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="percentage">
-                <th class="pl-10" mat-header-cell *matHeaderCellDef>
-                  {{ languageData.percentage }}
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ element.percentage }}%
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns2"></tr>
-            </table>
+          <div class="no-data" *ngIf="isEmptyDoughnutChart">
+            No data to display
           </div>
+
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Delivery Type</th>
+                <th>Order Count</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngIf="!isEmptyDoughnutChart">
+                <tr *ngFor="let element of dataSource2">
+                  <td>
+                    <div class="box-color">
+                      <div
+                        [ngStyle]="{
+                          background: element.color,
+                          width: '20px',
+                          height: '20px',
+                          borderRadius: '5px',
+                          marginRight: '5px'
+                        }"
+                      ></div>
+                      {{ element.name }}
+                    </div>
+                  </td>
+
+                  <td>{{ element.value }}</td>
+                  <td>{{ element.percentage }}%</td>
+                </tr>
+              </ng-container>
+              <ng-container *ngIf="isEmptyDoughnutChart">
+                <tr class="no-available">
+                  <td colspan="3" class="no-data-text">Data Unavailable</td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

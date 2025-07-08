@@ -147,6 +147,11 @@
         flex-direction: row-reverse;
         color: #fff;
       }
+
+      .expand-left {
+        transform: rotate(180deg);
+        color: #fff;
+      }
     }
     .version_num {
       text-align: center;

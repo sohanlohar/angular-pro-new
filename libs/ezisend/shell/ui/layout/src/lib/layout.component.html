@@ -22,8 +22,14 @@
   (mouseleave)="onSidebarHover(false)">
   <div class="sidebar-toggle">
     <button (click)="expandMenu()" class="toggle-btn">
-      <span *ngIf="sidebarActive" class="collapsedSpan"><span class="arrowIcon active"></span> <span class="collapseText"></span></span>
-      <span *ngIf="!sidebarActive" class="arrowIcon"></span>
+      <span *ngIf="!sidebarActive" class="collapsedSpan">
+        <span class="material-symbols-outlined">
+          expand_circle_right
+        </span>
+      </span>
+      <span *ngIf="sidebarActive" class="material-symbols-outlined expand-left">
+        expand_circle_right
+      </span>
     </button>
   </div>
     <pos-nav-sidebar

@@ -1,5 +1,11 @@
 /* eslint-disable no-case-declarations */
-import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IResponse } from '@pos/ezisend/shared/data-access/models';
@@ -54,10 +60,15 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
     'type',
     'action',
   ];
-  actions:any = ['my_location', 'print'];
-  languageData: any = (localStorage.getItem("language") && localStorage.getItem("language") === 'en') ? en.data.myShipments.live_shipment_tab :
-  (localStorage.getItem("language") && localStorage.getItem("language") === 'my') ? bm.data.myShipments.live_shipment_tab :
-    en.data.myShipments.live_shipment_tab;
+  actions: any = ['my_location', 'print'];
+  languageData: any =
+    localStorage.getItem('language') &&
+    localStorage.getItem('language') === 'en'
+      ? en.data.myShipments.live_shipment_tab
+      : localStorage.getItem('language') &&
+        localStorage.getItem('language') === 'my'
+      ? bm.data.myShipments.live_shipment_tab
+      : en.data.myShipments.live_shipment_tab;
   filterOrderStatus: { id: string; value: string }[] = [
     {
       id: '',
@@ -93,7 +104,10 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
     { value: '', viewValue: this.languageData.all },
     { value: 'picked-up', viewValue: this.languageData.picked_up },
     { value: 'in-transit', viewValue: this.languageData.in_transit },
-    { value: 'out-for-delivery', viewValue: this.languageData.out_for_delivery },
+    {
+      value: 'out-for-delivery',
+      viewValue: this.languageData.out_for_delivery,
+    },
     { value: 'dropped-off', viewValue: this.languageData.dropped_off },
   ];
 
@@ -119,11 +133,10 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
     private translate: TranslationService
   ) {
     this.translate.buttonClick$.subscribe(() => {
-      if (localStorage.getItem("language") == "en") {
-        this.languageData = en.data.myShipments.live_shipment_tab
-      }
-      else if (localStorage.getItem("language") == "my") {
-        this.languageData = bm.data.myShipments.live_shipment_tab
+      if (localStorage.getItem('language') == 'en') {
+        this.languageData = en.data.myShipments.live_shipment_tab;
+      } else if (localStorage.getItem('language') == 'my') {
+        this.languageData = bm.data.myShipments.live_shipment_tab;
       }
 
       this.dropdownOptions[0].viewValue = this.languageData.all;
@@ -133,17 +146,23 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
       this.dropdownOptions[2].viewValue = this.languageData.in_transit;
       this.dropdownOptions[3].viewValue = this.languageData.out_for_delivery;
       this.dropdownOptions[4].viewValue = this.languageData.dropped_off;
-    })
+    });
   }
 
   ngOnInit(): void {
-        // For API
-    this.end_date = moment().endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.start_date = moment().subtract(30, 'days').startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.end_date = moment()
+      .endOf('day')
+      .utc()
+      .format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.start_date = moment()
+      .subtract(1, 'month')
+      .startOf('day')
+      .utc()
+      .format('YYYY-MM-DDTHH:mm:ss[Z]');
 
     // For Date Picker UI (local time)
-    const localEndDate = moment().endOf('day').toDate();
-    const localStartDate = moment().subtract(30, 'days').startOf('day').toDate();
+    const localEndDate = moment().endOf('day');
+    const localStartDate = moment().subtract(1, 'month').startOf('day');
 
     this.dateRangePickerForm = this.fb.group({
       start_date: [localStartDate],
@@ -179,47 +198,50 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
     )}`;
     this.shipment$ = this._commonService.fetchList('shipments', query);
     this.shipment$.subscribe({
-      next:(res)=>{
-        this.totalTrackingDetails=res.data.total;
-        if(res){
-          this.isLoading= false;
+      next: (res) => {
+        this.totalTrackingDetails = res.data.total;
+        if (res) {
+          this.isLoading = false;
         }
         this.cdr.detectChanges();
-      }
-    })
+      },
+    });
   }
 
   onActionEvent(event: { data: IDataShipment; actionType: string }) {
-
     this.selectedSingleData = event.data;
-    const urlPathDetails = event?.data?.tracking_details?.category?.toLowerCase() === 'mps'
-    ? 'my-shipment/mps-details'
-    : 'my-shipment/order-details';
+    const urlPathDetails =
+      event?.data?.tracking_details?.category?.toLowerCase() === 'mps'
+        ? 'my-shipment/mps-details'
+        : 'my-shipment/order-details';
 
-  const urlDetails = `${urlPathDetails}/${event.data.id}?activeTab=${this.current_tab}`;
+    const urlDetails = `${urlPathDetails}/${event.data.id}?activeTab=${this.current_tab}`;
     switch (event.actionType) {
       case 'my_location':
         const eventDetails = {
-          "event": "track_order",
-          "event_category": "SendParcel Pro - My Shipments - Live Shipments",
-          "event_action": "Track Order",
-          "event_label": "Track Order - "+ event?.data?.tracking_details?.tracking_id
+          event: 'track_order',
+          event_category: 'SendParcel Pro - My Shipments - Live Shipments',
+          event_action: 'Track Order',
+          event_label:
+            'Track Order - ' + event?.data?.tracking_details?.tracking_id,
         };
-            this._commonService.googleEventPush(eventDetails)
-       window.open(urlDetails);
+        this._commonService.googleEventPush(eventDetails);
+        window.open(urlDetails);
         return;
       case 'order-details':
         this._commonService.googleEventPush({
           event: 'track_order',
           event_category: 'SendParcel Pro - My Shipments - Live Shipments',
           event_action: 'Track Order',
-          event_label: 'Track Order -' + event.data.tracking_details.tracking_id,
+          event_label:
+            'Track Order -' + event.data.tracking_details.tracking_id,
         });
-        const eventDetailsViewOrder ={
+        const eventDetailsViewOrder = {
           event: 'view_order_details',
           event_category: 'SendParcel Pro - My Shipments - Live Shipments',
           event_action: 'View Order Details',
-          event_label: 'Order Details - ' + event.data.tracking_details.tracking_id,
+          event_label:
+            'Order Details - ' + event.data.tracking_details.tracking_id,
           tracking_number: event.data.tracking_details.tracking_id,
           order_date: moment(event.data.created_date).format('DD MMM YYYY'),
           order_time: moment(event.data.created_date).format('h:mm:ss A'),
@@ -228,7 +250,8 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
           parcel_width: event.data.pickup_details.width || null,
           parcel_height: event.data.pickup_details.height || null,
           parcel_length: event.data.pickup_details.length || null,
-          volumetric_weight: event.data.pickup_details.volumetric_weight || null,
+          volumetric_weight:
+            event.data.pickup_details.volumetric_weight || null,
           item_description: event.data.pickup_details.item_description || null,
           sum_insured_amount: event.data.sum_insured || null,
           premium_amount: event.data.premium_amount || null,
@@ -239,7 +262,7 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
           insured_shipping_insurance: event.data.sum_insured ? 'Yes' : 'No',
           shipment_type: event.data.type,
         };
-            this._commonService.googleEventPush(eventDetailsViewOrder)
+        this._commonService.googleEventPush(eventDetailsViewOrder);
         window.open(urlDetails);
         return;
       case 'print':
@@ -253,8 +276,9 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
   onSelectRow(data: IDataShipment[]) {
     this.selectedMultipleData = data;
     this.isPlugins = data.some(
-      (shipment : IDataShipment) =>  Object.keys(shipment.channel_order).length !== 0
-    )
+      (shipment: IDataShipment) =>
+        Object.keys(shipment.channel_order).length !== 0
+    );
     this.isShowCommercialinvoiceButton = this.selectedMultipleData.some(
       (order: IDataShipment) => order.type === 'INTERNATIONAL'
     );
@@ -269,12 +293,8 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
 
     this.isSelectedShipmentsNoTrackingId = this.selectedMultipleData.every(
       (shipment: IDataShipment) => shipment.tracking_details.tracking_id === ''
-    )
-    // console.log('this.selectedMultipleData =',this.selectedMultipleData)
-    // console.log('this.isSelectedShipmentsNoTrackingId =',this.isSelectedShipmentsNoTrackingId)
-
+    );
   }
-
 
   onActionButtonIcon(event: string, isMultiple = false) {
     let shipmentIds: number[] = [];
@@ -371,8 +391,16 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
           insured_shipping_insurance: event.data.sum_insured ? 'Yes' : 'No',
           shipment_type: event.data.type,
         };
-        this._commonService.googleEventPush(eventDetails)
-        this.router.navigate([event.data.tracking_details.category.toLowerCase() === 'mps' ? 'my-shipment/mps-details' :'my-shipment/order-details', event.data.id], { queryParams: {activeTab: 'live'} });
+        this._commonService.googleEventPush(eventDetails);
+        this.router.navigate(
+          [
+            event.data.tracking_details.category.toLowerCase() === 'mps'
+              ? 'my-shipment/mps-details'
+              : 'my-shipment/order-details',
+            event.data.id,
+          ],
+          { queryParams: { activeTab: 'live' } }
+        );
         return;
       default:
         return;
@@ -403,8 +431,7 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
     this.keyword = search.trim();
     this._commonService.googleEventPush({
       event: 'search_order',
-      event_category:
-        'SendParcel Pro - My Shipments - Live Shipments',
+      event_category: 'SendParcel Pro - My Shipments - Live Shipments',
       event_action: 'Search Order',
       event_label: this.keyword,
     });
@@ -417,8 +444,7 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
       this.end_date = event.end_date;
       this._commonService.googleEventPush({
         event: 'filter_section',
-        event_category:
-          'SendParcel Pro - My Shipments - Live Shipments',
+        event_category: 'SendParcel Pro - My Shipments - Live Shipments',
         event_action: 'Filter Section',
         event_label: this.start_date + ' - ' + this.end_date,
       });
@@ -432,25 +458,25 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
   onSelectChange(event: string, state: string) {
     if (event === 'order-status') {
       this.order_status = state;
-      const orderStatusLabel = state?.trim() || "all";
+      const orderStatusLabel = state?.trim() || 'all';
       const eventDetails = {
-        "event": "filter_section",
-        "event_category": "SendParcel Pro - My Shipments - Live Shipments",
-        "event_action": "Filter Section",
-        "event_label": "Order Status - "+ orderStatusLabel
-      };
-      this._commonService.googleEventPush(eventDetails)
-    }
-    if (event === 'order-type') {
-      this.cod_type = state;
-      const orderTypeLabel = state?.trim() || "all";
-      const eventDetails ={
         event: 'filter_section',
         event_category: 'SendParcel Pro - My Shipments - Live Shipments',
         event_action: 'Filter Section',
-        event_label:  "Order Type - "+ orderTypeLabel,
+        event_label: 'Order Status - ' + orderStatusLabel,
       };
-      this._commonService.googleEventPush(eventDetails)
+      this._commonService.googleEventPush(eventDetails);
+    }
+    if (event === 'order-type') {
+      this.cod_type = state;
+      const orderTypeLabel = state?.trim() || 'all';
+      const eventDetails = {
+        event: 'filter_section',
+        event_category: 'SendParcel Pro - My Shipments - Live Shipments',
+        event_action: 'Filter Section',
+        event_label: 'Order Type - ' + orderTypeLabel,
+      };
+      this._commonService.googleEventPush(eventDetails);
     }
     this.fetchShipments();
   }
@@ -458,8 +484,8 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
   private get buildParams(): IShipmentParamFilter {
     return {
       uitab: 'live',
-      start_date:  moment(this.start_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
-      end_date: moment(this.end_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      start_date: this.start_date,
+      end_date: this.end_date,
       shipment_status: this.order_status,
       cod_type: this.cod_type,
       keyword: this.keyword,
@@ -586,16 +612,13 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
     this._commonService
       .submitData('shipments', query, {
         ids: shipmentIds,
-        includeChildren: true
+        includeChildren: true,
       })
       .pipe(
         tap((response: IResponse<{ link: string }>) => {
           this._commonService.isLoading(false);
           window.open(
-            `${environment.sppUatUrl.replace(
-              '/api/',
-              ''
-            )}${response.data.link}`
+            `${environment.sppUatUrl.replace('/api/', '')}${response.data.link}`
           );
           if (this.isSelectAllOrders) {
             this.currentBatchPageRequest += 1;

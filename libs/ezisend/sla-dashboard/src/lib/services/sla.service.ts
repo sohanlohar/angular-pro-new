@@ -19,8 +19,8 @@ export class SlaService {
 
   getStatusList(startDate: string, endDate: string): Observable<IGlobalSlaResponse<ISlaStatusData>> {
     const params = new HttpParams()
-      .set('start_date', startDate)
-      .set('end_date', endDate);
+      .set('startDate', startDate)
+      .set('endDate', endDate);
 
     return this.http.get<IGlobalSlaResponse<ISlaStatusData>>(
       `${environment.sppUatUrl}dashboard/v1/sla/status`,
@@ -32,8 +32,8 @@ export class SlaService {
     IGlobalSlaResponse<ISlaCategoryStatusData>
   > {
     const params = new HttpParams()
-      .set('start_date', startDate)
-      .set('end_date', endDate);
+      .set('startDate', startDate)
+      .set('endDate', endDate);
 
     return this.http.get<IGlobalSlaResponse<ISlaCategoryStatusData>>(
       `${environment.sppUatUrl}dashboard/v1/sla/category`,
@@ -43,8 +43,8 @@ export class SlaService {
 
   getStateList(startDate: string, endDate: string): Observable<IGlobalSlaResponse<ISlaStateData>> {
     const params = new HttpParams()
-      .set('start_date', startDate)
-      .set('end_date', endDate);
+      .set('startDate', startDate)
+      .set('endDate', endDate);
 
     return this.http.get<IGlobalSlaResponse<ISlaStateData>>(
       `${environment.sppUatUrl}dashboard/v1/sla/state`,
@@ -54,8 +54,8 @@ export class SlaService {
 
   getDexList(startDate: string, endDate: string): Observable<IGlobalSlaResponse<IDexData>> {
     const params = new HttpParams()
-      .set('start_date', startDate)
-      .set('end_date', endDate);
+      .set('startDate', startDate)
+      .set('endDate', endDate);
 
     return this.http.get<IGlobalSlaResponse<IDexData>>(
       `${environment.sppUatUrl}dashboard/v1/dex`,
@@ -70,7 +70,7 @@ export class SlaService {
     );
   }
 
-  getDownloadFile(type: 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex', startDate: string, endDate: string): Observable<any> {
+  getDownloadFile(type: 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex' | 'sla_all', startDate: string, endDate: string): Observable<any> {
     const params = new HttpParams()
       .set('type', type)
       .set('startDate', startDate)

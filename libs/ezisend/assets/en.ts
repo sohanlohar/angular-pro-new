@@ -309,7 +309,7 @@ export const en = {
       invalid_sender_postcode:
         'Invalid sender postcode. Please provide a valid postcode to proceed',
       close: 'Close',
-
+      prepare_to_deliver: 'PREPARING TO DELIVER',
       proof_of_delivery: 'Proof of Delivery',
       view_proof_of_delivery: 'View Proof of Delivery',
       no_result_to_display: 'No results to display',

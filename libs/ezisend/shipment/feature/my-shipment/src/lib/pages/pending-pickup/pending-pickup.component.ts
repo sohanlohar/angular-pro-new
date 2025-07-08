@@ -1,5 +1,11 @@
 /* eslint-disable no-case-declarations */
-import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,17 +17,26 @@ import { MyShipmentHelper } from '@pos/ezisend/shipment/data-access/helper/my-sh
 import {
   IDataShipment,
   IShipment,
-  IShipmentParamFilter
+  IShipmentParamFilter,
 } from '@pos/ezisend/shipment/data-access/models';
 import * as moment from 'moment';
-import { catchError, filter, finalize, mergeMap, Observable, Subject, takeUntil, tap, map } from 'rxjs';
+import {
+  catchError,
+  filter,
+  finalize,
+  mergeMap,
+  Observable,
+  Subject,
+  takeUntil,
+  tap,
+  map,
+} from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { bm } from '../../../../../../../assets/my';
 import { en } from '../../../../../../../assets/en';
 import { TranslationService } from '../../../../../../../shared-services/translate.service';
 import { MyShipmentTableComponent } from '@pos/ezisend/shipment/ui/my-shipment-table';
 import { environment } from '@pos/shared/environments';
-
 
 @Component({
   selector: 'pos-pending-pickup',
@@ -49,8 +64,8 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
   selectedMultipleData: IDataShipment[] = [];
   totalShipmentNoTrackingId: any = [];
   shipment$: Observable<IResponse<IShipment>> | undefined;
-   protected _onDestroy = new Subject<void>();
-  @ViewChild(MyShipmentTableComponent) myShipment:any;
+  protected _onDestroy = new Subject<void>();
+  @ViewChild(MyShipmentTableComponent) myShipment: any;
   // Search Field
   keyword?: string;
 
@@ -76,17 +91,34 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
   showOrderMessage = 'pickup';
   totalTrackingDetails: any;
   isLoading = true;
-  languageData: any = (localStorage.getItem("language") && localStorage.getItem("language") === 'en') ? en.data.myShipments.pending_shipments :
-  (localStorage.getItem("language") && localStorage.getItem("language") === 'my') ? bm.data.myShipments.pending_shipments :
-    en.data.myShipments.pending_shipments;
+  languageData: any =
+    localStorage.getItem('language') &&
+    localStorage.getItem('language') === 'en'
+      ? en.data.myShipments.pending_shipments
+      : localStorage.getItem('language') &&
+        localStorage.getItem('language') === 'my'
+      ? bm.data.myShipments.pending_shipments
+      : en.data.myShipments.pending_shipments;
 
   // Select Dropdown
   dropdownOptions = [
     { value: '', viewValue: this.languageData.order_status_all },
-    { value: 'pick up scheduled', viewValue: this.languageData.order_status_pickup_schedule },
-    { value: 'pick up rescheduled', viewValue: this.languageData.order_status_pickup_reschedule },
-    { value: 'partial picked up', viewValue: this.languageData.order_status_partial },
-    { value: 'drop off requested', viewValue: this.languageData.order_status_dropoff },
+    {
+      value: 'pick up scheduled',
+      viewValue: this.languageData.order_status_pickup_schedule,
+    },
+    {
+      value: 'pick up rescheduled',
+      viewValue: this.languageData.order_status_pickup_reschedule,
+    },
+    {
+      value: 'partial picked up',
+      viewValue: this.languageData.order_status_partial,
+    },
+    {
+      value: 'drop off requested',
+      viewValue: this.languageData.order_status_dropoff,
+    },
     // { value: 'pick up cancelled', viewValue: 'Pick Up Cancelled' },
   ];
   mobileFilterOpen = false;
@@ -108,28 +140,38 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
       this.toggleValue.setValue('view-by-orders');
     }
     this.translate.buttonClick$.subscribe(() => {
-      if (localStorage.getItem("language") == "en") {
-        this.languageData = en.data.myShipments.pending_shipments
-      }
-      else if (localStorage.getItem("language") == "my") {
-        this.languageData = bm.data.myShipments.pending_shipments
+      if (localStorage.getItem('language') == 'en') {
+        this.languageData = en.data.myShipments.pending_shipments;
+      } else if (localStorage.getItem('language') == 'my') {
+        this.languageData = bm.data.myShipments.pending_shipments;
       }
 
       this.dropdownOptions[0].viewValue = this.languageData.order_status_all;
-      this.dropdownOptions[0].viewValue = this.languageData.order_status_pickup_schedule;
-      this.dropdownOptions[0].viewValue = this.languageData.order_status_pickup_reschedule;
-      this.dropdownOptions[0].viewValue = this.languageData.order_status_partial;
-      this.dropdownOptions[0].viewValue = this.languageData.order_status_dropoff;
-    })
+      this.dropdownOptions[0].viewValue =
+        this.languageData.order_status_pickup_schedule;
+      this.dropdownOptions[0].viewValue =
+        this.languageData.order_status_pickup_reschedule;
+      this.dropdownOptions[0].viewValue =
+        this.languageData.order_status_partial;
+      this.dropdownOptions[0].viewValue =
+        this.languageData.order_status_dropoff;
+    });
   }
 
   ngOnInit(): void {
-    this.end_date = moment().add(30, 'days').endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.start_date = moment().startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.end_date = moment()
+      .add(30, 'days')
+      .endOf('day')
+      .utc()
+      .format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.start_date = moment()
+      .startOf('day')
+      .utc()
+      .format('YYYY-MM-DDTHH:mm:ss[Z]');
 
     // For Date Picker UI (local time)
-    const localEndDate = moment().add(30, 'days').endOf('day').toDate();
-    const localStartDate = moment().startOf('day').toDate();
+    const localEndDate = moment().add(30, 'days').endOf('day');
+    const localStartDate = moment().startOf('day');
     this.dateRangePickerForm = this.fb.group({
       start_date: [localStartDate],
       end_date: [localEndDate],
@@ -156,38 +198,42 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
     )}`;
     this.shipment$ = this._commonService.fetchList('shipments', query);
     this.shipment$.subscribe({
-      next:(res)=>{
-        this.totalTrackingDetails=res.data.total;
-        if(res){
-          this.isLoading= false;
+      next: (res) => {
+        this.totalTrackingDetails = res.data.total;
+        if (res) {
+          this.isLoading = false;
           this.cdr.detectChanges();
         }
         this.onSelectRow([]);
         this.myShipment?.selectAllOrder(false);
         this.cdr.detectChanges();
-      }
-    })
+      },
+    });
   }
 
   onActionEvent(event: { data: IDataShipment; actionType: string }) {
     let pickup_number;
-    if(event.actionType == 'close'){
+    if (event.actionType == 'close') {
       pickup_number = event.data.pickup_details.pickup_number;
-    }else{
-      pickup_number = this.toggleValue.value === 'view-by-orders' ? event.data.tracking_details.tracking_id : event.data.pickup_details.pickup_number;
+    } else {
+      pickup_number =
+        this.toggleValue.value === 'view-by-orders'
+          ? event.data.tracking_details.tracking_id
+          : event.data.pickup_details.pickup_number;
     }
     const pickup_datetime = event.data.pickup_details.pickup_datetime;
-    const params:any = {
-      activeTab: 'pending-pickup'
-    }
+    const params: any = {
+      activeTab: 'pending-pickup',
+    };
     if (this.toggleValue.value === 'view-by-orders') {
-      params['viewBy'] = 'view-by-orders'
+      params['viewBy'] = 'view-by-orders';
     }
-    const urlPathDetails = event?.data?.tracking_details?.category?.toLowerCase() === 'mps'
-    ? 'my-shipment/mps-details'
-    : 'my-shipment/order-details';
+    const urlPathDetails =
+      event?.data?.tracking_details?.category?.toLowerCase() === 'mps'
+        ? 'my-shipment/mps-details'
+        : 'my-shipment/order-details';
 
-  const urlDetails = `${urlPathDetails}/${event.data.id}?activeTab=pending-pickup`;
+    const urlDetails = `${urlPathDetails}/${event.data.id}?activeTab=pending-pickup`;
 
     switch (event.actionType) {
       case 'publish':
@@ -205,29 +251,43 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
         this.confirmCancel(pickup_number);
         return;
       case 'parcel-details':
-         if (event.data.tracking_details.category.toLowerCase() === 'mps') {
-          this.router.navigate(['my-shipment/mps-details', event.data.id],{ queryParams: params });
+        if (event.data.tracking_details.category.toLowerCase() === 'mps') {
+          this.router.navigate(['my-shipment/mps-details', event.data.id], {
+            queryParams: params,
+          });
         } else {
-          this.router.navigate(['my-shipment/parcel-details', event.data.pickup_details.pickup_number], { queryParams: params });
+          this.router.navigate(
+            [
+              'my-shipment/parcel-details',
+              event.data.pickup_details.pickup_number,
+            ],
+            { queryParams: params }
+          );
         }
         // this.router.navigate(['my-shipment/parcel-details', event.data.pickup_details.pickup_number]);
         return;
       case 'print':
-        this.onDownloadAsAndPrint('print', event.data.pickup_details.pickup_number, event.data.id);
+        this.onDownloadAsAndPrint(
+          'print',
+          event.data.pickup_details.pickup_number,
+          event.data.id
+        );
         return;
       case 'order-details':
         this._commonService.googleEventPush({
           event: 'track_order',
           event_category: 'SendParcel Pro - My Shipments - All',
           event_action: 'Track Order',
-          event_label: 'Track Order -' + event.data.tracking_details.tracking_id,
+          event_label:
+            'Track Order -' + event.data.tracking_details.tracking_id,
         });
 
         this._commonService.googleEventPush({
           event: 'view_order_details',
           event_category: 'SendParcel Pro - My Shipments - All',
           event_action: 'View Order Details',
-          event_label: 'Order Details - ' + event.data.tracking_details.tracking_id,
+          event_label:
+            'Order Details - ' + event.data.tracking_details.tracking_id,
           tracking_number: event.data.tracking_details.tracking_id,
           order_date: moment(event.data.created_date).format('DD MMM YYYY'),
           order_time: moment(event.data.created_date).format('h:mm:ss A'),
@@ -236,7 +296,8 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
           parcel_width: event.data.pickup_details.width || null,
           parcel_height: event.data.pickup_details.height || null,
           parcel_length: event.data.pickup_details.length || null,
-          volumetric_weight: event.data.pickup_details.volumetric_weight || null,
+          volumetric_weight:
+            event.data.pickup_details.volumetric_weight || null,
           item_description: event.data.pickup_details.item_description || null,
           sum_insured_amount: event.data.sum_insured || null,
           premium_amount: event.data.premium_amount || null,
@@ -247,41 +308,47 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
           insured_shipping_insurance: event.data.sum_insured ? 'Yes' : 'No',
           shipment_type: event.data.type,
         });
-        window.open(urlDetails)
+        window.open(urlDetails);
         return;
       case 'reschedule-pick-up':
         this.reschedulePickUp(event.data);
         return;
       case 'edit':
-
-          const eventDetails ={
-            "event": "edit_order",
-            "event_category": "Send Parcel Pro - My Shipments - Pending Pick Up",
-            "event_action": "Edit Order",
-            "event_label": event.data.tracking_details.tracking_id,
-          };
-          this._commonService.googleEventPush(eventDetails)
-          this._commonService.fetchList('shipments', `query?id=${event.data.id}`)
+        const eventDetails = {
+          event: 'edit_order',
+          event_category: 'Send Parcel Pro - My Shipments - Pending Pick Up',
+          event_action: 'Edit Order',
+          event_label: event.data.tracking_details.tracking_id,
+        };
+        this._commonService.googleEventPush(eventDetails);
+        this._commonService
+          .fetchList('shipments', `query?id=${event.data.id}`)
           .pipe(
-            map((response: { data: any; }) => response.data),
+            map((response: { data: any }) => response.data),
             takeUntil(this._onDestroy),
             finalize(() => this.cdr.detectChanges)
           )
           .subscribe({
-            next:(data)=>{
+            next: (data) => {
               this._commonService.setSelectedShipmentData(data);
-              if(data.sender_details.pickup_option_id) {
+              if (data.sender_details.pickup_option_id) {
                 const currentDomain = window.location.origin;
-                window.open(`${currentDomain}/order-edit/${event.data.id}/${data.sender_details.pickup_option_id}/pending-pickup`, '_blank');
-              }else{
+                window.open(
+                  `${currentDomain}/order-edit/${event.data.id}/${data.sender_details.pickup_option_id}/pending-pickup`,
+                  '_blank'
+                );
+              } else {
                 const currentDomain = window.location.origin;
-                window.open(`${currentDomain}/order-edit/${event.data.id}/pending-pickup`, '_blank');
+                window.open(
+                  `${currentDomain}/order-edit/${event.data.id}/pending-pickup`,
+                  '_blank'
+                );
               }
             },
-            error:()=>{
+            error: () => {
               this._commonService.openErrorDialog();
               this.cdr.detectChanges;
-            }
+            },
           });
         return;
       default:
@@ -308,57 +375,59 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
       });
   }
 
-  private errorMessage(err:any) {
+  private errorMessage(err: any) {
     this.dialog.open(DialogComponent, {
       data: {
         title: 'Error',
         descriptions: err.error?.error?.message,
         icon: 'warning',
         confirmEvent: false,
-        closeEvent: true
+        closeEvent: true,
       },
     });
   }
 
   private cancelV2(pickup_number: string) {
     this._commonService.isLoading(true);
-    this._commonService.submitDataV2('pickups', 'cancel', {
-      connote_number: pickup_number
-    })
-    .pipe(takeUntil(this._onDestroy))
-    .subscribe({
-      next: (data) =>{
-        this._commonService.isLoading(false);
-        this.cdr.detectChanges();
-        this.fetchShipments();
-      },
-      error: (err) => {
-        this._commonService.isLoading(false);
-        this.cdr.detectChanges();
-        this.errorMessage(err)
-      }
-    });
+    this._commonService
+      .submitDataV2('pickups', 'cancel', {
+        connote_number: pickup_number,
+      })
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe({
+        next: (data) => {
+          this._commonService.isLoading(false);
+          this.cdr.detectChanges();
+          this.fetchShipments();
+        },
+        error: (err) => {
+          this._commonService.isLoading(false);
+          this.cdr.detectChanges();
+          this.errorMessage(err);
+        },
+      });
   }
 
   private cancel(pickup_numbers: string[]) {
     this._commonService.isLoading(true);
-    this._commonService.submitData('pickups', 'cancel', {
-      pickup_numbers,
-      cancel_notes: 'This is a static message',
-    })
-    .pipe(takeUntil(this._onDestroy))
-    .subscribe({
-      next: (data) =>{
-        this._commonService.isLoading(false);
-        this.cdr.detectChanges();
-        this.fetchShipments();
-      },
-      error: (err) => {
-        this._commonService.isLoading(false);
-        this.cdr.detectChanges();
-        this.errorMessage(err)
-      }
-    });
+    this._commonService
+      .submitData('pickups', 'cancel', {
+        pickup_numbers,
+        cancel_notes: 'This is a static message',
+      })
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe({
+        next: (data) => {
+          this._commonService.isLoading(false);
+          this.cdr.detectChanges();
+          this.fetchShipments();
+        },
+        error: (err) => {
+          this._commonService.isLoading(false);
+          this.cdr.detectChanges();
+          this.errorMessage(err);
+        },
+      });
   }
 
   private confirmReschedule(pickup_number: string) {
@@ -369,16 +438,20 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
         takeUntil(this._onDestroy)
       )
       .subscribe({
-        next:() => {
+        next: () => {
           this._commonService.isLoading(false);
           this.cdr.detectChanges();
-          this._commonService.redirectTo('/my-shipment', { t: 'pending-pickup' });
+          this._commonService.redirectTo('/my-shipment', {
+            t: 'pending-pickup',
+          });
         },
         error: (err) => {
           this._commonService.isLoading(false);
           this.cdr.detectChanges();
-          this.errorMessage(err.error?.error?.data !== null ? err.error?.error?.data : err)
-        }
+          this.errorMessage(
+            err.error?.error?.data !== null ? err.error?.error?.data : err
+          );
+        },
       });
   }
 
@@ -421,14 +494,19 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
         // Reload table data
         this.fetchShipments();
         // Extract the pickup number safely
-        const pickupNumber = data.data.shipments[0]?.pickup_details?.pickup_number;
+        const pickupNumber =
+          data.data.shipments[0]?.pickup_details?.pickup_number;
 
         if (pickupNumber) {
           if (regexPattern.test(search.trim())) {
             params['keyword'] = search.trim();
-            this.router.navigate(['my-shipment/parcel-details', pickupNumber], { queryParams: params });
+            this.router.navigate(['my-shipment/parcel-details', pickupNumber], {
+              queryParams: params,
+            });
           } else {
-            this.router.navigate(['my-shipment/parcel-details', pickupNumber], { queryParams: params });
+            this.router.navigate(['my-shipment/parcel-details', pickupNumber], {
+              queryParams: params,
+            });
           }
         }
       } else {
@@ -439,16 +517,17 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
 
   onDateRangePickerFormChange(event: any) {
     if (event && event.start_date && event.end_date) {
-      this.start_date = moment(event.start_date).startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
-      this.end_date = moment(event.end_date).endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
+      this.start_date = event.start_date;
+      this.end_date = event.end_date;
       const eventDetails = {
         event: 'filter_section',
-        event_category:
-          'SendParcel Pro - My Shipments - Pending Shipments',
+        event_category: 'SendParcel Pro - My Shipments - Pending Shipments',
         event_action: 'Filter Section',
-        event_label: `${moment(event.start_date).format('YYYY-MM-DD')} - ${moment(event.end_date).format('YYYY-MM-DD')}`,
+        event_label: `${moment(event.start_date).format(
+          'YYYY-MM-DD'
+        )} - ${moment(event.end_date).format('YYYY-MM-DD')}`,
       };
-          this._commonService.googleEventPush(eventDetails);
+      this._commonService.googleEventPush(eventDetails);
     } else {
       this.start_date = '';
       this.end_date = '';
@@ -459,76 +538,91 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
   onSelectChange(pickupStatus: string) {
     const status =
       pickupStatus === 'pick up scheduled'
-      ? 'pickup-requested'
-      : pickupStatus === 'pick up rescheduled'
-      ? 'pickup-rescheduled'
-      : pickupStatus === 'partial picked up'
-      ? 'partial-picked-up'
-      : pickupStatus === 'pick up cancelled'
-      ? 'cancelled'
-      : pickupStatus === 'drop off requested'
-      ? 'pending-dropoff'
-      :'';
+        ? 'pickup-requested'
+        : pickupStatus === 'pick up rescheduled'
+        ? 'pickup-rescheduled'
+        : pickupStatus === 'partial picked up'
+        ? 'partial-picked-up'
+        : pickupStatus === 'pick up cancelled'
+        ? 'cancelled'
+        : pickupStatus === 'drop off requested'
+        ? 'pending-dropoff'
+        : '';
 
     this.pickup_status = status;
-    const orderStatusLabel = status?.trim() || "all";
+    const orderStatusLabel = status?.trim() || 'all';
     const eventDetails = {
       event: 'filter_section',
-      event_category:
-        'SendParcel Pro - My Shipments - Pending Shipments',
+      event_category: 'SendParcel Pro - My Shipments - Pending Shipments',
       event_action: 'Filter Section',
-      event_label: "Order Status – " + orderStatusLabel,
-   };
-                this._commonService.googleEventPush(eventDetails);
+      event_label: 'Order Status – ' + orderStatusLabel,
+    };
+    this._commonService.googleEventPush(eventDetails);
     this.fetchShipments();
   }
-
-  // private get buildParams(): IShipmentParamFilter {
-  //   return {
-  //     uitab: 'pending-pickup',
-  //     pickup_start_date : this.start_date,
-  //     pickup_end_date: this.end_date,
-  //     pickup_status: this.pickup_status,
-  //     keyword: this.keyword,
-  //     page: +this.currentPage,
-  //     limit: +this.pageSize,
-  //   };
-  // }
 
   private get buildParams(): IShipmentParamFilter {
     const isViewByOrders = this.toggleValue.value === 'view-by-orders';
 
     const baseParams: IShipmentParamFilter = {
       uitab: 'pending-pickup', // isViewByOrders ? 'live' : 'pending-pickup',
-      pickup_start_date: moment(this.start_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
-      pickup_end_date: moment(this.end_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      pickup_start_date: this.start_date,
+      pickup_end_date: this.end_date,
       pickup_status: this.pickup_status,
       keyword: this.keyword,
       page: +this.currentPage,
       limit: +this.pageSize,
-      shipment_status: this.shipment_status
+      shipment_status: this.shipment_status,
     };
     if (this.toggleValue.value) {
       baseParams.view_option = this.toggleValue.value;
     }
-    this.showOrderMessage = isViewByOrders ? 'order' : 'pick up'
+    this.showOrderMessage = isViewByOrders ? 'order' : 'pick up';
     this.activeTab = 'pending';
-    this.actions = isViewByOrders ? ['print', 'edit', 'reschedule-pick-up', 'close'] : ['print', 'reschedule-pick-up', 'publish', 'close'];
+    this.actions = isViewByOrders
+      ? ['print', 'edit', 'reschedule-pick-up', 'close']
+      : ['print', 'reschedule-pick-up', 'publish', 'close'];
     this.columns = isViewByOrders
-      ? ['select', 'trackingDetail', 'pickupNo', 'status','pickupTime', 'recipient', 'deliveryDetail', 'type', 'action']
-      : ['select', 'pickupNo', 'status', 'pickupTime', 'pickupAddress', 'quantity', 'weight', 'action'];
+      ? [
+          'select',
+          'trackingDetail',
+          'pickupNo',
+          'status',
+          'pickupTime',
+          'recipient',
+          'deliveryDetail',
+          'type',
+          'action',
+        ]
+      : [
+          'select',
+          'pickupNo',
+          'status',
+          'pickupTime',
+          'pickupAddress',
+          'quantity',
+          'weight',
+          'action',
+        ];
     return baseParams;
   }
 
-  onDownloadAsAndPrint(event: string, pickupNumber : string, shipmentId: number) {
+  onDownloadAsAndPrint(
+    event: string,
+    pickupNumber: string,
+    shipmentId: number
+  ) {
     const shipmentIds: string = pickupNumber;
 
-    const query = this.toggleValue.value === 'view-by-orders' ? 'connote/print' :`pickup/connote/print`;
+    const query =
+      this.toggleValue.value === 'view-by-orders'
+        ? 'connote/print'
+        : `pickup/connote/print`;
 
-    const shipmentPayload:any = {
+    const shipmentPayload: any = {
       ids: [shipmentId],
-      includeChildren: true
-    }
+      includeChildren: true,
+    };
 
     if (this.toggleValue.value !== 'view-by-orders') {
       delete shipmentPayload.ids;
@@ -547,16 +641,14 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
           this._commonService.isLoading(false);
           this.cdr.detectChanges();
           window.open(
-            `${environment.sppUatUrl.replace('/api/', '')}${
-              response.data.link
-            }`
-          )
+            `${environment.sppUatUrl.replace('/api/', '')}${response.data.link}`
+          );
         }),
-        catchError((err)=> {
+        catchError((err) => {
           this._commonService.openErrorDialog();
           return err;
         }),
-        finalize(()=>{
+        finalize(() => {
           this.cdr.detectChanges();
           this._commonService.isLoading(false);
         })
@@ -600,10 +692,12 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
       );
     }
 
-
     this.isSelectedShipmentsNoTrackingId = this.selectedMultipleData.every(
-      (shipment: IDataShipment) => this.toggleValue.value === 'view-by-orders' ? shipment.tracking_details.tracking_id === '' : shipment.pickup_details.pickup_number === ''
-    )
+      (shipment: IDataShipment) =>
+        this.toggleValue.value === 'view-by-orders'
+          ? shipment.tracking_details.tracking_id === ''
+          : shipment.pickup_details.pickup_number === ''
+    );
   }
 
   onActionButtonIcon(event: string, isMultiple = false) {
@@ -624,10 +718,12 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
         : '';
 
     /* actions */
-    if (event === 'connote' ||
+    if (
+      event === 'connote' ||
       event === 'tallysheet' ||
       event === 'commercialinvoice' ||
-      event === 'print') {
+      event === 'print'
+    ) {
       this.isSelectAllOrders
         ? this.calculateBatchProcessing(event)
         : this.onPrintAndDownloadShipments(event, isMultiple);
@@ -670,7 +766,7 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
 
     this.currentBatchPageRequest = 1;
     const query = `list?uitab=request-pickup&page=${this.currentBatchPageRequest}&limit=${this.totalShipmentRecords}`;
-    this.fetchBatchShipments(event, query, isMultiple)
+    this.fetchBatchShipments(event, query, isMultiple);
   }
 
   onPrintAndDownloadShipments(event: string, isMultiple = false) {
@@ -684,30 +780,48 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
       /* button print lable, download connote & tallysheet */
       /* just grab all shipment ids without filtering */
       if (event === 'connote' || event === 'tallysheet') {
-        const shipmentwithTrackingId =
-          this.selectedMultipleData.filter((shipment: IDataShipment) => this.toggleValue.value === 'view-by-orders' ? +shipment.id : shipment.pickup_details.pickup_number !== '');
+        const shipmentwithTrackingId = this.selectedMultipleData.filter(
+          (shipment: IDataShipment) =>
+            this.toggleValue.value === 'view-by-orders'
+              ? +shipment.id
+              : shipment.pickup_details.pickup_number !== ''
+        );
         if (shipmentwithTrackingId.length) {
           shipmentIds = shipmentwithTrackingId.map(
             (shipment: IDataShipment) => shipment.id
           );
         }
-
       } else if (event === 'print') {
-        const shipmentWithTrackingId =
-          this.selectedMultipleData.filter((shipment: IDataShipment) => this.toggleValue.value === 'view-by-orders' ? +shipment.id : shipment.pickup_details.pickup_number !== '');
+        const shipmentWithTrackingId = this.selectedMultipleData.filter(
+          (shipment: IDataShipment) =>
+            this.toggleValue.value === 'view-by-orders'
+              ? +shipment.id
+              : shipment.pickup_details.pickup_number !== ''
+        );
         if (shipmentWithTrackingId.length) {
-          shipmentIds = shipmentWithTrackingId.map((shipment: IDataShipment) => this.toggleValue.value === 'view-by-orders' ? +shipment.id : shipment.pickup_details.pickup_number);
+          shipmentIds = shipmentWithTrackingId.map((shipment: IDataShipment) =>
+            this.toggleValue.value === 'view-by-orders'
+              ? +shipment.id
+              : shipment.pickup_details.pickup_number
+          );
         }
       } else if (event === 'commercialinvoice') {
         /* button download commercial invoice; before download */
         /* need to filter the shipment that have type INTERNATIONAL only */
-        const shipmentwithTrackingId =
-          this.selectedMultipleData.filter((shipment: IDataShipment) => this.toggleValue.value === 'view-by-orders' ? +shipment.id : shipment.pickup_details.pickup_number !== '');
+        const shipmentwithTrackingId = this.selectedMultipleData.filter(
+          (shipment: IDataShipment) =>
+            this.toggleValue.value === 'view-by-orders'
+              ? +shipment.id
+              : shipment.pickup_details.pickup_number !== ''
+        );
         if (shipmentwithTrackingId.length) {
-          const shipmentsInternational =
-            this.selectedMultipleData.filter((shipment: IDataShipment) => shipment.type === 'INTERNATIONAL');
+          const shipmentsInternational = this.selectedMultipleData.filter(
+            (shipment: IDataShipment) => shipment.type === 'INTERNATIONAL'
+          );
           if (shipmentsInternational.length) {
-            shipmentIds = shipmentsInternational.map((shipment: IDataShipment) => +shipment.id);
+            shipmentIds = shipmentsInternational.map(
+              (shipment: IDataShipment) => +shipment.id
+            );
           }
         }
       }
@@ -719,15 +833,17 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
         : event === 'tallysheet'
         ? `${event}/download`
         : event === 'print'
-        ? (this.toggleValue.value === 'view-by-orders' ? 'connote/print' :`pickup/connote/print`)
+        ? this.toggleValue.value === 'view-by-orders'
+          ? 'connote/print'
+          : `pickup/connote/print`
         : event === 'connote'
         ? 'thermal/prn'
         : '';
 
-    const shipmentPayload:any = {
+    const shipmentPayload: any = {
       ids: shipmentIds,
-      includeChildren: true
-    }
+      includeChildren: true,
+    };
     if (event === 'print' && this.toggleValue.value !== 'view-by-orders') {
       delete shipmentPayload.ids;
       shipmentPayload.pickup_ids = shipmentIds;
@@ -740,90 +856,108 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
           this._commonService.isLoading(false);
           this.cdr.detectChanges();
           window.open(
-            `${environment.sppUatUrl.replace('/api/', '')}${
-              response.data.link
-            }`
-          )
+            `${environment.sppUatUrl.replace('/api/', '')}${response.data.link}`
+          );
           if (this.isSelectAllOrders) {
-            this.currentBatchPageRequest +=1;
+            this.currentBatchPageRequest += 1;
             this.totalBatchRequest = this.totalBatchRequest - 1;
             const query = `list?uitab=request-pickup&page=${this.currentBatchPageRequest}&limit=100`;
-            if (this.totalBatchRequest >= 1) this.fetchBatchShipments(event, query);
+            if (this.totalBatchRequest >= 1)
+              this.fetchBatchShipments(event, query);
             else this.currentBatchPageRequest = 0;
           }
         }),
         takeUntil(this._onDestroy)
       )
       .subscribe({
-        next:()=>{
+        next: () => {
           this._commonService.isLoading(false);
           this.cdr.detectChanges();
         },
-        error:()=>{
+        error: () => {
           this.cdr.detectChanges();
           this._commonService.isLoading(false);
           this._commonService.openErrorDialog();
         },
-        complete:()=> {
+        complete: () => {
           this.cdr.detectChanges();
           this._commonService.isLoading(false);
-        }
+        },
       });
   }
 
   fetchBatchShipments(event: string, query: string, isMultiple?: any) {
     this.batchProcessingIds = [];
-    this._commonService.fetchList('shipments', query)
+    this._commonService
+      .fetchList('shipments', query)
       .pipe(
         takeUntil(this._onDestroy),
         tap((response: IResponse<{ shipments: IDataShipment[] }>) => {
-          if (event === 'gen-connote' || event === 'gen-connote-v2' ) {
-            const shipmentNoTrackingId =
-              response.data.shipments.filter((shipment: IDataShipment) => shipment.pickup_details.pickup_number === '');
+          if (event === 'gen-connote' || event === 'gen-connote-v2') {
+            const shipmentNoTrackingId = response.data.shipments.filter(
+              (shipment: IDataShipment) =>
+                shipment.pickup_details.pickup_number === ''
+            );
             if (shipmentNoTrackingId.length) {
-              this.batchProcessingIds = shipmentNoTrackingId.map((shipment: IDataShipment) => +shipment.id);
+              this.batchProcessingIds = shipmentNoTrackingId.map(
+                (shipment: IDataShipment) => +shipment.id
+              );
             }
           } else if (event === 'requestPickup') {
             this._commonService.isLoading(true);
-            const shipmentwithTrackingId =
-              response.data.shipments.filter((shipment: IDataShipment) => shipment.pickup_details.pickup_number !== '');
+            const shipmentwithTrackingId = response.data.shipments.filter(
+              (shipment: IDataShipment) =>
+                shipment.pickup_details.pickup_number !== ''
+            );
             if (shipmentwithTrackingId.length) {
-              this.batchProcessingIds = shipmentwithTrackingId.map((shipment: IDataShipment) => shipment.tracking_details.tracking_id);
+              this.batchProcessingIds = shipmentwithTrackingId.map(
+                (shipment: IDataShipment) =>
+                  shipment.tracking_details.tracking_id
+              );
             }
           } else if (event === 'print') {
-            this.batchProcessingIds = response.data.shipments.map((shipment: IDataShipment) => +shipment.id);
-          } else if (
-            event === 'connote' ||
-            event === 'tallysheet'
-          ) {
-            const shipmentwithTrackingId =
-              response.data.shipments.filter((shipment: IDataShipment) => shipment.pickup_details.pickup_number !== '');
+            this.batchProcessingIds = response.data.shipments.map(
+              (shipment: IDataShipment) => +shipment.id
+            );
+          } else if (event === 'connote' || event === 'tallysheet') {
+            const shipmentwithTrackingId = response.data.shipments.filter(
+              (shipment: IDataShipment) =>
+                shipment.pickup_details.pickup_number !== ''
+            );
 
             if (shipmentwithTrackingId.length) {
-              this.batchProcessingIds = shipmentwithTrackingId.map((shipment: IDataShipment) => +shipment.id);
+              this.batchProcessingIds = shipmentwithTrackingId.map(
+                (shipment: IDataShipment) => +shipment.id
+              );
             }
 
             if (shipmentwithTrackingId.length > 100 && event === 'connote') {
               this.dialog.open(DialogComponent, {
                 data: {
                   title: 'Uh-oh',
-                  descriptions: 'You can download up to 100 consignment notes at one time. Please unselect the remaining consignment notes to proceed with the download action.',
+                  descriptions:
+                    'You can download up to 100 consignment notes at one time. Please unselect the remaining consignment notes to proceed with the download action.',
                   icon: 'warning',
                   confirmEvent: false,
-                  closeEvent: true
+                  closeEvent: true,
                 },
               });
-              return
+              return;
             }
           } else if (event === 'commercialinvoice') {
-            const shipmentwithTrackingId =
-              response.data.shipments.filter((shipment: IDataShipment) => shipment.pickup_details.pickup_number !== '');
+            const shipmentwithTrackingId = response.data.shipments.filter(
+              (shipment: IDataShipment) =>
+                shipment.pickup_details.pickup_number !== ''
+            );
 
             if (shipmentwithTrackingId.length) {
-              const shipmentsInternational =
-                response.data.shipments.filter((shipment: IDataShipment) => shipment.type === 'INTERNATIONAL');
+              const shipmentsInternational = response.data.shipments.filter(
+                (shipment: IDataShipment) => shipment.type === 'INTERNATIONAL'
+              );
               if (shipmentsInternational.length) {
-                this.batchProcessingIds = shipmentsInternational.map((shipment: IDataShipment) => +shipment.id);
+                this.batchProcessingIds = shipmentsInternational.map(
+                  (shipment: IDataShipment) => +shipment.id
+                );
               }
             }
           }
@@ -831,42 +965,45 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe({
-        next:(res)=> { this._commonService.isLoading(false);this.cdr.detectChanges(); },
-        error:(err)=>{
+        next: () => {
+          this._commonService.isLoading(false);
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
           this.cdr.detectChanges();
           this._commonService.isLoading(false);
           // this._commonService.openErrorDialog();
           this._commonService.openCustomErrorDialog(err);
         },
-        complete:()=> {
+        complete: () => {
           this.cdr.detectChanges();
           this._commonService.isLoading(false);
-        }
+        },
       });
   }
 
-/**
- * Method Name: reschedulePickUp
- *
- * Input Parameters:
- *   - data (IDataShipment): Contains shipment details including pickup information.
- *
- * Output Parameters:
- *   - void: This method doesn't return any value, but it opens a dialog and performs actions based on user input.
- *
- * Purpose:
- *   - This method triggers the rescheduling of a shipment pickup by opening a dialog for the user to select a new date.
- *
- * Author:
- *   - [Saepul Latif]
- *
- * Description:
- *   - The method opens a dialog where the user is prompted with a reschedule pickup message. It uses language-specific content for the title and description.
- *   - The dialog includes an option for the user to confirm the event (`confirmEvent`).
- *   - When the user confirms, the subscription listens for changes to the date (via `changeDate`), and once the new date is selected, the `onReschedulePickUp` method is called with the selected date and the pickup number.
- *   - The `takeUntil(this._onDestroy)` operator is used to clean up the subscriptions to avoid memory leaks when the component is destroyed.
- */
-  private reschedulePickUp(data: IDataShipment){
+  /**
+   * Method Name: reschedulePickUp
+   *
+   * Input Parameters:
+   *   - data (IDataShipment): Contains shipment details including pickup information.
+   *
+   * Output Parameters:
+   *   - void: This method doesn't return any value, but it opens a dialog and performs actions based on user input.
+   *
+   * Purpose:
+   *   - This method triggers the rescheduling of a shipment pickup by opening a dialog for the user to select a new date.
+   *
+   * Author:
+   *   - [Saepul Latif]
+   *
+   * Description:
+   *   - The method opens a dialog where the user is prompted with a reschedule pickup message. It uses language-specific content for the title and description.
+   *   - The dialog includes an option for the user to confirm the event (`confirmEvent`).
+   *   - When the user confirms, the subscription listens for changes to the date (via `changeDate`), and once the new date is selected, the `onReschedulePickUp` method is called with the selected date and the pickup number.
+   *   - The `takeUntil(this._onDestroy)` operator is used to clean up the subscriptions to avoid memory leaks when the component is destroyed.
+   */
+  private reschedulePickUp(data: IDataShipment) {
     const dialogRef = this.dialog.open(DialogComponent, {
       data: {
         title: this.languageData.reschedule_pickup_title,
@@ -879,29 +1016,30 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
       },
     });
 
-
-      dialogRef.componentInstance
-      .confirmEvent
-      .pipe(
-        takeUntil(this._onDestroy)
-      ).subscribe((result) => {
+    dialogRef.componentInstance.confirmEvent
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe((result) => {
         if (result) {
           dialogRef.componentInstance.changeDate
-          .pipe(
-            takeUntil(this._onDestroy)
-          ).subscribe((res) => {
-            this.onReschedulePickUp(data.pickup_details.pickup_number, res, dialogRef);
-                 // Trigger Google Analytics event for date selection
-        const eventDetails = {
-          event: "pick_up_edit_date",
-          event_category: "SendParcel Pro - My Shipments - Pending Shipments",
-          event_action: "Edit Pick Up Date",
-          event_label: "Pick Up Date",
-        };
-        // Push event details to Google Analytics
-        this._commonService.googleEventPush(eventDetails);
-              })
-            }
+            .pipe(takeUntil(this._onDestroy))
+            .subscribe((res) => {
+              this.onReschedulePickUp(
+                data.pickup_details.pickup_number,
+                res,
+                dialogRef
+              );
+              // Trigger Google Analytics event for date selection
+              const eventDetails = {
+                event: 'pick_up_edit_date',
+                event_category:
+                  'SendParcel Pro - My Shipments - Pending Shipments',
+                event_action: 'Edit Pick Up Date',
+                event_label: 'Pick Up Date',
+              };
+              // Push event details to Google Analytics
+              this._commonService.googleEventPush(eventDetails);
+            });
+        }
       });
   }
 
@@ -909,49 +1047,44 @@ export class PendingPickupComponent implements OnInit, OnDestroy {
     pickupNumber: string,
     pickupDateTime: string,
     dialogRef: MatDialogRef<DialogComponent, any>
-  ){
-
-    this._commonService.submitData('pickups','reschedule',
-      { pickup_number: pickupNumber,
-        pickup_datetime: pickupDateTime
-      }
-    ).pipe((
-      takeUntil(this._onDestroy)
-    ))
-    .subscribe({
-      next: (res) => {
-        this.fetchShipments();
-        dialogRef.close();
-        this.openSnackBar(
-          res.message,
-          'close'
-        );
-        // Trigger Google Analytics event on successful date chaneg
-        const eventDetails = {
-          event: "pick_up_schedule_request_success",
-          event_category: "SendParcel Pro - My Shipments - Pending Shipments",
-          event_action: "Pick Up Schedule Request Success",
-          event_label: "Success",
-        };
-        // Push event details to Google Analytics
-        this._commonService.googleEventPush(eventDetails);
-      },
-      error: (err) => {
-        dialogRef.close();
-        this.openSnackBar(
-          err.error.error.message || 'Internal Server Error',
-          'close'
-        );
-      }
-    })
-        // Trigger Google Analytics event for date selection
-        const eventDetails = {
-          event: "pick_up_submit_schedule_request",
-          event_category: "SendParcel Pro - My Shipments - Pending Shipments",
-          event_action: "Submit Schedule Request",
-          event_label: "Schedule Request –" + pickupDateTime,
-        };
-        // Push event details to Google Analytics
-        this._commonService.googleEventPush(eventDetails);
+  ) {
+    this._commonService
+      .submitData('pickups', 'reschedule', {
+        pickup_number: pickupNumber,
+        pickup_datetime: pickupDateTime,
+      })
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe({
+        next: (res) => {
+          this.fetchShipments();
+          dialogRef.close();
+          this.openSnackBar(res.message, 'close');
+          // Trigger Google Analytics event on successful date chaneg
+          const eventDetails = {
+            event: 'pick_up_schedule_request_success',
+            event_category: 'SendParcel Pro - My Shipments - Pending Shipments',
+            event_action: 'Pick Up Schedule Request Success',
+            event_label: 'Success',
+          };
+          // Push event details to Google Analytics
+          this._commonService.googleEventPush(eventDetails);
+        },
+        error: (err) => {
+          dialogRef.close();
+          this.openSnackBar(
+            err.error.error.message || 'Internal Server Error',
+            'close'
+          );
+        },
+      });
+    // Trigger Google Analytics event for date selection
+    const eventDetails = {
+      event: 'pick_up_submit_schedule_request',
+      event_category: 'SendParcel Pro - My Shipments - Pending Shipments',
+      event_action: 'Submit Schedule Request',
+      event_label: 'Schedule Request –' + pickupDateTime,
+    };
+    // Push event details to Google Analytics
+    this._commonService.googleEventPush(eventDetails);
   }
 }

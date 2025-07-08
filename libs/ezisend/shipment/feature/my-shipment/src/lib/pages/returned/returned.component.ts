@@ -1,4 +1,8 @@
-import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IResponse } from '@pos/ezisend/shared/data-access/models';
@@ -37,7 +41,7 @@ export class ReturnedComponent implements OnInit {
     'type',
     'action',
   ];
-  actions:any =  ['my_location', 'print'];
+  actions: any = ['my_location', 'print'];
   shipment$: Observable<IResponse<IShipment>> | undefined;
 
   // Search Field
@@ -51,9 +55,14 @@ export class ReturnedComponent implements OnInit {
   });
   start_date?: string;
   end_date?: string;
-  languageData: any = (localStorage.getItem("language") && localStorage.getItem("language") === 'en') ? en.data.myShipments.returned :
-  (localStorage.getItem("language") && localStorage.getItem("language") === 'my') ? bm.data.myShipments.returned :
-    en.data.myShipments.returned;
+  languageData: any =
+    localStorage.getItem('language') &&
+    localStorage.getItem('language') === 'en'
+      ? en.data.myShipments.returned
+      : localStorage.getItem('language') &&
+        localStorage.getItem('language') === 'my'
+      ? bm.data.myShipments.returned
+      : en.data.myShipments.returned;
   // Select Dropdown
   dropdownOptions = [
     { value: '', viewValue: this.languageData.all },
@@ -66,7 +75,7 @@ export class ReturnedComponent implements OnInit {
   selectedMultipleData: IDataShipment[] = [];
   selectedSingleData!: IDataShipment;
   isShowCommercialinvoiceButton = false;
-  isPlugins  = false;
+  isPlugins = false;
   totalShipmentNoTrackingId = 0;
   totalShipmentNotRequestPickup = 0;
   isSelectedShipmentsNoTrackingId = false;
@@ -88,28 +97,34 @@ export class ReturnedComponent implements OnInit {
     private translate: TranslationService
   ) {
     this.translate.buttonClick$.subscribe(() => {
-      if (localStorage.getItem("language") == "en") {
-        this.languageData = en.data.myShipments.returned
-      }
-      else if (localStorage.getItem("language") == "my") {
-        this.languageData = bm.data.myShipments.returned
+      if (localStorage.getItem('language') == 'en') {
+        this.languageData = en.data.myShipments.returned;
+      } else if (localStorage.getItem('language') == 'my') {
+        this.languageData = bm.data.myShipments.returned;
       }
       this.dropdownOptions[0].viewValue = this.languageData.all;
       this.dropdownOptions[2].viewValue = this.languageData.non_cod;
-    })
+    });
   }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       this.current_tab = params['t'];
-    })
+    });
     // For API
-     this.end_date = moment().endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.start_date = moment().subtract(30, 'days').startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.end_date = moment()
+      .endOf('day')
+      .utc()
+      .format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.start_date = moment()
+      .subtract(1, 'month')
+      .startOf('day')
+      .utc()
+      .format('YYYY-MM-DDTHH:mm:ss[Z]');
 
     // For Date Picker UI (local time)
-    const localEndDate = moment().endOf('day').toDate();
-    const localStartDate = moment().subtract(30, 'days').startOf('day').toDate();
+    const localEndDate = moment().endOf('day');
+    const localStartDate = moment().subtract(1, 'month').startOf('day');
 
     this.dateRangePickerForm = this.fb.group({
       start_date: [localStartDate],
@@ -120,7 +135,7 @@ export class ReturnedComponent implements OnInit {
       event_category: 'SendParcel Pro - My Shipments - Return Shipments',
       event_action: 'Tab To Section',
       event_label: 'Return Shipments',
-    }
+    };
     this._commonService.googleEventPush(eventDetails);
     this.fetchShipments();
   }
@@ -131,43 +146,45 @@ export class ReturnedComponent implements OnInit {
     )}`;
     this.shipment$ = this._commonService.fetchList('shipments', query);
     this.shipment$.subscribe({
-      next:(res)=>{
-        this.totalTrackingDetails=res.data.total;
-        if(res){
-          this.isLoading= false;
+      next: (res) => {
+        this.totalTrackingDetails = res.data.total;
+        if (res) {
+          this.isLoading = false;
         }
         this.cdr.detectChanges();
-      }
-    })
+      },
+    });
   }
 
   onActionEvent(event: { data: IDataShipment; actionType: string }) {
     this.selectedSingleData = event.data;
-    const urlPathDetails = event?.data?.tracking_details?.category?.toLowerCase() === 'mps'
-    ? 'my-shipment/mps-details'
-    : 'my-shipment/order-details';
+    const urlPathDetails =
+      event?.data?.tracking_details?.category?.toLowerCase() === 'mps'
+        ? 'my-shipment/mps-details'
+        : 'my-shipment/order-details';
 
-  const urlDetails = `${urlPathDetails}/${event.data.id}?activeTab=${this.current_tab}`;
+    const urlDetails = `${urlPathDetails}/${event.data.id}?activeTab=${this.current_tab}`;
     switch (event.actionType) {
       case 'my_location':
         this._commonService.googleEventPush({
           event: 'track_order',
           event_category: 'SendParcel Pro - My Shipments - Return Shipments',
           event_action: 'Track Order',
-          event_label: 'Track Order -' + event.data.tracking_details.tracking_id,
+          event_label:
+            'Track Order -' + event.data.tracking_details.tracking_id,
         });
-       window.open(urlDetails);
+        window.open(urlDetails);
         return;
       case 'print':
         this.onActionButtonIcon('print', false);
-      return;
+        return;
       case 'order-details':
-
         this._commonService.googleEventPush({
-          event: "view_order_details",
-          event_category: "Send Parcel Pro - My Shipments - Return Shipments",
-          event_action: "View Order Details",
-          event_label: "Order Details - " + event.data.tracking_details.tracking_id,
+          event: 'view_order_details',
+          event_category: 'Send Parcel Pro - My Shipments - Return Shipments',
+          event_action: 'View Order Details',
+          event_label:
+            'Order Details - ' + event.data.tracking_details.tracking_id,
           // tracking_number: event.data.tracking_details.tracking_id,
           order_date: moment(event.data.created_date).format('DD MMM YYYY'),
           order_time: moment(event.data.created_date).format('h:mm:ss A'),
@@ -176,7 +193,8 @@ export class ReturnedComponent implements OnInit {
           parcel_width: event.data.pickup_details.width || null,
           parcel_height: event.data.pickup_details.height || null,
           parcel_length: event.data.pickup_details.length || null,
-          volumetric_weight: event.data.pickup_details.volumetric_weight || null,
+          volumetric_weight:
+            event.data.pickup_details.volumetric_weight || null,
           item_description: event.data.pickup_details.item_description || null,
           sum_insured_amount: event.data.sum_insured || null,
           premium_amount: event.data.premium_amount || null,
@@ -211,8 +229,7 @@ export class ReturnedComponent implements OnInit {
     this.keyword = search.trim();
     this._commonService.googleEventPush({
       event: 'search_order',
-      event_category:
-        'SendParcel Pro - My Shipments - Return Shipments',
+      event_category: 'SendParcel Pro - My Shipments - Return Shipments',
       event_action: 'Search Order',
       event_label: this.keyword,
     });
@@ -225,12 +242,11 @@ export class ReturnedComponent implements OnInit {
       this.end_date = event.end_date;
       const eventDetails = {
         event: 'filter_section',
-        event_category:
-          'SendParcel Pro - My Shipments - Return Shipments',
+        event_category: 'SendParcel Pro - My Shipments - Return Shipments',
         event_action: 'Filter Section',
         event_label: this.start_date + ' - ' + this.end_date,
       };
-          this._commonService.googleEventPush(eventDetails);
+      this._commonService.googleEventPush(eventDetails);
     } else {
       this.start_date = '';
       this.end_date = '';
@@ -238,18 +254,17 @@ export class ReturnedComponent implements OnInit {
     this.fetchShipments();
   }
 
-  onSelectChange(orderType: string, uitab?:string) {
-    if(uitab === 'return'){
+  onSelectChange(orderType: string, uitab?: string) {
+    if (uitab === 'return') {
       this.cod_type = orderType;
-      const orderTypeLabel = orderType?.trim() || "all";
+      const orderTypeLabel = orderType?.trim() || 'all';
       const eventDetails = {
         event: 'filter_section',
-        event_category:
-          'SendParcel Pro - My Shipments - Return Shipments',
+        event_category: 'SendParcel Pro - My Shipments - Return Shipments',
         event_action: 'Filter Section',
-        event_label:  "Order Type – " + orderTypeLabel,
+        event_label: 'Order Type – ' + orderTypeLabel,
       };
-               this._commonService.googleEventPush(eventDetails);
+      this._commonService.googleEventPush(eventDetails);
     } else {
       this.order_type = orderType;
     }
@@ -258,13 +273,14 @@ export class ReturnedComponent implements OnInit {
 
   onActionButtonIcon(event: string, isMultiple = false) {
     let shipmentIds: number[] = [];
-    const query = event === 'tallysheet'
-      ? `${event}/download`
-      : ''
-      ? event === 'print'
-      : 'Print Label';
+    const query =
+      event === 'tallysheet'
+        ? `${event}/download`
+        : ''
+        ? event === 'print'
+        : 'Print Label';
 
-      if (
+    if (
       event === 'connote' ||
       event === 'commercialinvoice' ||
       event === 'print'
@@ -276,8 +292,9 @@ export class ReturnedComponent implements OnInit {
       return;
     }
 
-    const shipmentwithTrackingId =
-      this.selectedMultipleData.filter((shipment: IDataShipment) => shipment.tracking_details.tracking_id !== '');
+    const shipmentwithTrackingId = this.selectedMultipleData.filter(
+      (shipment: IDataShipment) => shipment.tracking_details.tracking_id !== ''
+    );
 
     if (this.isSelectAllOrders) {
       shipmentIds = this.batchProcessingIds;
@@ -293,32 +310,32 @@ export class ReturnedComponent implements OnInit {
       shipmentIds.push(this.selectedSingleData.id);
     }
 
-    this._commonService.submitData('shipments', query,
-      {
+    this._commonService
+      .submitData('shipments', query, {
         ids: shipmentIds,
-      }
-    ).pipe(
-      takeUntil(this._onDestroy),
-      tap((response: IResponse<{ link: string }>) => {
-        window.open(
-          `${environment.sppUatUrl.replace('/api/', '')}${
-            response.data.link
-          }`
-        )
-      }),
-      catchError(() => {
-        this._commonService.openErrorDialog();
-        return EMPTY;
       })
-    ).subscribe();
+      .pipe(
+        takeUntil(this._onDestroy),
+        tap((response: IResponse<{ link: string }>) => {
+          window.open(
+            `${environment.sppUatUrl.replace('/api/', '')}${response.data.link}`
+          );
+        }),
+        catchError(() => {
+          this._commonService.openErrorDialog();
+          return EMPTY;
+        })
+      )
+      .subscribe();
   }
 
   onSelectRow(data: IDataShipment[]) {
     this.selectedMultipleData = data;
 
     this.isPlugins = data.some(
-      (shipment : IDataShipment) =>  Object.keys(shipment.channel_order).length !== 0
-    )
+      (shipment: IDataShipment) =>
+        Object.keys(shipment.channel_order).length !== 0
+    );
 
     this.isShowCommercialinvoiceButton = this.selectedMultipleData.some(
       (order: IDataShipment) => order.type === 'INTERNATIONAL'
@@ -340,8 +357,8 @@ export class ReturnedComponent implements OnInit {
   private get buildParams(): IShipmentParamFilter {
     return {
       uitab: 'returned',
-      start_date: moment(this.start_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
-      end_date: moment(this.end_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      start_date: this.start_date,
+      end_date: this.end_date,
       order_type: this.order_type,
       cod_type: this.cod_type,
       keyword: this.keyword,
@@ -462,16 +479,13 @@ export class ReturnedComponent implements OnInit {
     this._commonService
       .submitData('shipments', query, {
         ids: shipmentIds,
-        includeChildren: true
+        includeChildren: true,
       })
       .pipe(
         tap((response: IResponse<{ link: string }>) => {
           this._commonService.isLoading(false);
           window.open(
-            `${environment.sppUatUrl.replace(
-              '/api/',
-              ''
-            )}${response.data.link}`
+            `${environment.sppUatUrl.replace('/api/', '')}${response.data.link}`
           );
           if (this.isSelectAllOrders) {
             this.currentBatchPageRequest += 1;

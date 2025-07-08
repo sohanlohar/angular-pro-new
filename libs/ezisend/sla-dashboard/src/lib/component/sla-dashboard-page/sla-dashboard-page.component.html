@@ -16,15 +16,24 @@
         <label>Last Refreshed: {{ updatedLastRefreshed }}</label>
       </div>
       <div class="button-download">
-        <button mat-flat-button color="primary" [matMenuTriggerFor]="headerMenu">
+        <button
+          mat-flat-button
+          color="primary"
+          [matMenuTriggerFor]="headerMenu"
+          *ngIf="!isStatusEmpty || !isEmptyType || !isEmptyDex || shipmentData.length > 0"
+        >
           Download As
           <mat-icon class="material-icon-outlined" mat-icon-button>
             arrow_drop_down
           </mat-icon>
         </button>
         <mat-menu #headerMenu="matMenu">
-          <button mat-menu-item (click)="downloadAllFileSequential()">Report (.xlsx)</button>
-          <button mat-menu-item (click)="downloadAllAsPDF()">Report (.pdf)</button>
+          <button mat-menu-item (click)="downloadFile('sla_all')">
+            Report (.xlsx)
+          </button>
+          <button mat-menu-item (click)="downloadAllAsPDF()">
+            Report (.pdf)
+          </button>
         </mat-menu>
       </div>
     </div>
@@ -34,15 +43,24 @@
     <div class="container">
       <div class="title-container">
         <span>SLA Status</span>
-        <button mat-flat-button color="primary" [matMenuTriggerFor]="statusMenu">
+        <button
+          mat-flat-button
+          color="primary"
+          [matMenuTriggerFor]="statusMenu"
+          *ngIf="!isStatusEmpty"
+        >
           Download As
           <mat-icon class="material-icon-outlined" mat-icon-button>
             arrow_drop_down
           </mat-icon>
         </button>
         <mat-menu #statusMenu="matMenu">
-          <button mat-menu-item (click)="downloadFile('sla_status')">Report (.xlsx)</button>
-          <button mat-menu-item (click)="downloadChartAsPDF('status')">Report (.pdf)</button>
+          <button mat-menu-item (click)="downloadFile('sla_status')">
+            Report (.xlsx)
+          </button>
+          <button mat-menu-item (click)="downloadChartAsPDF('status')">
+            Report (.pdf)
+          </button>
         </mat-menu>
       </div>
       <div class="chart-card" #statusChart>
@@ -53,28 +71,36 @@
           [options]="statusPieOptions"
           [legend]="true"
           [chartType]="'doughnut'"
-          *ngIf="statusPieData.length > 0"
+          [plugins]="statusPiePlugins"
+          *ngIf="!isStatusEmpty"
         >
         </canvas>
 
-        <div class="no-data" *ngIf="statusPieData.length === 0">
-          No data available
-        </div>
+        <div class="no-data" *ngIf="isStatusEmpty">No data to display</div>
       </div>
     </div>
 
     <div class="container">
       <div class="title-container">
-        <span>SLA Type (D+1 to D+5)</span>
-        <button mat-flat-button color="primary" [matMenuTriggerFor]="categoryMenu">
+        <span>SLA Type</span>
+        <button
+          mat-flat-button
+          color="primary"
+          [matMenuTriggerFor]="categoryMenu"
+          *ngIf="!isEmptyType"
+        >
           Download As
           <mat-icon class="material-icon-outlined" mat-icon-button>
             arrow_drop_down
           </mat-icon>
         </button>
         <mat-menu #categoryMenu="matMenu">
-          <button mat-menu-item (click)="downloadFile('sla_category')">Report (.xlsx)</button>
-          <button mat-menu-item (click)="downloadChartAsPDF('category')">Report (.pdf)</button>
+          <button mat-menu-item (click)="downloadFile('sla_category')">
+            Report (.xlsx)
+          </button>
+          <button mat-menu-item (click)="downloadChartAsPDF('category')">
+            Report (.pdf)
+          </button>
         </mat-menu>
       </div>
       <div class="chart-card" #categoryChart>
@@ -85,13 +111,12 @@
           [options]="catBarOptions"
           [legend]="catBarLegend"
           [chartType]="catBarType"
-          *ngIf="catBarData.length > 0"
+          [plugins]="catBarPlugins"
+          *ngIf="!isEmptyType"
         >
         </canvas>
 
-        <div class="no-data" *ngIf="catBarData.length === 0">
-          No data available
-        </div>
+        <div class="no-data" *ngIf="isEmptyType">No data to display</div>
       </div>
     </div>
   </div>
@@ -100,46 +125,26 @@
   <div class="container one-column">
     <div class="title-container">
       <span>SLA by Destination</span>
-      <button mat-flat-button color="primary" [matMenuTriggerFor]="stateMenu">
+      <button
+        mat-flat-button
+        color="primary"
+        [matMenuTriggerFor]="stateMenu"
+        *ngIf="shipmentData.length > 0"
+      >
         Download As
         <mat-icon class="material-icon-outlined" mat-icon-button>
           arrow_drop_down
         </mat-icon>
       </button>
       <mat-menu #stateMenu="matMenu">
-        <button mat-menu-item (click)="downloadFile('sla_state')">Report (.xlsx)</button>
-        <button mat-menu-item (click)="downloadChartAsPDF('state')">Report (.pdf)</button>
+        <button mat-menu-item (click)="downloadFile('sla_state')">
+          Report (.xlsx)
+        </button>
+        <button mat-menu-item (click)="downloadChartAsPDF('state')">
+          Report (.pdf)
+        </button>
       </mat-menu>
     </div>
-    <!-- <div class="flex-container">
-      <div class="chart-container">
-        <canvas
-          baseChart
-          [datasets]="stateChartData"
-          [labels]="stateChartLabels"
-          [options]="stateChartOptions"
-          [legend]="true"
-          [chartType]="'horizontalBar'"
-        >
-        </canvas>
-      </div>
-      <div class="chart-container">
-        <canvas
-          baseChart
-          [datasets]="stateChartData2"
-          [labels]="stateChartLabels"
-          [options]="stateChartOptions2"
-          [legend]="true"
-          [chartType]="'horizontalBar'"
-        >
-        </canvas>
-      </div>
-    </div>
-
-    <div class="report-title">
-      <span class="title">Total Shipment: </span>
-      <span class="number">{{ totalShipmentState }}</span>
-    </div> -->
 
     <div class="shipment-chart" #stateChart>
       <ng-container *ngIf="shipmentData.length > 0">
@@ -177,29 +182,19 @@
         </div>
       </ng-container>
 
-      <div class="no-data" *ngIf="shipmentData.length === 0">
-        No data available
-      </div>
-
       <div class="total-shipment" *ngIf="shipmentData.length > 0">
         Total Shipment: <strong>{{ getTotalShipments() | number }}</strong>
       </div>
+    </div>
+
+    <div class="no-data" *ngIf="shipmentData.length === 0">
+      No data to display
     </div>
   </div>
   <div class="divider"></div>
   <div class="container one-column">
     <div class="title-container">
       <span>Delivery Exceptions</span>
-      <button mat-flat-button color="primary" [matMenuTriggerFor]="dexMenu">
-        Download As
-        <mat-icon class="material-icon-outlined" mat-icon-button>
-          arrow_drop_down
-        </mat-icon>
-      </button>
-      <mat-menu #dexMenu="matMenu">
-        <button mat-menu-item (click)="downloadFile('sla_dex')">Report (.xlsx)</button>
-        <button mat-menu-item (click)="downloadChartAsPDF('dex')">Report (.pdf)</button>
-      </mat-menu>
     </div>
 
     <div class="pieChart" #dexChart>
@@ -212,55 +207,51 @@
           [options]="dexChartOptions"
           [colors]="dexChartColors"
           style="width: 800px"
-          *ngIf="dexChartData.length > 0"
+          *ngIf="!isEmptyDex"
         >
         </canvas>
-        <div *ngIf="dexChartData.length === 0" class="no-data">
+        <div *ngIf="isEmptyDex" class="no-data">
           <p>No data available</p>
         </div>
       </div>
 
-      <div class="pieTable scrollable">
-        <table mat-table [dataSource]="dexSourceData" class="mat-elevation-z8">
-          <ng-container matColumnDef="label">
-            <th mat-header-cell *matHeaderCellDef class="align-left">
-              Description
-            </th>
-            <td mat-cell *matCellDef="let element" class="align-left nowrap">
-              <span
-                class="color-box"
-                [ngStyle]="{ 'background-color': element.color }"
-              ></span>
-              {{ element.label }}
-            </td>
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Total</th>
+            <th>Percentage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="!isEmptyDex">
+            <tr *ngFor="let element of dexSourceData">
+              <td>
+                <div class="box-color">
+                  <div
+                    [ngStyle]="{
+                      background: element.color,
+                      width: '20px',
+                      height: '20px',
+                      borderRadius: '5px',
+                      marginRight: '5px'
+                    }"
+                  ></div>
+                  {{ element.name }}
+                </div>
+              </td>
+
+              <td>{{ element.count }}</td>
+              <td>{{ element.percentage }}%</td>
+            </tr>
           </ng-container>
-
-          <ng-container matColumnDef="count">
-            <th class="nowrap" mat-header-cell *matHeaderCellDef>Total</th>
-            <td mat-cell *matCellDef="let element">
-              {{ element.count }}
-            </td>
+          <ng-container *ngIf="isEmptyDex">
+            <tr class="no-available">
+              <td colspan="3" class="no-data-text">Data Unavailable</td>
+            </tr>
           </ng-container>
-
-          <ng-container matColumnDef="percentage">
-            <th class="pl-10" mat-header-cell *matHeaderCellDef>Percentage</th>
-            <td mat-cell *matCellDef="let element">
-              {{ element.percentage }}%
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns2"></tr>
-        </table>
-
-        <!-- No data message -->
-        <div
-          *ngIf="!dexSourceData || dexSourceData.length === 0"
-          class="no-data-message"
-        >
-          <p>No data available</p>
-        </div>
-      </div>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

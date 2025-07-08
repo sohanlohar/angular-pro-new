@@ -35,6 +35,7 @@
     "@swimlane/ngx-charts": "^20.5.0",
     "aws-rum-web": "^1.14.0",
     "chart.js": "^2.9.4",
+    "chartjs-plugin-datalabels": "^1.0.0",
     "d3": "^7.9.0",
     "gleap": "^13.2.5",
     "html2canvas": "^1.4.1",

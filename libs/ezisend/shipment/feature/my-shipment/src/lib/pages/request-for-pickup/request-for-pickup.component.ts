@@ -27,7 +27,7 @@ import * as moment from 'moment';
   styleUrls: ['./request-for-pickup.component.scss'],
 })
 export class RequestForPickupComponent implements OnInit, OnDestroy {
-  @ViewChild('shipmentTable') shipmentTable: any
+  @ViewChild('shipmentTable') shipmentTable: any;
   columns = [
     'select',
     'trackingDetail',
@@ -37,13 +37,13 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
     'type',
     'action',
   ];
-  actions = ['edit', 'delete'];// removed print action
+  actions = ['edit', 'delete']; // removed print action
   shipment$: Observable<IResponse<IShipment>> | undefined;
   allShipments: IDataShipment[] = [];
   currentPage = 1;
   pageSize = 100;
-  start_date:any = '';
-  end_date:any = '';
+  start_date: any = '';
+  end_date: any = '';
   keyword = '';
   shipment_status = '';
   minSelectableDate = moment().subtract(3, 'months').toDate();
@@ -63,18 +63,23 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
     end_date: [''],
   });
   isSelectedShipmentsNoTrackingId = false;
-  @ViewChild(MyShipmentTableComponent) myShipment:any;
+  @ViewChild(MyShipmentTableComponent) myShipment: any;
   @Output() dataEmitter: EventEmitter<any> = new EventEmitter<any>();
   conNoteV3Response: any;
   protected _onDestroy = new Subject<void>();
   totalTrackingDetails: any;
   isLoading = true;
 
-  language: any = (localStorage.getItem("language") && localStorage.getItem("language") === 'en') ? en.data :
-  (localStorage.getItem("language") && localStorage.getItem("language") === 'my') ? bm.data :
-    en.data;
+  language: any =
+    localStorage.getItem('language') &&
+    localStorage.getItem('language') === 'en'
+      ? en.data
+      : localStorage.getItem('language') &&
+        localStorage.getItem('language') === 'my'
+      ? bm.data
+      : en.data;
   languageData: any = this.language.myShipments.request_pickup;
-  languageOrderDetail:any = this.language.order_details;
+  languageOrderDetail: any = this.language.order_details;
 
   constructor(
     public dialog: MatDialog,
@@ -87,23 +92,28 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
     private translate: TranslationService
   ) {
     this.translate.buttonClick$.subscribe(() => {
-      if (localStorage.getItem("language") == "en") {
-        this.languageData = en.data.myShipments.request_pickup
+      if (localStorage.getItem('language') == 'en') {
+        this.languageData = en.data.myShipments.request_pickup;
+      } else if (localStorage.getItem('language') == 'my') {
+        this.languageData = bm.data.myShipments.request_pickup;
       }
-      else if (localStorage.getItem("language") == "my") {
-        this.languageData = bm.data.myShipments.request_pickup
-      }
-    })
+    });
   }
 
   ngOnInit(): void {
     // For API
-     this.end_date = moment().endOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
-    this.start_date = moment().subtract(30, 'days').startOf('day').format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.end_date = moment().endOf('day').utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+    this.start_date = moment()
+      .subtract(1, 'month')
+      .startOf('day')
+      .utc()
+      .format('YYYY-MM-DDTHH:mm:ss[Z]');
 
     // For Date Picker UI (local time)
-    const localEndDate = moment().endOf('day').toDate();
-    const localStartDate = moment().subtract(30, 'days').startOf('day').toDate();
+    const localEndDate = moment().endOf('day');
+    const localStartDate = moment()
+      .subtract(1, 'month')
+      .startOf('day');
 
     this.dateRangePickerForm = this.fb.group({
       start_date: [localStartDate],
@@ -115,7 +125,7 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
       event_category: 'SendParcel Pro - My Shipments - Request For Pickup',
       event_action: 'Tab To Section',
       event_label: 'Request For Pick Up',
-      }
+    };
     this._commonService.googleEventPush(eventDetails);
     this.fetchShipments();
   }
@@ -125,54 +135,66 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
     this._onDestroy.complete();
   }
 
-  @HostListener('window:resize', ['$event'])
-
+  // @HostListener('window:resize', ['$event'])
   fetchShipments() {
     const query = `list?${MyShipmentHelper.contructFilterObject(
       this.buildParams
     )}`;
     this.shipment$ = this._commonService.fetchList('shipments', query);
     this.shipment$.subscribe({
-      next:(res)=>{
-        this.totalTrackingDetails=res.data.total;
-        if(res){
-          this.isLoading= false;
+      next: (res) => {
+        this.totalTrackingDetails = res.data.total;
+        if (res) {
+          this.isLoading = false;
         }
         this.cdr.detectChanges();
-      }
-    })
+      },
+    });
   }
 
   fetchBatchShipments(event: string, query: string, isMultiple?: any) {
     this.batchProcessingIds = [];
-    this._commonService.fetchList('shipments', query)
+    this._commonService
+      .fetchList('shipments', query)
       .pipe(
         takeUntil(this._onDestroy),
         tap((response: IResponse<{ shipments: IDataShipment[] }>) => {
-          if (event === 'gen-connote' || event === 'gen-connote-v2' ) {
-            const shipmentNoTrackingId =
-              response.data.shipments.filter((shipment: IDataShipment) => shipment.tracking_details.tracking_id === '');
+          if (event === 'gen-connote' || event === 'gen-connote-v2') {
+            const shipmentNoTrackingId = response.data.shipments.filter(
+              (shipment: IDataShipment) =>
+                shipment.tracking_details.tracking_id === ''
+            );
             if (shipmentNoTrackingId.length) {
-              this.batchProcessingIds = shipmentNoTrackingId.map((shipment: IDataShipment) => +shipment.id);
+              this.batchProcessingIds = shipmentNoTrackingId.map(
+                (shipment: IDataShipment) => +shipment.id
+              );
             }
           } else if (event === 'requestPickup') {
             this._commonService.isLoading(true);
-            const shipmentwithTrackingId =
-              response.data.shipments.filter((shipment: IDataShipment) => shipment.tracking_details.tracking_id !== '');
+            const shipmentwithTrackingId = response.data.shipments.filter(
+              (shipment: IDataShipment) =>
+                shipment.tracking_details.tracking_id !== ''
+            );
             if (shipmentwithTrackingId.length) {
-              this.batchProcessingIds = shipmentwithTrackingId.map((shipment: IDataShipment) => shipment.tracking_details.tracking_id);
+              this.batchProcessingIds = shipmentwithTrackingId.map(
+                (shipment: IDataShipment) =>
+                  shipment.tracking_details.tracking_id
+              );
             }
           } else if (event === 'print') {
-            this.batchProcessingIds = response.data.shipments.map((shipment: IDataShipment) => +shipment.id);
-          } else if (
-            event === 'connote' ||
-            event === 'tallysheet'
-          ) {
-            const shipmentwithTrackingId =
-              response.data.shipments.filter((shipment: IDataShipment) => shipment.tracking_details.tracking_id !== '');
+            this.batchProcessingIds = response.data.shipments.map(
+              (shipment: IDataShipment) => +shipment.id
+            );
+          } else if (event === 'connote' || event === 'tallysheet') {
+            const shipmentwithTrackingId = response.data.shipments.filter(
+              (shipment: IDataShipment) =>
+                shipment.tracking_details.tracking_id !== ''
+            );
 
             if (shipmentwithTrackingId.length) {
-              this.batchProcessingIds = shipmentwithTrackingId.map((shipment: IDataShipment) => +shipment.id);
+              this.batchProcessingIds = shipmentwithTrackingId.map(
+                (shipment: IDataShipment) => +shipment.id
+              );
             }
 
             // console.log('order selected is ',shipmentwithTrackingId.length, 'which is more than 100')
@@ -183,34 +205,43 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
                   descriptions: this.languageData.description1,
                   icon: 'warning',
                   confirmEvent: false,
-                  closeEvent: true
+                  closeEvent: true,
                 },
               });
-              return
+              return;
             }
           } else if (event === 'commercialinvoice') {
-            const shipmentwithTrackingId =
-              response.data.shipments.filter((shipment: IDataShipment) => shipment.tracking_details.tracking_id !== '');
+            const shipmentwithTrackingId = response.data.shipments.filter(
+              (shipment: IDataShipment) =>
+                shipment.tracking_details.tracking_id !== ''
+            );
 
             if (shipmentwithTrackingId.length) {
-              const shipmentsInternational =
-                response.data.shipments.filter((shipment: IDataShipment) => shipment.type === 'INTERNATIONAL');
+              const shipmentsInternational = response.data.shipments.filter(
+                (shipment: IDataShipment) => shipment.type === 'INTERNATIONAL'
+              );
               if (shipmentsInternational.length) {
-                this.batchProcessingIds = shipmentsInternational.map((shipment: IDataShipment) => +shipment.id);
+                this.batchProcessingIds = shipmentsInternational.map(
+                  (shipment: IDataShipment) => +shipment.id
+                );
               }
             }
           } else if (event === 'delete') {
-            const shipmentsWithoutTrackingID =
-              response.data.shipments.filter((shipment: IDataShipment) => shipment.tracking_details.tracking_id === '');
+            const shipmentsWithoutTrackingID = response.data.shipments.filter(
+              (shipment: IDataShipment) =>
+                shipment.tracking_details.tracking_id === ''
+            );
             if (shipmentsWithoutTrackingID.length) {
-              this.batchProcessingIds = shipmentsWithoutTrackingID.map((shipment: IDataShipment) => +shipment.id);
+              this.batchProcessingIds = shipmentsWithoutTrackingID.map(
+                (shipment: IDataShipment) => +shipment.id
+              );
             }
           }
 
           event === 'gen-connote'
             ? this.onGenerateConnote(event, false)
             : event === 'gen-connote-v2'
-            ? this.openDialogGenerateConnote(event,isMultiple)
+            ? this.openDialogGenerateConnote(event, isMultiple)
             : event === 'requestPickup'
             ? this.openDialogRequestPickup()
             : event === 'delete'
@@ -219,17 +250,19 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe({
-        next:(res)=> { this._commonService.isLoading(false); },
-        error:(err)=>{
+        next: (res) => {
+          this._commonService.isLoading(false);
+        },
+        error: (err) => {
           this.cdr.detectChanges();
           this._commonService.isLoading(false);
           // this._commonService.openErrorDialog();
           this._commonService.openCustomErrorDialog(err);
         },
-        complete:()=> {
+        complete: () => {
           this.cdr.detectChanges();
           this._commonService.isLoading(false);
-        }
+        },
       });
   }
 
@@ -243,8 +276,7 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
     this.keyword = search.trim();
     this._commonService.googleEventPush({
       event: 'search_order',
-      event_category:
-        'SendParcel Pro - My Shipments - Request For Pickup',
+      event_category: 'SendParcel Pro - My Shipments - Request For Pickup',
       event_action: 'Search Order',
       event_label: this.keyword,
     });
@@ -257,12 +289,11 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
       this.end_date = event.end_date;
       const eventDetails = {
         event: 'filter_section',
-        event_category:
-          'SendParcel Pro - My Shipments - Request For Pickup',
+        event_category: 'SendParcel Pro - My Shipments - Request For Pickup',
         event_action: 'Filter Section',
         event_label: this.start_date + ' - ' + this.end_date,
-     };
-         this._commonService.googleEventPush(eventDetails);
+      };
+      this._commonService.googleEventPush(eventDetails);
     } else {
       this.start_date = '';
       this.end_date = '';
@@ -275,7 +306,7 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
 
     // let selectedAll = this.shipmentTable.enabledDataTable.length
 
-    this.isSelectAllOrders = false
+    this.isSelectAllOrders = false;
 
     // checking for select all (might use later)
     /*if (this.selectedMultipleData.length !== selectedAll || !this.selectedMultipleData.length) {
@@ -298,11 +329,10 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
 
     this.isSelectedShipmentsNoTrackingId = this.selectedMultipleData.every(
       (shipment: IDataShipment) => shipment.tracking_details.tracking_id === ''
-    )
+    );
   }
 
   onActionIconEvent(event: { data: IDataShipment; actionType: string }) {
-
     this.selectedSingleData = event.data;
 
     switch (event.actionType) {
@@ -349,43 +379,59 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
           insured_shipping_insurance: event.data.sum_insured ? 'Yes' : 'No',
           shipment_type: event.data.type,
         });
-        this.router.navigate([event.data.tracking_details.category.toLowerCase() === 'mps' ? 'my-shipment/mps-details' :'my-shipment/order-details', event.data.id],{ queryParams: {activeTab: 'request-pickup'} });
+        this.router.navigate(
+          [
+            event.data.tracking_details.category.toLowerCase() === 'mps'
+              ? 'my-shipment/mps-details'
+              : 'my-shipment/order-details',
+            event.data.id,
+          ],
+          { queryParams: { activeTab: 'request-pickup' } }
+        );
         return;
       case 'edit':
         const trackingId = event.data?.tracking_details?.tracking_id;
-        const eventLabel = trackingId && trackingId.trim()
-            ? "Tracking Number - " + trackingId
-            : "NO TRACKING ID GENERATED";
+        const eventLabel =
+          trackingId && trackingId.trim()
+            ? 'Tracking Number - ' + trackingId
+            : 'NO TRACKING ID GENERATED';
         const eventDetails = {
-          "event": "edit_order",
-          "event_category": "Send Parcel Pro - My Shipments - Request For Pick Up",
-          "event_action": "Edit Order",
-          "event_label": eventLabel,
+          event: 'edit_order',
+          event_category:
+            'Send Parcel Pro - My Shipments - Request For Pick Up',
+          event_action: 'Edit Order',
+          event_label: eventLabel,
         };
-        this._commonService.googleEventPush(eventDetails)
+        this._commonService.googleEventPush(eventDetails);
         this.commonService
-      .fetchList('shipments', `query?id=${event.data.id}`)
-      .pipe(
-        map(response => response.data),
-        takeUntil(this._onDestroy),
-        finalize(() => this.cdr.detectChanges)
-      )
-      .subscribe({
-        next:(data)=>{
-          this.commonService.setSelectedShipmentData(data);
-          if(data.sender_details.pickup_option_id) {
-            const currentDomain = window.location.origin;
-            window.open(`${currentDomain}/order-edit/${event.data.id}/${data.sender_details.pickup_option_id}`, '_blank');
-          }else{
-            const currentDomain = window.location.origin;
-            window.open(`${currentDomain}/order-edit/${event.data.id}`, '_blank');
-          }
-        },
-        error:()=>{
-          this.commonService.openErrorDialog();
-          this.cdr.detectChanges;
-        }
-        });
+          .fetchList('shipments', `query?id=${event.data.id}`)
+          .pipe(
+            map((response) => response.data),
+            takeUntil(this._onDestroy),
+            finalize(() => this.cdr.detectChanges)
+          )
+          .subscribe({
+            next: (data) => {
+              this.commonService.setSelectedShipmentData(data);
+              if (data.sender_details.pickup_option_id) {
+                const currentDomain = window.location.origin;
+                window.open(
+                  `${currentDomain}/order-edit/${event.data.id}/${data.sender_details.pickup_option_id}`,
+                  '_blank'
+                );
+              } else {
+                const currentDomain = window.location.origin;
+                window.open(
+                  `${currentDomain}/order-edit/${event.data.id}`,
+                  '_blank'
+                );
+              }
+            },
+            error: () => {
+              this.commonService.openErrorDialog();
+              this.cdr.detectChanges;
+            },
+          });
         return;
       case 'delete':
         this.onActionButtonIcon('delete', false);
@@ -406,7 +452,7 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
             next: () => {
               this.cdr.detectChanges();
               this._commonService.isLoading(false);
-              this.shipmentTable.assignShipment()
+              this.shipmentTable.assignShipment();
             },
             error: (err) => {
               this.cdr.detectChanges();
@@ -414,15 +460,18 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
               /* dialog for http error 403 and body error E1004 */
               /* triggered in Interceptor service. */
               /* This is to avoid  multiple dialog */
-              if ((err.error?.error?.status !== 403 && err.error?.error?.code !== 'E1004')) {
+              if (
+                err.error?.error?.status !== 403 &&
+                err.error?.error?.code !== 'E1004'
+              ) {
                 this._commonService.openCustomErrorDialog(err);
               }
             },
-            complete:()=> {
+            complete: () => {
               this.cdr.detectChanges();
               this.myShipment.selectAllOrder(false);
               this._commonService.isLoading(false);
-            }
+            },
           });
         return;
       default:
@@ -431,7 +480,6 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
   }
 
   onActionButtonIcon(event: string, isMultiple = false) {
-
     /* single or present */
     const orderState =
       isMultiple && this.selectedMultipleData.length > 1 ? "order's" : 'order';
@@ -458,16 +506,18 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
     if (event === 'requestPickup') {
       this.isSelectAllOrders
         ? this.calculateBatchProcessing(event)
-        : this.openDialogRequestPickup()
+        : this.openDialogRequestPickup();
 
       return;
     }
 
     /* actions */
-    if (event === 'connote' ||
+    if (
+      event === 'connote' ||
       event === 'tallysheet' ||
       event === 'commercialinvoice' ||
-      event === 'print') {
+      event === 'print'
+    ) {
       this.isSelectAllOrders
         ? this.calculateBatchProcessing(event)
         : this.onDownloadAsAndPrint(event, isMultiple);
@@ -478,26 +528,26 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
     /* generate connote */
     if (event === 'gen-connote') {
       this.isSelectAllOrders
-        ? this.calculateBatchProcessing(event , isMultiple)
+        ? this.calculateBatchProcessing(event, isMultiple)
         : this.onGenerateConnote(event, isMultiple);
-      return
+      return;
     }
 
     /* generate connote V2 */
     if (event === 'gen-connote-v2') {
-
       const eventDetails = {
-        "event": "pick_up_begin_schedule_request",
-        "event_category": "SendParcel Pro - My Shipments - Request For Pick Up",
-        "event_action": "Begin Schedule Pick Up Request",
-        "event_label": "Schedule Pick Up Request - Create Consignment And Pick Up"
+        event: 'pick_up_begin_schedule_request',
+        event_category: 'SendParcel Pro - My Shipments - Request For Pick Up',
+        event_action: 'Begin Schedule Pick Up Request',
+        event_label:
+          'Schedule Pick Up Request - Create Consignment And Pick Up',
       };
-      this.commonService.googleEventPush(eventDetails)
+      this.commonService.googleEventPush(eventDetails);
 
       this.isSelectAllOrders
         ? this.calculateBatchProcessing(event)
-        : this.openDialogGenerateConnote(event,isMultiple);
-      return
+        : this.openDialogGenerateConnote(event, isMultiple);
+      return;
     }
 
     /* dialog config */
@@ -505,7 +555,14 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
       data: {
         descriptions:
           event !== 'delete'
-            ? this.languageData.dailog_msg1 + ' ' + typeAction + ' ' + this.languageData.dailog_msg2 + ' ' + orderState +'?'
+            ? this.languageData.dailog_msg1 +
+              ' ' +
+              typeAction +
+              ' ' +
+              this.languageData.dailog_msg2 +
+              ' ' +
+              orderState +
+              '?'
             : typeAction,
         icon: 'warning',
         confirmEvent: true,
@@ -519,20 +576,26 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
           this.isSelectAllOrders
             ? this.calculateBatchProcessing(event)
             : this.onDelete(event, isMultiple);
-
-        };
+        }
         dialogSubmitSubscription.unsubscribe();
         dialogRef.close();
       });
   }
 
-  onGenerateConnote(event: string, isMultiple: boolean, date?: string, tableRows?: any) {
+  onGenerateConnote(
+    event: string,
+    isMultiple: boolean,
+    date?: string,
+    tableRows?: any
+  ) {
     this._commonService.isLoading(true);
     let orderIds: number[] = [];
     /* if there is a case where user accidentally selected together with */
     /* shipment that have tracking id, so we need to filter and take the */
     /* shipment without trackingid */
-    this.selectedMultipleData = this.selectedMultipleData.length ? this.selectedMultipleData : tableRows;
+    this.selectedMultipleData = this.selectedMultipleData.length
+      ? this.selectedMultipleData
+      : tableRows;
     const shipmentsHaveTrackingId = this.selectedMultipleData.filter(
       (shipment: IDataShipment) => shipment.tracking_details.tracking_id === ''
     );
@@ -549,59 +612,58 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
     if (!this.isSelectAllOrders && !isMultiple) {
       orderIds = [this.selectedSingleData.id];
     }
-    if(this.selectedMultipleData.length > 0 || orderIds.length > 0) {
+    if (this.selectedMultipleData.length > 0 || orderIds.length > 0) {
       // PLACE TO CHANGE THE V3 GEN CONNOTE
       this._commonService
-      // *********** changing this v3 to v2 for testing of Generating connote is taking too long SPPI-1440 on 23-07-2024 **************************
-      .submitDataV2('shipments', 'gen-connote', {
-        pickup_datetime : date,
-        scope: {
-          all: this.isSelectAllOrders,
-          shipment_ids: this.isSelectAllOrders === true ? [] : orderIds,
-        },
-      })
-      .pipe(takeUntil(this._onDestroy))
-      .subscribe({
-        next: (response: any) => {
-          if (response?.code === 'S0000') {
-            this.conNoteV3Response = response.data;
-            this.shipmentTable.assignShipment();
-          }
-          this._commonService.isLoading(false);
-        },
-        error: (err) => {
-          this.cdr.detectChanges();
-          this._commonService.openCustomErrorDialog(err);
-          this._commonService.isLoading(false);
-          this._commonService.dialog.afterAllClosed.subscribe(() => {
+        // *********** changing this v3 to v2 for testing of Generating connote is taking too long SPPI-1440 on 23-07-2024 **************************
+        .submitDataV2('shipments', 'gen-connote', {
+          pickup_datetime: date,
+          scope: {
+            all: this.isSelectAllOrders,
+            shipment_ids: this.isSelectAllOrders === true ? [] : orderIds,
+          },
+        })
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe({
+          next: (response: any) => {
+            if (response?.code === 'S0000') {
+              this.conNoteV3Response = response.data;
+              this.shipmentTable.assignShipment();
+            }
+            this._commonService.isLoading(false);
+          },
+          error: (err) => {
             this.cdr.detectChanges();
-            this.shipmentTable.assignShipment();
+            this._commonService.openCustomErrorDialog(err);
+            this._commonService.isLoading(false);
+            this._commonService.dialog.afterAllClosed.subscribe(() => {
+              this.cdr.detectChanges();
+              this.shipmentTable.assignShipment();
+              this.myShipment.selectAllOrder(false);
+              this.myShipment.selection.clear();
+              this.selectedMultipleData.length = 0;
+            });
+          },
+          complete: () => {
+            this.cdr.detectChanges();
+            this._commonService.isLoading(false);
             this.myShipment.selectAllOrder(false);
-            this.myShipment.selection.clear();
-            this.selectedMultipleData.length = 0;
-          });
-        },
-        complete:()=> {
-          this.cdr.detectChanges();
-          this._commonService.isLoading(false);
-          this.myShipment.selectAllOrder(false);
-          this.goPendingTab();
-        }
-      }
-      );
+            this.goPendingTab();
+          },
+        });
     } else {
       this.cdr.detectChanges();
       this._commonService.isLoading(false);
       this.dialog.open(DialogComponent, {
         data: {
           title: 'Note',
-          descriptions: "You've already generated consignment notes for all the shipments. Please proceed to request your pickup.",
+          descriptions:
+            "You've already generated consignment notes for all the shipments. Please proceed to request your pickup.",
           icon: 'warning',
           confirmEvent: false,
-          closeEvent: true
-
+          closeEvent: true,
         },
-      })
+      });
     }
   }
 
@@ -617,7 +679,7 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
         icon: 'print',
         confirmEvent: true,
         closeEvent: true,
-        actionText: this.languageData.go_now
+        actionText: this.languageData.go_now,
       },
     });
 
@@ -628,25 +690,25 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
         dialogRef.close();
       });
 
-      dialogRef.afterClosed().subscribe(() => {
-        this.shipmentTable.assignShipment();
-        // on Go Now Button Click after successful submission
+    dialogRef.afterClosed().subscribe(() => {
+      this.shipmentTable.assignShipment();
+      // on Go Now Button Click after successful submission
       const eventDetails = {
-        "event": "go_to_page",
-        "event_category": "SendParcel Pro - My Shipments - Request For Pick Up ",
-        "event_action": "Go To Page",
-        "event_label": "My Shipments - Pending Shipments"
+        event: 'go_to_page',
+        event_category: 'SendParcel Pro - My Shipments - Request For Pick Up ',
+        event_action: 'Go To Page',
+        event_label: 'My Shipments - Pending Shipments',
       };
-      this.commonService.googleEventPush(eventDetails)
-      });
-      // on create Pick Up Request success
-      const eventDetails = {
-        "event": "pick_up_schedule_request_success",
-        "event_category": "SendParcel Pro - My Shipments - Request For Pick Up ",
-        "event_action": "Pick Up Schedule Request Success",
-        "event_label": "Success"
-      };
-      this.commonService.googleEventPush(eventDetails)
+      this.commonService.googleEventPush(eventDetails);
+    });
+    // on create Pick Up Request success
+    const eventDetails = {
+      event: 'pick_up_schedule_request_success',
+      event_category: 'SendParcel Pro - My Shipments - Request For Pick Up ',
+      event_action: 'Pick Up Schedule Request Success',
+      event_label: 'Success',
+    };
+    this.commonService.googleEventPush(eventDetails);
   }
 
   onDelete(event: string, isMultiple = false) {
@@ -670,7 +732,7 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
       .pipe(
         tap((response: any) => {
           if (response.code === 'S0000') {
-            if(response.data.results[0].status === 'deletion_failed') {
+            if (response.data.results[0].status === 'deletion_failed') {
               this._commonService.openErrorDialog();
             } else {
               this.fetchShipments();
@@ -680,13 +742,13 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
               this.totalShipmentRecords = 0;
               this.myShipment.selection.clear();
             }
-
           }
           if (this.isSelectAllOrders) {
-            this.currentBatchPageRequest +=1;
+            this.currentBatchPageRequest += 1;
             this.totalBatchRequest = this.totalBatchRequest - 1;
             const query = `list?uitab=request-pickup&page=${this.currentBatchPageRequest}&limit=100`;
-            if (this.totalBatchRequest >= 1) this.fetchBatchShipments(event, query);
+            if (this.totalBatchRequest >= 1)
+              this.fetchBatchShipments(event, query);
             else this.currentBatchPageRequest = 0;
           }
           this._commonService.isLoading(false);
@@ -694,31 +756,30 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
         takeUntil(this._onDestroy)
       )
       .subscribe({
-        next: (asd:any) => {
-
+        next: () => {
           this.commonService.googleEventPush({
-            "event": "delete_order",
-            "event_category": "Send Parcel Pro - My Shipments - Request For Pick Up",
-            "event_action": "Confirm Delete Order",
-            "event_label": "Delete Order-Success  - "+ shipmentIds,
+            event: 'delete_order',
+            event_category:
+              'Send Parcel Pro - My Shipments - Request For Pick Up',
+            event_action: 'Confirm Delete Order',
+            event_label: 'Delete Order-Success  - ' + shipmentIds,
           });
           this.cdr.detectChanges();
           this._commonService.isLoading(false);
           // this._commonService.redirectTo('/my-shipment', { t: 'request-pickup' });
-          this.shipmentTable.assignShipment()
+          this.shipmentTable.assignShipment();
         },
-        error:() => {
+        error: () => {
           this.cdr.detectChanges();
           this._commonService.isLoading(false);
           this._commonService.openErrorDialog();
         },
-        complete:()=> {
+        complete: () => {
           this.cdr.detectChanges();
           this._commonService.isLoading(false);
-        }
+        },
       });
   }
-
 
   onDownloadAsAndPrint(event: string, isMultiple = false) {
     let shipmentIds: number[] = [];
@@ -731,8 +792,10 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
       /* button print lable, download connote & tallysheet */
       /* just grab all shipment ids without filtering */
       if (event === 'connote' || event === 'tallysheet') {
-        const shipmentwithTrackingId =
-          this.selectedMultipleData.filter((shipment: IDataShipment) => shipment.tracking_details.tracking_id !== '');
+        const shipmentwithTrackingId = this.selectedMultipleData.filter(
+          (shipment: IDataShipment) =>
+            shipment.tracking_details.tracking_id !== ''
+        );
         if (shipmentwithTrackingId.length) {
           shipmentIds = shipmentwithTrackingId.map(
             (shipment: IDataShipment) => shipment.id
@@ -746,37 +809,49 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
               descriptions: this.languageData.description1,
               icon: 'warning',
               confirmEvent: false,
-              closeEvent: true
-
+              closeEvent: true,
             },
           });
-          return
+          return;
         }
       } else if (event === 'print') {
-        const shipmentWithTrackingId =
-          this.selectedMultipleData.filter((shipment: IDataShipment) => shipment.tracking_details.tracking_id !== '');
+        const shipmentWithTrackingId = this.selectedMultipleData.filter(
+          (shipment: IDataShipment) =>
+            shipment.tracking_details.tracking_id !== ''
+        );
         if (shipmentWithTrackingId.length) {
-          shipmentIds = shipmentWithTrackingId.map((shipment: IDataShipment) => +shipment.id);
+          shipmentIds = shipmentWithTrackingId.map(
+            (shipment: IDataShipment) => +shipment.id
+          );
         }
       } else if (event === 'commercialinvoice') {
         /* button download commercial invoice; before download */
         /* need to filter the shipment that have type INTERNATIONAL only */
-        const shipmentwithTrackingId =
-          this.selectedMultipleData.filter((shipment: IDataShipment) => shipment.tracking_details.tracking_id !== '');
+        const shipmentwithTrackingId = this.selectedMultipleData.filter(
+          (shipment: IDataShipment) =>
+            shipment.tracking_details.tracking_id !== ''
+        );
         if (shipmentwithTrackingId.length) {
-          const shipmentsInternational =
-            this.selectedMultipleData.filter((shipment: IDataShipment) => shipment.type === 'INTERNATIONAL');
+          const shipmentsInternational = this.selectedMultipleData.filter(
+            (shipment: IDataShipment) => shipment.type === 'INTERNATIONAL'
+          );
           if (shipmentsInternational.length) {
-            shipmentIds = shipmentsInternational.map((shipment: IDataShipment) => +shipment.id);
+            shipmentIds = shipmentsInternational.map(
+              (shipment: IDataShipment) => +shipment.id
+            );
           }
         }
       } else if (event === 'delete') {
         /* button delete; before delete */
         /* need to filter the shipment that doesn't have tracking id only */
-        const shipmentsWithoutTrackingID =
-          this.selectedMultipleData.filter((shipment: IDataShipment) => shipment.tracking_details.tracking_id === '');
+        const shipmentsWithoutTrackingID = this.selectedMultipleData.filter(
+          (shipment: IDataShipment) =>
+            shipment.tracking_details.tracking_id === ''
+        );
         if (shipmentsWithoutTrackingID.length) {
-          shipmentIds = shipmentsWithoutTrackingID.map((shipment: IDataShipment) => +shipment.id);
+          shipmentIds = shipmentsWithoutTrackingID.map(
+            (shipment: IDataShipment) => +shipment.id
+          );
         }
       }
     }
@@ -804,51 +879,50 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
     this._commonService
       .submitData('shipments', query, {
         ids: shipmentIds,
-        includeChildren: true
+        includeChildren: true,
       })
       .pipe(
         tap((response: IResponse<{ link: string }>) => {
           this._commonService.isLoading(false);
           window.open(
-            `${environment.sppUatUrl.replace('/api/', '')}${
-              response.data.link
-            }`
-          )
+            `${environment.sppUatUrl.replace('/api/', '')}${response.data.link}`
+          );
           if (this.isSelectAllOrders) {
-            this.currentBatchPageRequest +=1;
+            this.currentBatchPageRequest += 1;
             this.totalBatchRequest = this.totalBatchRequest - 1;
             const query = `list?uitab=request-pickup&page=${this.currentBatchPageRequest}&limit=100`;
-            if (this.totalBatchRequest >= 1) this.fetchBatchShipments(event, query);
+            if (this.totalBatchRequest >= 1)
+              this.fetchBatchShipments(event, query);
             else this.currentBatchPageRequest = 0;
           }
         }),
         takeUntil(this._onDestroy)
       )
       .subscribe({
-        next:()=>{
+        next: () => {
           this._commonService.isLoading(false);
         },
-        error:()=>{
+        error: () => {
           this.cdr.detectChanges();
           this._commonService.isLoading(false);
           this._commonService.openErrorDialog();
         },
-        complete:()=> {
+        complete: () => {
           this.cdr.detectChanges();
           this._commonService.isLoading(false);
-        }
+        },
       });
   }
 
   private get buildParams(): IShipmentParamFilter {
     return {
       uitab: 'request-pickup',
-      start_date: moment(this.start_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
-      end_date: moment(this.end_date).utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      start_date: this.start_date,
+      end_date: this.end_date,
       keyword: this.keyword,
       page: +this.currentPage,
       limit: +this.pageSize,
-      shipment_status: this.shipment_status
+      shipment_status: this.shipment_status,
     };
   }
 
@@ -864,15 +938,18 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
 
     this.currentBatchPageRequest = 1;
     const query = `list?uitab=request-pickup&page=${this.currentBatchPageRequest}&limit=${this.totalShipmentRecords}`;
-    this.fetchBatchShipments(event, query, isMultiple)
+    this.fetchBatchShipments(event, query, isMultiple);
   }
 
-  private uploadSinglePickupRequest(date: string, connote_id: string | string[]) {
+  private uploadSinglePickupRequest(
+    date: string,
+    connote_id: string | string[]
+  ) {
     let connoteId = this.isSelectAllOrders
       ? this.batchProcessingIds
       : connote_id;
 
-    connoteId = (typeof connoteId === 'string') ? [connoteId] : connoteId;
+    connoteId = typeof connoteId === 'string' ? [connoteId] : connoteId;
     connoteId = (connoteId as any).filter((id: string) => id !== '');
 
     this._commonService.isLoading(true);
@@ -890,13 +967,15 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
         mergeMap((date: string) =>
           this.uploadSinglePickupRequest(
             date,
-            this.selectedMultipleData.map((shipment: IDataShipment) => shipment.tracking_details.tracking_id)
+            this.selectedMultipleData.map(
+              (shipment: IDataShipment) => shipment.tracking_details.tracking_id
+            )
           )
         ),
         tap(() => {
           this._commonService.isLoading(false);
           // this._commonService.redirectTo('/my-shipment', { t: 'request-pickup' })
-          this.shipmentTable.assignShipment()
+          this.shipmentTable.assignShipment();
         }),
         takeUntil(this._onDestroy)
       )
@@ -906,20 +985,20 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
           this._commonService.isLoading(false);
           this._commonService.openCustomErrorDialog(err);
         },
-        complete:() => {
+        complete: () => {
           this.cdr.detectChanges();
           this.myShipment.selectAllOrder(false);
           this._commonService.isLoading(false);
-        }
+        },
       });
   }
 
-  private openDialogGenerateConnote(event:any, isMultiple:boolean) {
-    const tableRows = this.selectedMultipleData
+  private openDialogGenerateConnote(event: any, isMultiple: boolean) {
+    const tableRows = this.selectedMultipleData;
     openPickupDialog(this.dialog)
       .pipe(
         filter((date) => {
-          return !!date
+          return !!date;
         }),
         // mergeMap((date: string) => {
         //   console.log(date)
@@ -945,11 +1024,11 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
           // this._commonService.isLoading(false);
           this._commonService.openCustomErrorDialog(err);
         },
-        complete:() => {
+        complete: () => {
           this.cdr.detectChanges();
           // this.myShipment.selectAllOrder(false);
           // this._commonService.isLoading(false);
-        }
+        },
       });
   }
 }
