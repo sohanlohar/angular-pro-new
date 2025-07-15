@@ -17,6 +17,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { EzisendDashboardUiCodOrderModule } from '@pos/ezisend/dashboard/ui/cod-order';
 import { MatTableModule } from '@angular/material/table';
 import { ChartsModule } from 'ng2-charts';
+import { MatTooltipModule } from '@angular/material/tooltip';
 @NgModule({
   imports: [
     CommonModule,
@@ -37,6 +38,7 @@ import { ChartsModule } from 'ng2-charts';
     EzisendDashboardUiCodOrderModule,
     MatTableModule,
     ChartsModule,
+    MatTooltipModule,
   ],
   declarations: [SlaDashboardPageComponent],
   exports: [SlaDashboardPageComponent],

@@ -8,10 +8,9 @@
             </mat-panel-title>
         </mat-expansion-panel-header>
         <div class="smart-input-container">
-            
             <textarea
                 #myText
-                [placeholder]="languageData.note1 + '&nbsp;' + languageData.note2 + '&#10;' + languageData.note3 + '&#10;' + languageData.note4 + '&#10;' + languageData.note5 + '&#10;' + languageData.note6"
+                [placeholder]="languageData.note1 + '&#10;' + languageData.note2 + '&#10;' + languageData.note3 + '&#10;' + languageData.note4 + '&#10;' + languageData.note5 + '&#10;' + languageData.note6"
                 maxlength="500"
                 [(ngModel)]="userInput"
                 (paste)="onPaste($event)"

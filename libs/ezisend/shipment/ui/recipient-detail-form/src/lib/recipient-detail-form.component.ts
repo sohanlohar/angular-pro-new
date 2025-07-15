@@ -177,7 +177,9 @@ export class RecipientDetailFormComponent
         }
       });
 
-    this.countryList$ = this.commonService.countryList$;
+    // this.countryList$ = this.commonService.countryList$;
+    this.countryList$ = this.commonService.getAPI('countries', 'list', 0, 'v2'); // SPPI-2388 - change in the endpoint v1 -> v2
+  
     this.getState$ = this.commonService.getAPI('states', 'query?country=MY', 0);
     this.resetTypeFormFieldCuntryCityState();
     
@@ -403,6 +405,15 @@ this.getCities = val.data;
         )
         .subscribe({
           next: (val) => {
+            
+            // // SPP group : 8-Jul-25 : if state is repeated then remove the duplicate data
+            val.data = (val?.data ?? []).filter(
+              (item: { state_name: any; state_code: any; }, index: any, self: any[]) =>
+                index === self.findIndex(
+                  t => t.state_name === item.state_name && t.state_code === item.state_code
+                )
+            ); 
+            
             if (val?.data?.length) {
               this.isSingleState = val?.data?.length > 1 ? false : true;
               const state_index = this.getState

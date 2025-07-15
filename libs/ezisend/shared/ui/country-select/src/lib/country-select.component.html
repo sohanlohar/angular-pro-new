@@ -13,7 +13,7 @@
           [formControl]="dialFilterCtrl">
         </ngx-mat-select-search>
       </mat-option>
-      <mat-option *ngFor="let val of filteredCountries | async" [value]="val">
+      <mat-option *ngFor="let val of filteredCountries | async" [value]="val" [disabled]="val?.disabled">
         <img class="flag" aria-hidden [src]="loadFlagImage(val.code)" height="25">
         
         <span>{{val.country}}</span>

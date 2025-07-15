@@ -15,12 +15,80 @@ import * as Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { SlaService } from '../../services/sla.service';
 import { CommonService } from '@pos/ezisend/shared/data-access/services';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import {
+  IDexData,
+  IGlobalSlaResponse,
+  ISlaCategoryStatusData,
+  ISlaStateData,
+  ISlaStatusData,
+} from '../../models/sla.model';
 
 // Register the datalabels plugin
 Chart.plugins.register(ChartDataLabels);
+
+// Chart.js v2 plugin for rounded bar edges (4px radius)
+// Place this after Chart import and before component definition
+if ((Chart as any) && (Chart as any).elements && (Chart as any).elements.Rectangle) {
+  (Chart as any).elements.Rectangle.prototype.draw = function() {
+    const ctx = this._chart.ctx;
+    const vm = this._view;
+    let left, right, top, bottom;
+    const borderWidth = vm.borderWidth;
+    const radius = 4;
+
+    // Get dataset label
+    const dataset = this._chart.data.datasets[this._datasetIndex];
+    const isSuccessOrNoData = dataset.label &&
+      (dataset.label.toLowerCase().includes('success') || dataset.label.toLowerCase().includes('no data'));
+
+    if (!vm.horizontal) {
+      left = vm.x - vm.width / 2;
+      right = vm.x + vm.width / 2;
+      top = vm.y;
+      bottom = vm.base;
+    } else {
+      left = vm.base;
+      right = vm.x;
+      top = vm.y - vm.height / 2;
+      bottom = vm.y + vm.height / 2;
+    }
+
+    ctx.save();
+    ctx.beginPath();
+
+    if (isSuccessOrNoData) {
+      // Only top corners rounded
+      ctx.moveTo(left, bottom);
+      ctx.lineTo(left, top + radius);
+      ctx.quadraticCurveTo(left, top, left + radius, top);
+      ctx.lineTo(right - radius, top);
+      ctx.quadraticCurveTo(right, top, right, top + radius);
+      ctx.lineTo(right, bottom);
+      ctx.lineTo(left, bottom); // Close the path at the bottom
+    } else {
+      // Square bar
+      ctx.rect(left, top, right - left, bottom - top);
+    }
+
+    ctx.fillStyle = vm.backgroundColor;
+    ctx.fill();
+
+    // Draw border for both bar types
+    if (borderWidth) {
+      ctx.save();
+      ctx.clip(); // Ensure border doesn't overflow
+      ctx.strokeStyle = vm.borderColor;
+      ctx.lineWidth = borderWidth;
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.restore();
+  };
+}
 
 @Component({
   selector: 'pos-sla-dashboard-page',
@@ -39,7 +107,6 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     startDate: '',
     endDate: '',
   };
-  updatedLastRefreshed = '';
 
   shipmentData: any[] = [];
   start_date = '';
@@ -80,10 +147,22 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     total_failed: number;
   }[] = [];
 
-  catBarRawData: { success: number[]; failed: number[] } = { success: [], failed: [] };
+  catBarRawData: { success: number[]; failed: number[] } = {
+    success: [],
+    failed: [],
+  };
 
   catBarOptions: ChartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
+    legend: {
+      display: true,
+      position: 'bottom',
+      align: 'center',
+      labels: {
+        padding: 20,
+      },
+    },
     scales: {
       yAxes: [
         {
@@ -98,7 +177,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
           ticks: {
             beginAtZero: true,
             max: 100,
-            callback: function(value: number) {
+            callback: function (value: number) {
               return value + '%';
             },
           },
@@ -107,12 +186,19 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       xAxes: [
         {
           stacked: true,
-          display: false,
+          display: true, // Show x-axis
           gridLines: {
             display: false,
             drawBorder: false,
             drawOnChartArea: false,
             drawTicks: false,
+          },
+          ticks: {
+            display: true, // Show x-axis labels
+            autoSkip: false, // Show all labels
+            maxRotation: 45, // Rotate labels if needed
+            minRotation: 0,
+            padding: 10, // Add space between labels and bars
           },
         },
       ],
@@ -123,23 +209,25 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         color: '#fff',
         font: {
           weight: 'bold',
-          size: 14
+          size: 14,
         },
-        formatter: (value: number) => value.toFixed(1) + '%',
+        formatter: (value: number) => (value >= 10 ? value.toFixed(1) + '%' : ''),
       },
     },
     tooltips: {
       callbacks: {
         label: (tooltipItem: any, data: any) => {
-          // Use raw data for tooltip
+          // Show both raw count and percentage in tooltip
           const idx = tooltipItem.index;
           const dsIdx = tooltipItem.datasetIndex;
-          const comp = data.datasets[dsIdx].label === 'Success' ? 'success' : 'failed';
+          const comp =
+            data.datasets[dsIdx].label === 'Success' ? 'success' : 'failed';
           const rawVal = this.catBarRawData[comp][idx];
-          return `${data.datasets[dsIdx].label}: ${rawVal}`;
-        }
-      }
-    }
+          const percentage = tooltipItem.yLabel || tooltipItem.value;
+          return `${data.datasets[dsIdx].label}: ${rawVal} (${percentage.toFixed(1)}%)`;
+        },
+      },
+    },
   };
 
   catBarLabels: Label[] = [];
@@ -157,9 +245,14 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
   statusPiePlugins = [ChartDataLabels];
   statusPieOptions: ChartOptions = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     legend: {
       display: true,
+      position: 'bottom',
+      align: 'center',
+      labels: {
+        padding: 8,
+      },
     },
     animation: {
       animateScale: true,
@@ -171,13 +264,17 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         color: '#fff',
         font: {
           weight: 'bold',
-          size: 14
+          size: 14,
         },
-        formatter: (value: number) => {
-          return value.toFixed(1) + '%';
-        }
-      }
-    }
+        formatter: (value: number, ctx: any) => {
+          const dataArr = ctx.chart.data.datasets[0].data;
+          const total = dataArr.reduce((a: number, b: number) => a + b, 0);
+          if (!total) return '';
+          const percentage = (value / total) * 100;
+          return percentage > 0 ? percentage.toFixed(1) + '%' : '';
+        },
+      },
+    },
   };
 
   // dex pie chart data
@@ -317,155 +414,265 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.last_updated = [];
-    this.isLoading = true;
-    this.compleate = 0;
-    this.getCategoryData();
-    this.getStatusData();
-    this.getStateData();
-    this.getDexList();
+    this.loadDashboardData();
   }
 
-  private getStatusData() {
-    this.slaService
-      .getStatusList(this.startDate, this.endDate)
-      .pipe(finalize(() => this.checLoading(1)))
-      .subscribe((res) => {
-        this.last_updated.push(res.data.last_updated);
-        this.last_updated.push(res.data.last_updated);
-        const sla_status = res.data.sla_statuses || [];
-        this.statusPieLabels = sla_status.map(
-          (item) => item.label + ' (' + item.value + ')'
-        );
-        this.statusPieData = [
+  onDateRangeChange() {
+    this.loadDashboardData();
+  }
+
+  private loadDashboardData() {
+    this.last_updated = [];
+    this.isLoading = true;
+
+    forkJoin([
+      this.getCategoryData().pipe(catchError((err) => of(null))),
+      this.getStatusData().pipe(catchError((err) => of(null))),
+      this.getStateData().pipe(catchError((err) => of(null))),
+      this.getDexList().pipe(catchError((err) => of(null))),
+    ]).subscribe({
+      next: ([catRes, statusRes, stateRes, dexRes]) => {
+        if (catRes) {
+          this.mappingCategoryResponse(catRes);
+        }
+
+        if (statusRes) {
+          this.mappingStatusResponse(statusRes);
+        }
+
+        if (stateRes) {
+          this.mappingStateResponse(stateRes);
+        }
+
+        if (dexRes) {
+          this.mappingDexResponse(dexRes);
+        }
+      },
+      complete: () => {
+        this.isLoading = false;
+      },
+    });
+  }
+
+  private mappingCategoryResponse(
+    catRes: IGlobalSlaResponse<ISlaCategoryStatusData>
+  ) {
+    this.last_updated.push(catRes.data.last_updated);
+
+    this.catBarOptions = {
+      ...this.catBarOptions,
+      legend: {
+        display: true,
+        position: 'bottom',
+      },
+      scales: {
+        ...this.catBarOptions.scales,
+        yAxes: [
           {
-            data: sla_status.map((item) => Number(item.percentage.toFixed(2))),
-            backgroundColor: ['#6be0bf', '#EA7369'],
-            borderColor: ['#6be0bf', '#EA7369'],
-            borderWidth: 2,
+            ...(this.catBarOptions.scales && this.catBarOptions.scales.yAxes
+              ? this.catBarOptions.scales.yAxes[0]
+              : {}),
+            ticks: {
+              ...(this.catBarOptions.scales && this.catBarOptions.scales.yAxes
+                ? this.catBarOptions.scales.yAxes[0]?.ticks
+                : {}),
+              max: 100,
+              callback: function (value: number) {
+                return value + '%';
+              },
+            },
           },
-        ];
+        ],
+      },
+    };
 
-        this.isStatusEmpty = sla_status.length === 0 || sla_status.every(item => item.value === 0);
+    const sla_category = catRes.data.sla_categories || [];
+    this.catBarLabels = sla_category.map((item) => item.label);
+    this.catBarRawData.success = sla_category.map((item) => item.total_success);
+    this.catBarRawData.failed = sla_category.map((item) => item.total_failed);
 
-      });
+    // Prepare arrays for each dataset
+    const percentSuccess: number[] = [];
+    const percentFailed: number[] = [];
+    const percentNoData: number[] = [];
+    sla_category.forEach((item) => {
+      const total = item.total_success + item.total_failed;
+      if (total === 0) {
+        percentSuccess.push(0);
+        percentFailed.push(0);
+        percentNoData.push(100); // Full gray bar
+      } else {
+        percentSuccess.push((item.total_success / total) * 100);
+        percentFailed.push((item.total_failed / total) * 100);
+        percentNoData.push(0);
+      }
+    });
+
+    const datasets = [
+      {
+        label: 'No Data',
+        data: percentNoData,
+        backgroundColor: '#cccccc',
+        borderColor: '#cccccc',
+        stack: 'a', // Revert: stack with Success/Failed
+        datalabels: {
+          display: (ctx: any) => ctx.dataset.label === 'No Data' && ctx.dataset.data[ctx.dataIndex] > 0,
+          color: '#fff',
+          font: { weight: 'bold' as const, size: 16 }, // Larger font for visibility
+          align: 'center' as const,
+          anchor: 'center' as const,
+          padding: { top: 0, bottom: 0 }, // Explicit padding for centering
+          formatter: (value: any, ctx: any) => value > 0 ? 'No\nData\nAvailable' : '',
+        },
+        _customLegend: false, // Custom property to help filter legend
+      },
+      {
+        label: 'Failed',
+        data: percentFailed,
+        backgroundColor: '#eb4d5f',
+        borderColor: '#eb4d5f',
+        borderWidth: 2,
+        stack: 'a',
+        _customLegend: true,
+        datalabels: { display: false }, // Never show label for failed
+      },
+      {
+        label: 'Success',
+        data: percentSuccess,
+        backgroundColor: '#3478cb',
+        borderColor: '#3478cb',
+        stack: 'a',
+        _customLegend: true,
+        datalabels: {
+          display: (ctx: any) => {
+            // Only show if percentage > 10 and value > 0
+            const value = ctx.dataset.data[ctx.dataIndex];
+            return value > 10;
+          },
+          color: '#fff',
+          font: { weight: 'bold' as const, size: 14 },
+          align: 'center' as const,
+          anchor: 'center' as const,
+          formatter: (value: any, ctx: any) => value > 0 ? value.toFixed(1) + '%' : '',
+        },
+      },
+    ];
+    this.catBarData = datasets;
+    this.catBarOptions = {
+      ...this.catBarOptions,
+      legend: {
+        ...this.catBarOptions.legend,
+        position: 'top',
+        reverse: true,
+        labels: {
+          ...this.catBarOptions.legend?.labels,
+          filter: function(legendItem: any, chartData: any) {
+            // Only show legend for datasets with _customLegend: true
+            if (!chartData.datasets) return false;
+            const ds = chartData.datasets[legendItem.datasetIndex];
+            return ds && ds._customLegend;
+          }
+        }
+      },
+      plugins: {
+        ...this.catBarOptions.plugins,
+        datalabels: undefined, // Use per-dataset config
+      },
+      tooltips: {
+        callbacks: {
+          label: (tooltipItem: any, data: any) => {
+            const dsLabel = data.datasets[tooltipItem.datasetIndex].label;
+            if (dsLabel === 'No Data') {
+              return 'No data available';
+            }
+            if (dsLabel === 'Success') {
+              const idx = tooltipItem.index;
+              const rawVal = this.catBarRawData.success[idx];
+              const failedVal = this.catBarRawData.failed[idx];
+              const total = rawVal + failedVal;
+              const percentage = total > 0 ? (rawVal / total) * 100 : 0;
+              return percentage > 0 ? `Success: ${rawVal} (${percentage.toFixed(1)}%)` : '';
+            }
+            if (dsLabel === 'Failed') {
+              const idx = tooltipItem.index;
+              const rawVal = this.catBarRawData.failed[idx];
+              const successVal = this.catBarRawData.success[idx];
+              const total = rawVal + successVal;
+              const percentage = total > 0 ? (rawVal / total) * 100 : 0;
+              return percentage > 0 ? `Failed: ${rawVal} (${percentage.toFixed(2)}%)` : '';
+            }
+            return '';
+          },
+        },
+      },
+    };
+    this.isEmptyType =
+      sla_category.length === 0 ||
+      sla_category.every(
+        (item) => item.total_success === 0 && item.total_failed === 0
+      );
+  }
+
+  private mappingStatusResponse(statusRes: IGlobalSlaResponse<ISlaStatusData>) {
+    this.last_updated.push(statusRes.data.last_updated);
+    this.last_updated.push(statusRes.data.last_updated);
+    const sla_status = statusRes.data.sla_statuses || [];
+    this.statusPieLabels = sla_status.map(
+      (item) => item.label + ' (' + item.value + ')'
+    );
+    this.statusPieData = [
+      {
+        data: sla_status.map((item) => Number(item.percentage.toFixed(1))),
+        backgroundColor: ['#50a0f8', '#f7cb4f'],
+        borderColor: ['#50a0f8', '#f7cb4f'],
+        borderWidth: 2,
+      },
+    ];
+    this.isStatusEmpty =
+      sla_status.length === 0 || sla_status.every((item) => item.value === 0);
+  }
+
+  private mappingStateResponse(stateRes: IGlobalSlaResponse<ISlaStateData>) {
+    const sortedData = stateRes.data.sla_states
+      .filter((item) => item.total > 0)
+      .sort((a, b) => b.percentage - a.percentage);
+    this.shipmentData = sortedData.map((item) => ({
+      state: item.label,
+      percentage: Number(item.percentage.toFixed(2)),
+      shipments: item.total,
+    }));
+    this.totalShipmentState = stateRes.data.total_shipment;
+  }
+
+  private mappingDexResponse(dexRes: IGlobalSlaResponse<IDexData>) {
+    this.last_updated.push(dexRes.data.last_updated);
+    const dex = dexRes.data.exceptions || [];
+    this.dexChartLabels = dex.map((item) => item.label);
+    this.dexChartData = dex
+      .sort((a, b) => b.total - a.total)
+      .map((item) => Number(item.percentage.toFixed(2)));
+    this.dexSourceData = dex
+      .sort((a, b) => b.total - a.total)
+      .map((item, index) => ({
+        label: item.label,
+        total: item.total,
+        percentage: Number(item.percentage.toFixed(2)),
+        color: this.dexChartBackgroundColor[index],
+      }));
+    this.isEmptyDex = dex.length === 0 || dex.every((item) => item.total === 0);
   }
 
   private getCategoryData() {
-    this.slaService
-      .getCategoryStatusList(this.startDate, this.endDate)
-      .pipe(finalize(() => this.checLoading(1)))
-      .subscribe((res) => {
-        this.last_updated.push(res.data.last_updated);
-        const copyResponse = { ...res };
-        const maxValueSuccess = Math.max(
-          ...copyResponse.data.sla_categories.map((item) => item.total_success)
-        );
-        const maxValueFailed = Math.max(
-          ...copyResponse.data.sla_categories.map((item) => item.total_failed)
-        );
-        const maxValue = Math.max(maxValueSuccess, maxValueFailed);
-
-        this.catBarOptions = {
-          ...this.catBarOptions,
-          scales: {
-            ...this.catBarOptions.scales,
-            yAxes: [
-              {
-                ...((this.catBarOptions.scales && this.catBarOptions.scales.yAxes) ? this.catBarOptions.scales.yAxes[0] : {}),
-                ticks: {
-                  ...((this.catBarOptions.scales && this.catBarOptions.scales.yAxes) ? this.catBarOptions.scales.yAxes[0]?.ticks : {}),
-                  max: 100,
-                  callback: function(value: number) {
-                    return value + '%';
-                  },
-                },
-              },
-            ],
-          },
-        };
-
-        const sla_category = res.data.sla_categories || [];
-        this.catBarLabels = sla_category.map((item) => item.label);
-
-        // Store raw data
-        this.catBarRawData.success = sla_category.map((item) => item.total_success);
-        this.catBarRawData.failed = sla_category.map((item) => item.total_failed);
-
-        // Calculate percent for each bar
-        const percentSuccess = sla_category.map((item) => {
-          const total = item.total_success + item.total_failed;
-          return total > 0 ? (item.total_success / total) * 100 : 0;
-        });
-        const percentFailed = sla_category.map((item) => {
-          const total = item.total_success + item.total_failed;
-          return total > 0 ? (item.total_failed / total) * 100 : 0;
-        });
-
-        this.catBarData = [
-          {
-            label: 'Failed',
-            data: percentFailed,
-            backgroundColor: '#eb4d5f',
-            borderColor: '#eb4d5f',
-            borderWidth: 2,
-            stack: 'a',
-          },
-          {
-            label: 'Success',
-            data: percentSuccess,
-            backgroundColor: '#3478cb',
-            borderColor: '#3478cb',
-            stack: 'a',
-          },
-        ];
-        this.isEmptyType = sla_category.length === 0 || sla_category.every(item => item.total_success === 0 && item.total_failed === 0);
-      });
+    return this.slaService.getCategoryStatusList(this.startDate, this.endDate);
   }
-
+  private getStatusData() {
+    return this.slaService.getStatusList(this.startDate, this.endDate);
+  }
   private getStateData() {
-    this.slaService
-      .getStateList(this.startDate, this.endDate)
-      .pipe(finalize(() => this.checLoading(1)))
-      .subscribe((res) => {
-        const sortedData = res.data.sla_states
-          .filter(item => item.total > 0)
-          .sort(
-            (a, b) => b.percentage - a.percentage
-          );
-
-        this.shipmentData = sortedData.map((item) => ({
-          state: item.label,
-          percentage: Number(item.percentage.toFixed(2)),
-          shipments: item.total,
-        }));
-
-        this.totalShipmentState = res.data.total_shipment;
-      });
+    return this.slaService.getStateList(this.startDate, this.endDate);
   }
-
   private getDexList() {
-    this.slaService
-      .getDexList(this.startDate, this.endDate)
-      .pipe(finalize(() => this.checLoading(1)))
-      .subscribe((res) => {
-        this.last_updated.push(res.data.last_updated);
-        const dex = res.data.exceptions || [];
-        this.dexChartLabels = dex.map((item) => item.label);
-        this.dexChartData = dex
-          .sort((a, b) => b.total - a.total)
-          .map((item) => Number(item.percentage.toFixed(2)));
-        this.dexSourceData = dex
-          .sort((a, b) => b.total - a.total)
-          .map((item, index) => ({
-            label: item.label,
-            count: item.total,
-            percentage: Number(item.percentage.toFixed(2)),
-            color: this.dexChartBackgroundColor[index],
-          }));
-
-        this.isEmptyDex = dex.length === 0 || dex.every(item => item.total === 0);
-      });
+    return this.slaService.getDexList(this.startDate, this.endDate);
   }
 
   // disable right now
@@ -476,6 +683,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
   // }
 
   onDateRangePickerFormChange(event: any) {
+    console.log(event);
     if (!event.start_date || !event.end_date) return;
 
     this.dateRangePickerForm.patchValue({
@@ -485,28 +693,25 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     this.ngAfterViewInit();
   }
 
-  private checLoading(val: number) {
-    this.compleate = this.compleate + val;
-    if (this.compleate === 4) {
-      this.last_updated = this.last_updated.sort(
-        (a, b) => new Date(b).getTime() - new Date(a).getTime()
-      );
-      const formattingDate = moment(this.last_updated[0]).format(
-        'DD MMM YYYY, hh:mm A'
-      );
-      this.updatedLastRefreshed = formattingDate;
-      this.isLoading = false;
-    }
+  get updatedLastRefreshed() {
+    this.last_updated = this.last_updated.sort(
+      (a, b) => new Date(b).getTime() - new Date(a).getTime()
+    );
+    const formattingDate = moment(this.last_updated[0]).format(
+      'DD MMM YYYY, hh:mm A'
+    );
+
+    return formattingDate;
   }
 
   get startDate() {
     const start_date = this.dateRangePickerForm.value.start_date;
-    return moment.utc(start_date).format('YYYY-MM-DD');
+    return moment(start_date).format('YYYY-MM-DD');
   }
 
   get endDate() {
     const end_date = this.dateRangePickerForm.value.end_date;
-    return moment.utc(end_date).format('YYYY-MM-DD');
+    return moment(end_date).format('YYYY-MM-DD');
   }
 
   getTotalShipments(): number {
@@ -523,20 +728,12 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
   async downloadAllFile() {
     this.commonService.isLoading(true);
 
-    this.slaService.getDownloadFile('sla_all', this.startDate, this.endDate)
+    this.slaService
+      .getDownloadFile('sla_all', this.startDate, this.endDate)
       .pipe(finalize(() => this.commonService.isLoading(false)))
       .subscribe({
         next: (res: any) => {
-          const fileName = `SLA_ALL_${moment().format('YYYY-MM-DD_HH-mm')}.xlsx`;
-          const blob = new Blob([res], {
-            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          });
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = fileName;
-          a.click();
-          window.URL.revokeObjectURL(url);
+          this.downloadWithFileName('sla_all', res);
         },
         error: (err: any) => {
           console.error('Error downloading all files:', err);
@@ -544,7 +741,9 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       });
   }
 
-  downloadFile(type: 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex' | 'sla_all') {
+  downloadFile(
+    type: 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex' | 'sla_all'
+  ) {
     this.commonService.isLoading(true);
     this.slaService
       .getDownloadFile(type, this.startDate, this.endDate)

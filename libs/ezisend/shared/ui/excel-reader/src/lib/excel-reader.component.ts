@@ -1432,7 +1432,8 @@ export class ExcelReaderComponent implements OnDestroy {
 
 
         /* MPS Alone */
-          if(this.BU_type === 'mps' && this.commonService.isMPS.getValue()) {
+          if (this.BU_type === 'mps' && (!this.commonService.isCODUbat.getValue() || this.commonService.isMPS.getValue())) {
+          
               if (workbook.SheetNames[0] === 'MPS') {
                 const keys = Object.keys(this.data[0]);
                 if (
@@ -1586,7 +1587,8 @@ export class ExcelReaderComponent implements OnDestroy {
               subscribe((data) => {
                 this.isLoading = false;
                 this.cdr.detectChanges();
-                if(this.commonService.isMPS.getValue()) {
+                
+                if ((!this.commonService.isCODUbat.getValue() || this.commonService.isMPS.getValue())) {
                     if(data !== 'MPS') {
                       this.CreateShipmentFailure();
                       this.dialog.open(DialogComponent, {

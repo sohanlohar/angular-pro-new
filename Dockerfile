@@ -1,6 +1,8 @@
 FROM 972277210775.dkr.ecr.ap-southeast-1.amazonaws.com/base_images:node-16.14.0 as build
 WORKDIR /app
-RUN apt update && npm install -g @angular/cli
+RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list && \
+    sed -i 's|http://security.debian.org/debian-security|http://archive.debian.org/debian-security|g' /etc/apt/sources.list && \
+    apt --allow-releaseinfo-change update && npm install -g @angular/cli
 COPY . .
 RUN npm cache clean --force
 RUN npm install 

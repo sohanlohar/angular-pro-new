@@ -424,10 +424,11 @@ export class CommonService {
     );
   }
 
-  getAPI(endpoint: string, query: string, withDelay = 0) {
+  getAPI(endpoint: string, query: string, withDelay = 0, version?:string,) {
+    const versionValue = version? version : 'v1';
     /* BASE URL HAVE TO MOVE TO ENVIRONMENT */
     return this.http
-      .get(`${this.MDMAPI}${endpoint}/v1/${query}`)
+      .get(`${this.MDMAPI}${endpoint}/${versionValue}/${query}`)
       // .pipe(delay(withDelay));
       .pipe(share());
   }

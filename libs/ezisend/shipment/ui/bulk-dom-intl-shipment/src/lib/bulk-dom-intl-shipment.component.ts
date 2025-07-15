@@ -107,14 +107,32 @@ export class BulkDomIntlShipmentComponent implements OnInit {
     } else if(this.BU_type === 'bulk-contact'){
       this.title = this.data.contact_upload_templete;
     } else if(this.BU_type === 'mps'){
-      this.commonService.isMPS
+      this.commonService.isCODUbat
           .pipe(takeUntil(this._onDestroy))
           .subscribe((data) => {
-            if(data) {
+            if(!data) {
               this.title = 'MPS';
+            } 
+            else {
+                this.commonService.isMPS
+                  .pipe(takeUntil(this._onDestroy))
+                  .subscribe((data) => {
+                    if(data) {
+                        this.title = 'MPS';
+                    }
+                  })
             }
             this.cdr.detectChanges();
           })
+      // this.commonService.isMPS
+      //     .pipe(takeUntil(this._onDestroy))
+      //     .subscribe((data) => {
+      //       debugger
+      //       if(data) {
+              // this.title = 'MPS';
+      //       }
+      //       this.cdr.detectChanges();
+      //     })
           this.description = this.data.within_east_west;
     }
     else {

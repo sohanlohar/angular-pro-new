@@ -5,25 +5,34 @@
       {{ data?.dashboard?.my_orders }}
     </div>
   </div>
+  <div class="date-range-picker">
+    <form [formGroup]="dateRangePickerForm">
+      <pos-date-range-picker
+        (formChange)="onDateRangePickerFormChange($event)"
+        class="px-3"
+      ></pos-date-range-picker>
+    </form>
+  </div>
+
   <ng-container>
     <div class="container__orders" [class.nameClass]="!allStatusLoadingState()">
-      <div class="header-search">
-        <div class="dashboard-datepicker">
-          <form [formGroup]="dateRangePickerForm">
-            <pos-date-range-picker
-              (formChange)="onDateRangePickerFormChange($event)"
-              class="px-3"
-            ></pos-date-range-picker>
-          </form>
+      <div class="card-column">
+        <div class="container__shipment-summary">
+          <span *ngFor="let summary of summaryTiles">
+            <pos-shipment-tile
+              [summaryTile]="summary"
+              [boxHeight]="boxHeight"
+            ></pos-shipment-tile>
+          </span>
         </div>
       </div>
-      <mat-divider></mat-divider>
+
       <div class="wrapper-column">
-        <div class="column">
+        <div class="column left">
           <ng-container>
-            <label class="container__orders-title">{{
-              data?.dashboard?.my_cod
-            }}</label>
+            <div class="container__orders-title">
+              {{ data?.dashboard?.my_cod }}
+            </div>
             <pos-cod-order
               theme="green"
               icon="done"
@@ -49,61 +58,71 @@
             </pos-cod-order>
           </ng-container>
         </div>
-        <div class="column">
-          <canvas
-            baseChart
-            height="124"
-            [data]="doughnutChartData"
-            [labels]="doughnutChartLabels"
-            [chartType]="doughnutChartType"
-            [options]="doughnutChartOptions"
-            [plugins]="doughnutChartPlugins"
-            [legend]="doughnutChartLegend"
-            [colors]="doughnutColors"
-            *ngIf="!isEmptyDoughnutChart"
+        <div class="column cod">
+          <div class="payment-method">Payment Method</div>
+          <div
+            class="chart-table-container"
+            [class.empty]="isEmptyDoughnutChart"
           >
-          </canvas>
-          <div class="no-data" *ngIf="isEmptyDoughnutChart">
-            No data to display
+            <div class="chart-section">
+              <canvas
+                baseChart
+                height="260"
+                width="260"
+                [data]="doughnutChartData"
+                [labels]="doughnutChartLabels"
+                [chartType]="doughnutChartType"
+                [options]="doughnutChartOptions"
+                [plugins]="doughnutChartPlugins"
+                [legend]="doughnutChartLegend"
+                [colors]="doughnutColors"
+                *ngIf="!isEmptyDoughnutChart"
+              >
+              </canvas>
+              <div class="no-data" *ngIf="isEmptyDoughnutChart">
+                No data to display
+              </div>
+            </div>
+            <div class="table-section">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Delivery Type</th>
+                    <th>Order Count</th>
+                    <th>Percentage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngIf="!isEmptyDoughnutChart">
+                    <tr *ngFor="let element of dataSource2">
+                      <td>
+                        <div class="box-color">
+                          <div
+                            [ngStyle]="{
+                              background: element.color,
+                              width: '20px',
+                              height: '20px',
+                              borderRadius: '5px',
+                              marginRight: '5px'
+                            }"
+                          ></div>
+                          {{ element.name }}
+                        </div>
+                      </td>
+
+                      <td>{{ element.value }}</td>
+                      <td>{{ element.percentage }}%</td>
+                    </tr>
+                  </ng-container>
+                  <ng-container *ngIf="isEmptyDoughnutChart">
+                    <tr class="no-available">
+                      <td colspan="3" class="no-data-text">Data Unavailable</td>
+                    </tr>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
           </div>
-
-          <table class="custom-table">
-            <thead>
-              <tr>
-                <th>Delivery Type</th>
-                <th>Order Count</th>
-                <th>Percentage</th>
-              </tr>
-            </thead>
-            <tbody>
-              <ng-container *ngIf="!isEmptyDoughnutChart">
-                <tr *ngFor="let element of dataSource2">
-                  <td>
-                    <div class="box-color">
-                      <div
-                        [ngStyle]="{
-                          background: element.color,
-                          width: '20px',
-                          height: '20px',
-                          borderRadius: '5px',
-                          marginRight: '5px'
-                        }"
-                      ></div>
-                      {{ element.name }}
-                    </div>
-                  </td>
-
-                  <td>{{ element.value }}</td>
-                  <td>{{ element.percentage }}%</td>
-                </tr>
-              </ng-container>
-              <ng-container *ngIf="isEmptyDoughnutChart">
-                <tr class="no-available">
-                  <td colspan="3" class="no-data-text">Data Unavailable</td>
-                </tr>
-              </ng-container>
-            </tbody>
-          </table>
         </div>
       </div>
     </div>

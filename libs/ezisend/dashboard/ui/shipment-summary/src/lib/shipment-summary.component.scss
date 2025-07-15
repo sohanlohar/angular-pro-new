@@ -32,14 +32,9 @@
   }
 
   &__orders {
-    background-color: #ffffff;
-    border-radius: 6px;
-    box-shadow: 1px 1px 12px rgb(98 85 85 / 25%);
-    color: v.$teritary_color;
     display: flex;
     flex-direction: column;
-    row-gap: 1rem;
-    padding: 1.5rem;
+    row-gap: 24px;
 
     .dashboard-datepicker {
       display: flex;
@@ -71,6 +66,12 @@
     &-title {
       font-size: v.$font_size_s;
       font-weight: v.$font-weight-medium;
+      display: flex;
+      flex-direction: row;
+      align-items: start;
+      justify-content: start;
+      width: 100%;
+      color: #034d91;
     }
 
     .horizontal-line {
@@ -259,13 +260,30 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
-  gap: 48px;
+  gap: 24px;
 
   .column {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 24px;
+    background-color: #ffffff;
+    border-radius: 6px;
+    box-shadow: 1px 1px 12px rgb(98 85 85 / 25%);
+    color: v.$teritary_color;
+    padding: 24px;
+
+    &.left {
+      width: 50%;
+
+      pos-cod-order {
+        width: 100%!important;
+      }
+    }
+
+    &.cod {
+      padding-left: 0!important;
+    }
   }
 }
 
@@ -281,6 +299,8 @@
   width: 100%;
   min-height: 250px;
   border-radius: 8px;
+  margin-right: 24px;
+  width: 100%;
 }
 
 .custom-table {
@@ -330,4 +350,84 @@
   td {
     text-align: center!important;
   }
+}
+
+.date-range-picker {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 30px;
+
+  > span {
+    font-size: 13px;
+  }
+  > form {
+    margin-top: 3px;
+    width: 250px !important;
+  }
+
+  ::ng-deep .mat-form-field-appearance-standard .mat-form-field-flex {
+    border: 1px solid #cbcbcb;
+    border-radius: 5px;
+    padding: 0 0.4rem;
+    background-color: #fff !important;
+  }
+
+  label {
+    font-family: 'Poppins', Helvetica, sans-serif!important;
+    font-size: 14px!important;
+    font-weight: 400!important;
+    color: #242424!important;
+  }
+}
+
+.chart-table-container {
+  display: flex;
+  flex-direction: row;
+  width: auto;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto; // Center the container
+
+  &.empty {
+    margin:24px!important
+  }
+
+  .chart-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 260px;
+  }
+
+  .table-section {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.payment-method {
+  padding-left: 24px;
+  width: 100%;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 500;
+  color: #034d91;
+  margin-bottom: 30px;
+}
+
+.card-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background-color: #ffffff;
+  border-radius: 6px;
+  box-shadow: 1px 1px 12px rgb(98 85 85 / 25%);
+  color: v.$teritary_color;
+  padding: 24px;
 }

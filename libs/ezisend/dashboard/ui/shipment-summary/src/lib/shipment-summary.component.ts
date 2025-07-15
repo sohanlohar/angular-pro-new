@@ -23,6 +23,7 @@ import { bm } from 'libs/ezisend/assets/my';
 import { TranslationService } from 'libs/ezisend/shared-services/translate.service';
 import { SingleDataSet, Label, Color } from 'ng2-charts';
 import { ChartOptions, ChartType } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 @Component({
   selector: 'pos-shipment-summary',
   templateUrl: './shipment-summary.component.html',
@@ -55,13 +56,15 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
     },
   ];
   public doughnutChartLegend = false;
-  public doughnutChartPlugins = [];
+  public doughnutChartPlugins = [ChartDataLabels];
   /* doughnut chart */
   public doughnutChartOptions: ChartOptions = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false, // Allow the chart to fill the container
+    cutoutPercentage: 40, // Thicker ring (smaller center circle)
     aspectRatio: 1,
     legend: { position: 'left' },
+    layout: { padding: 0 }, // Remove padding around the chart
     tooltips: {
       callbacks: {
         label: (tooltipItem: any, data: any) => {
@@ -81,9 +84,19 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
         },
       },
     },
+    plugins: {
+      datalabels: {
+        color: '#fff', // White color for labels
+        font: {
+          weight: 'bold',
+          size: 16
+        }
+      }
+    }
   };
   displayedColumns2: string[] = ['delivery_type', 'order_count', 'percentage'];
   dataSource2: any = [];
+  expandedRowIndex: number | null = null;
 
   statistics = {
     byShipment: 0,
@@ -267,8 +280,11 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
             }
           });
 
-          this.dataSource2 = [
-            {
+          this.dataSource2 = [];
+
+          // Only add to dataSource2 if values are greater than 0
+          if (codTotal > 0) {
+            this.dataSource2.push({
               name: 'COD',
               color: this.doughnutColors[0].backgroundColor?.[0],
               value: codTotal,
@@ -276,8 +292,11 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
                 codTotal + nonCodTotal !== 0
                   ? ((codTotal * 100) / (codTotal + nonCodTotal)).toFixed(2)
                   : 0,
-            },
-            {
+            });
+          }
+
+          if (nonCodTotal > 0) {
+            this.dataSource2.push({
               name: 'NON COD',
               color: this.doughnutColors[0].backgroundColor?.[1],
               value: nonCodTotal,
@@ -285,11 +304,29 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
                 codTotal + nonCodTotal !== 0
                   ? ((nonCodTotal * 100) / (codTotal + nonCodTotal)).toFixed(2)
                   : 0,
-            },
-          ];
-          if (codTotal + nonCodTotal !== 0) {
-            this.doughnutChartData = [codTotal, nonCodTotal];
+            });
           }
+
+          // Filter out data points with 0 values for the chart
+          const filteredData: number[] = [];
+          const filteredLabels: string[] = [];
+
+          if (codTotal > 0) {
+            filteredData.push(codTotal);
+            filteredLabels.push('COD');
+          }
+
+          if (nonCodTotal > 0) {
+            filteredData.push(nonCodTotal);
+            filteredLabels.push('NON COD');
+          }
+
+          // Update chart data and labels
+          this.doughnutChartData = filteredData;
+          this.doughnutChartLabels = filteredLabels;
+
+          // Update isEmptyDoughnutChart based on filtered data
+          this.isEmptyDoughnutChart = filteredData.length === 0;
 
           // advancePieChart chart ends
           const codCountByDate: any = {};
@@ -320,5 +357,14 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.cdr.detectChanges();
       });
+  }
+
+  toggleRowExpansion(index: number): void {
+    this.expandedRowIndex = this.expandedRowIndex === index ? null : index;
+    this.cdr.detectChanges();
+  }
+
+  isRowExpanded(index: number): boolean {
+    return this.expandedRowIndex === index;
   }
 }

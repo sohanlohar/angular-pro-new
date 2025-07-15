@@ -15,11 +15,11 @@
         [customErrorMessages]="{
           required: languageForm.required_category
         }">
-        <mat-select [(value)]="selected_category" formControlName="category" (selectionChange)="getCategory($event.value)">
+        <mat-select [(value)]="selected_category" formControlName="category" (selectionChange)="getCategory($event.value)" [disabled]="isEditOrder">
           <!-- <mat-option value="Merchandise">Merchandise</mat-option> -->
           <mat-option *ngIf="(commonService.isCODUbat | async) === false" value="Document">{{languageData.document}}</mat-option>
           <mat-option *ngIf="(commonService.isCODUbat | async) === false" value="Parcel">{{languageData.parcel}}</mat-option>
-          <mat-option *ngIf="(commonService.isMPS| async) === true" value="MPS">{{languageData.mps}}</mat-option>
+          <mat-option *ngIf="(commonService.isCODUbat | async) === false" value="MPS">{{languageData.mps}}</mat-option>
           <mat-option *ngIf="(commonService.isCODUbat | async) === true" value="Ubat">{{languageData.ubat}}</mat-option>
           <mat-option *ngIf="(commonService.isMelPlus | async) === true" value="MelPlus">{{languageData.mel_plus}}</mat-option>
         </mat-select>
@@ -254,7 +254,7 @@
         [customErrorMessages]="{
           required: languageForm.select_product
         }">
-        <mat-select [(ngModel)]="product_category" formControlName="product" (selectionChange)="getProduct($event)">
+        <mat-select [(ngModel)]="product_category" formControlName="product" (selectionChange)="getProduct($event)" [disabled]="isEditOrder">
           <mat-option *ngFor="let product of product_categories" [value]="product" [disabled]="getDisabledCountry(product)">{{product}}</mat-option>
         </mat-select>
       </pos-form-control-wrapper>
@@ -268,7 +268,7 @@
         [customErrorMessages]="{
           required: languageForm.required_category
         }">
-        <mat-select [(ngModel)]="category_item" [(value)]="selected_category" formControlName="category">
+        <mat-select [(ngModel)]="category_item" [(value)]="selected_category" formControlName="category" [disabled]="isEditOrder">
           <mat-option *ngFor="let category of item_categories" [value]="category.name">{{category.value}}</mat-option>
         </mat-select>
       </pos-form-control-wrapper>
@@ -281,7 +281,7 @@
           required: languageForm.required_category_detail
         }">
         <mat-select [(ngModel)]="category_detail" [(value)]="selected_category_detail"
-          formControlName="category_details">
+          formControlName="category_details" [disabled]="isEditOrder">
           <mat-option *ngFor="let category of category_details" [value]="category.name">{{category.value}}</mat-option>
         </mat-select>
       </pos-form-control-wrapper>

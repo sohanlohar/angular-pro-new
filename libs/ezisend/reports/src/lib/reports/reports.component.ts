@@ -95,7 +95,7 @@ export class ReportsComponent implements OnInit {
       { value: 'pickup-requested', viewValue: this.languageData.pickup_requested },
       { value: 'out-for-delivery', viewValue: this.languageData.out_for_delivery },
       { value: 'picked-up', viewValue: this.languageData.picked_up },
-      { value: 'droppedoff', viewValue: this.languageData.droppedoff },
+      // { value: 'droppedoff', viewValue: this.languageData.droppedoff },
       { value: 'in-transit', viewValue: this.languageData.in_transit },
       { value: 'delivered', viewValue: this.languageData.delivered },
       { value: 'failed', viewValue: this.languageData.failed },

@@ -22,7 +22,14 @@
   .tablewrapper {
     width: 100%;
     overflow-x: auto;
-
+    &.wrapper--min-height-400 {
+      min-height: 400px;
+      transition: min-height 0.3s ease-in-out; // Optional: for smooth transition
+    }
+    &.wrapper--min-height-300 {
+      min-height: 300px;
+      transition: min-height 0.3s ease-in-out; // Optional: for smooth transition
+    }
     table {
       width: 100%;
 

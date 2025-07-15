@@ -21,7 +21,7 @@
       </ng-template>
       <pos-bulk-dom-intl-shipment [BU_type]="'melplus'"></pos-bulk-dom-intl-shipment>
     </mat-tab>
-    <mat-tab *ngIf="(commonService.isMPS | async)">
+    <mat-tab *ngIf="(commonService.isCODUbat | async) === false">
       <ng-template mat-tab-label>
         <label>MPS</label>
       </ng-template>

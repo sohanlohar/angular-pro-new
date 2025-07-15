@@ -23,6 +23,7 @@ export interface IntlCountryCode {
   calling_code: string;
   code: string;
   country: string;
+  disabled?: string
 }
 
 export interface ICountry {

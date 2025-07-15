@@ -11,7 +11,7 @@
       || activeTab === 'all'
       || activeTab === 'returned') &&
       selection.selected.length > 0
-    ">
+     " >
     <span class="wrapper-table-label_current">{{ isSelectAllOrder ? total : selection.selected.length}} {{activeTab === 'pending' ? viewBy :  languageData.order}} {{languageData.selected}}.</span>&nbsp;
     <!-- TEMPORARY HIDE SELECT ALL -->
     <!-- <span class="wrapper-table-label_all" *ngIf="!isSelectAllOrder" (click)="selectAllOrder(true)">Select all ({{total}}) orders in {{labelTab}}</span>
@@ -29,7 +29,9 @@
     *ngIf="dataTable.data.length > 0"
   ></pos-paginator>
 
-  <div class="tablewrapper">
+  <div #tableWrapper class="tablewrapper"
+       [class.wrapper--min-height-400]="isListingEmpty()"
+       [class.wrapper--min-height-300]="applyMinHeight300Rule">
     <ng-container>
       <table mat-table [dataSource]="dataTable">
         <ng-container matColumnDef="select">
@@ -202,7 +204,7 @@
                 <div class="pending_cancellation">{{languageData.pending_cancellation}}</div>
               </ng-container>
               <ng-container *ngIf="data.pickup_details?.pickup_status === 'droppedoff'">
-                <div class="droppedoff">{{languageData.dropped_off}}</div>
+                <div class="in-transit">{{languageData.on_the_way}}</div>
               </ng-container>
             </ng-container>
             <ng-container *ngIf="activeTab === 'pickup details'">
@@ -227,8 +229,8 @@
               <ng-container *ngIf="data.pickup_details?.pickup_status === 'cancelled'">
                 <div class="cancelled">{{languageData.pick_up_cancelled}}</div>
               </ng-container>
-              <ng-container *ngIf="data.status === 'droppedoff'">
-                <div class="droppedoff">{{languageData.order_created}}</div>
+              <ng-container *ngIf="data.status === 'droppedoff' || data.status === 'in-transit'">
+                <div class="in-transit">{{languageData.on_the_way}}</div>
               </ng-container>
             </ng-container>
             <ng-container *ngIf="activeTab === 'live'">
@@ -248,7 +250,7 @@
                 <div class="to-collect">{{languageData.ready_to_collect}}</div>
               </ng-container>
               <ng-container *ngIf="data.status === 'droppedoff'">
-                <div class="partial-picked">{{languageData.order_created}}</div>
+                <div class="in-transit">{{languageData.on_the_way}}</div>
               </ng-container>
             </ng-container>
             <ng-container *ngIf="activeTab === 'delivered'">
@@ -331,7 +333,7 @@
                 <div class="to-collect">{{languageData.ready_to_collect}}</div>
               </ng-container>
               <ng-container *ngIf="data.status === 'droppedoff'">
-                <div class="partial-picked">{{languageData.order_created}}</div>
+                <div class="in-transit">{{languageData.on_the_way}}</div>
               </ng-container>
               <ng-container *ngIf="data.status === 'pickup-requested'">
                 <div class="scheduled">{{languageData.pick_up_scheduled}}</div>
@@ -359,6 +361,15 @@
               </ng-container>
               <ng-container *ngIf="data.status === 'cancelled'">
                 <div class="cancelled">{{languageData.cancelled}}</div>
+              </ng-container>
+              <!-- Specific handling for missing tracking ID on statuses -->
+              <ng-container *ngIf="(!data.tracking_details?.tracking_id || data.tracking_details?.tracking_id === '') && (data.status === 'complete' || data.status === 'order-created')">
+                <div class="no-tracking-id">{{ languageData.no_tracking_id }}</div>
+              </ng-container>
+
+              <!-- Else if tracking ID exists -->
+              <ng-container *ngIf="data.tracking_details?.tracking_id && (data.status === 'complete' || data.status === 'order-created')">
+                <div class="delivered">{{ languageData.order_created }}</div>
               </ng-container>
             </ng-container>
           </td>

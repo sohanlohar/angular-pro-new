@@ -73,7 +73,7 @@ export class DateRangePickerComponent implements OnInit {
   @Input() initialRange: 'last30' | 'next30' | null | undefined = 'last30';
   form!: FormGroup;
   @Output() formChange = new EventEmitter();
-  @Output() pickerStateChanged = new EventEmitter<boolean>(); // New Output
+  @Output() pickerStateChanged = new EventEmitter<boolean>();
   isPickerOpen = false;
 
   selected: any;
