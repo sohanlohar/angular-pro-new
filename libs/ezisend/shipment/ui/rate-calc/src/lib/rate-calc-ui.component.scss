@@ -1,6 +1,6 @@
 .mat-fields-wrapper {
   display: flex;
-  align-items: end;
+  align-items: center;
   gap: 15px;
   flex-wrap: wrap;
   .mat-field-container {
@@ -391,7 +391,7 @@
     .mat-field-container {
       &.weight-field {
         ::ng-deep .mat-form-field-wrapper {
-          padding-bottom: 0;
+          // padding-bottom: 0;
         }
         .volumetric-calculator {
           font-size: 12px;
@@ -401,6 +401,8 @@
             color: #999;
             padding-top: 3px;
             cursor: auto;
+            position: absolute;
+            bottom: 0;
           }
         }
         .error-message {

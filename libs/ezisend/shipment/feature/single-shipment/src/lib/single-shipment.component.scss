@@ -64,7 +64,7 @@ mat-stepper {
 
 @media (min-width: 320px) and (max-width: 567px){
   ::ng-deep .dialog-container-custom .mat-dialog-container{
-    padding: 10px !important;
+    // padding: 10px !important;
     min-width: 80vw;
   }
 

@@ -10,13 +10,13 @@
     color: #5e5873;
     margin-bottom: 1.06rem;
   }
-  .mat-form-field {
-    margin-bottom: 15px !important;
-  }
+  // .mat-form-field {
+  //   margin-bottom: 15px !important;
+  // }
 
-  .mat-form-field {
-    margin-bottom: 15px !important;
-  }
+  // .mat-form-field {
+  //   margin-bottom: 15px !important;
+  // }
 
   .flex-display {
     display: flex;
@@ -558,10 +558,10 @@
   div {
     display: grid;
     grid-gap: 0rem 0.5rem;
-    margin: 1rem 0rem;
+    margin-bottom: 1rem;
     background: #f7fbff;
     border-radius: 0.5rem;
-    padding: 0 0.5rem;
+    // padding: 0 0.5rem;
 
     .delete_custom {
       grid-area: deCu;
@@ -725,7 +725,7 @@
     margin: 0.25em 0 !important;
   }
   .insurance-check {
-    margin: 0.25em 0 !important;
+    margin: 0.25em 0 30px !important;
   }
   .insurance-notes {
     // margin: 0 16px;

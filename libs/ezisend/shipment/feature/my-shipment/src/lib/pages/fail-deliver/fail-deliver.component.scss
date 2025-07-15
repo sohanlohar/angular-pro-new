@@ -127,7 +127,7 @@
   //   width: 362px;
   // }
   .my-shipment-wrapper .container-right {
-    padding-top: 25px;
+    // padding-top: 25px;
   }
   // .container .container-action {
   // height: 3rem !important ;
@@ -172,7 +172,7 @@
 
 @media screen and (max-width: 430px) {
   .date-range-picker {
-    width: 100% !important;
+    // width: 100% !important;
   }
 
   .container-action {
@@ -185,6 +185,7 @@
 @media screen and (max-width: 570px) {
   .my-shipment-wrapper .container button {
     flex: 1;
+    font-size: 12px;
   }
 
   ::ng-deep .mat-tab-header-pagination {
@@ -195,6 +196,11 @@
     display: flex;
     justify-content: center;
     margin-top: 10px;
+  }
+  .mobile-filter-popup {
+    h3 {
+      font-size: 14px;
+    }
   }
 }
 
@@ -216,7 +222,7 @@
 
   .mobile-filter-popup {
     background: white;
-    width: 90%;
+    // width: 90%;
     max-width: 400px;
     padding: 24px;
     border-radius: 12px;

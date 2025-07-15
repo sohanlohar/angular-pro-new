@@ -22,7 +22,7 @@
     </a>
     
     <ng-container *ngIf="!isLoading || !commonService.checkIfMobile(); else loadingSpinner">
-        <ul class="pickup_list" [ngClass]="{'h-1140': commonService.isMPSSelected | async}">
+        <ul class="pickup_list" [ngClass]="{'h-1140': commonService.isMPSSelected | async}" [ngClass]="pickupList.length ? 'fixed-height' : 'auto-height'">
             <span *ngIf="!pickupList || !pickupList.length">
                 <div class="pickup_no_found_container">
                     <div>{{languageData.note1}}<br>{{languageData.note2}}</div>

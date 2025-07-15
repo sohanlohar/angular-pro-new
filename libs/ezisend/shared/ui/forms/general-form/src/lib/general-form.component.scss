@@ -53,7 +53,7 @@
 
     .save-contacts {
       text-align: right;
-      margin-top: 4rem;
+      margin-top: 3rem;
     }
 
     .button-next {
@@ -178,6 +178,7 @@
     .form-group {
       gap: 0.1rem 0.5rem;
       width: 100% !important;
+      margin-bottom: 0;
     }
   }
   .form-container .form-group .save-contacts {
@@ -192,7 +193,7 @@
   }
   ::ng-deep {
     .mat-select-panel {
-      min-width: 0px !important;
+      // min-width: 0px !important;
       width: 100%;
     }
     .mat-form-field-appearance-outline .mat-form-field-flex {
@@ -218,5 +219,17 @@
 .login-loading-spinner {
   ::ng-deep circle {
     stroke: white;
+  }
+}
+
+@media only screen and (max-width: 375px) {
+  ::ng-deep .mat-select-panel {
+    max-width: 220px !important;
+  }
+}
+
+@media only screen and (max-width: 320px) {
+  ::ng-deep .mat-select-panel {
+    max-width: 175px !important;
   }
 }

@@ -8,3 +8,17 @@
     }
   }
 }
+
+@media screen and (max-width: 570px) {
+  .paginator-wrapper {
+    ::ng-deep .mat-paginator-container {
+      padding: 0;
+      .mat-paginator-page-size-select {
+        width: 50px;
+      }
+      .mat-paginator-page-size {
+        margin-right: 0;
+      }
+    }
+  }
+}

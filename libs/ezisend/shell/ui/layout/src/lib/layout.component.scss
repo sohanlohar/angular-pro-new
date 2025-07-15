@@ -283,9 +283,9 @@
   }
 
   .scroll-top-button{
-    bottom: 192px !important;
+    bottom: 180px !important;
     z-index: 9999;
-    right: 20px !important;
+    right: 10px !important;
   }
 
   .scroll-bottom-button{
@@ -293,7 +293,10 @@
     // right: 70px !important;
     bottom: 138px !important;
     z-index: 9999;
-    right: 20px !important;
+    right: 10px !important;
+  }
+  .bb-feedback-button{
+    right: 10px;
   }
 
   .bottom-128{
@@ -314,8 +317,8 @@
       font-size: 16px;
     }
   }
-  .scroll-top-button {
-    bottom: 180px !important;
-}
+//   .scroll-top-button {
+//     bottom: 180px !important;
+// }
 }
 

@@ -1,7 +1,7 @@
-@use "./styles/index.scss" as pos;
+@use './styles/index.scss' as pos;
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
-@use "@angular/material" as mat;
+@use '@angular/material' as mat;
 // Plus imports for other components in your app.
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
@@ -10,8 +10,8 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-@import "~@angular/material/theming";
-@import "https://fonts.googleapis.com/icon?family=Material+Icons";
+@import '~@angular/material/theming';
+@import 'https://fonts.googleapis.com/icon?family=Material+Icons';
 
 $ezisend-primary: mat.define-palette(pos.$blue-pos-palette, 900);
 $ezisend-accent: mat.define-palette(pos.$red-pos-palette, 400);
@@ -26,8 +26,8 @@ $ezisend-theme: mat.define-light-theme(
     color: (
       primary: $ezisend-primary,
       accent: $ezisend-accent,
-      warn: $ezisend-warn
-    )
+      warn: $ezisend-warn,
+    ),
   )
 );
 
@@ -38,13 +38,13 @@ $ezisend-theme: mat.define-light-theme(
 
 // Define a custom typography config for header
 $header-typography-config: mat-typography-config(
-  $font-family: "Poppins"
+  $font-family: 'Poppins',
 );
 
 // Define a custom typography config for all
 $main-typography-config: mat-typography-config(
-  $font-family: "Poppins",
-  $headline: mat-typography-level(24px, 32px, 400, "Poppins")
+  $font-family: 'Poppins',
+  $headline: mat-typography-level(24px, 32px, 400, 'Poppins'),
 );
 
 // Override typography using $main-typography-config for all angular material components
@@ -61,7 +61,7 @@ body {
 }
 body {
   margin: 0;
-  font-family: "Poppins", "Helvetica Neue", sans-serif;
+  font-family: 'Poppins', 'Helvetica Neue', sans-serif;
 }
 
 .dialog-container-custom .mat-dialog-container {
@@ -96,7 +96,10 @@ body {
   color: #f86262;
 }
 
-.cdk-overlay-connected-position-bounding-box .mat-menu-panel .mat-menu-content .action-icon_disabled {
+.cdk-overlay-connected-position-bounding-box
+  .mat-menu-panel
+  .mat-menu-content
+  .action-icon_disabled {
   opacity: 0.3;
   pointer-events: none;
 }
@@ -111,7 +114,8 @@ body {
   color: #f86262;
 }
 
-.mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline-thick {
+.mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid
+  .mat-form-field-outline-thick {
   color: #f86262;
 }
 
@@ -132,7 +136,9 @@ body {
 }
 
 .mat-form-field.mat-form-field-invalid .mat-form-field-label.mat-accent,
-.mat-form-field.mat-form-field-invalid .mat-form-field-label .mat-form-field-required-marker {
+.mat-form-field.mat-form-field-invalid
+  .mat-form-field-label
+  .mat-form-field-required-marker {
   color: #f86262;
 }
 
@@ -140,9 +146,15 @@ body {
   color: #f86262;
 }
 
-.mat-form-field-appearance-outline .mat-form-field-outline-thick .mat-form-field-outline-start,
-.mat-form-field-appearance-outline .mat-form-field-outline-thick .mat-form-field-outline-end,
-.mat-form-field-appearance-outline .mat-form-field-outline-thick .mat-form-field-outline-gap {
+.mat-form-field-appearance-outline
+  .mat-form-field-outline-thick
+  .mat-form-field-outline-start,
+.mat-form-field-appearance-outline
+  .mat-form-field-outline-thick
+  .mat-form-field-outline-end,
+.mat-form-field-appearance-outline
+  .mat-form-field-outline-thick
+  .mat-form-field-outline-gap {
   border-width: 1px !important;
 }
 
@@ -177,23 +189,29 @@ textarea.mat-input-element {
 .mat-form-field-disabled .mat-form-field-infix input,
 .mat-form-field-disabled .mat-form-field-infix textarea,
 .mat-form-field-disabled .mat-form-field-infix .pos-form-control-wrapper input,
-.mat-form-field-disabled .mat-form-field-infix .pos-form-control-wrapper textarea,
+.mat-form-field-disabled
+  .mat-form-field-infix
+  .pos-form-control-wrapper
+  textarea,
 .mat-form-field-disabled .mat-form-field-infix mat-select .mat-select-value {
   color: #a6a6a6;
 }
-.mat-form-field-wrapper{
-  padding-bottom: 0;
-}
+// .mat-form-field-wrapper {
+//   padding-bottom: 0;
+// }
 @media screen and (max-width: 375px) {
-  .mat-datepicker-popup .mat-datepicker-content .mat-datepicker-content-container .mat-calendar {
+  .mat-datepicker-popup
+    .mat-datepicker-content
+    .mat-datepicker-content-container
+    .mat-calendar {
     width: 220px;
     height: 300px;
   }
 }
 @media screen and (max-width: 780px) {
-  .mat-form-field-appearance-outline .mat-form-field-wrapper {
-    margin: 0.25em 0em !important;
-  }
+  // .mat-form-field-appearance-outline .mat-form-field-wrapper {
+  //   margin: 0.25em 0em !important;
+  // }
   .mat-datepicker-content .mat-calendar {
     width: 250px !important;
     height: 300px !important;
@@ -235,7 +253,8 @@ textarea.mat-input-element {
 }
 @media screen and (max-width: 780px) {
   .bb-feedback-button {
-    bottom: 83px !important;
+    bottom: 90px !important;
+    right: 10px !important;
   }
   .mat-tab-body-content {
     background: #fff;
@@ -249,7 +268,7 @@ textarea.mat-input-element {
 }
 @media screen and (max-width: 575px) {
   .bb-feedback-button {
-    bottom: 96px !important;
+    // bottom: 96px !important;
     .bb-feedback-button-icon {
       width: 35px;
       height: 35px;
@@ -276,8 +295,7 @@ html {
 button:hover {
   transform: scale(0.96);
 }
-.mat-form-field-appearance-standard .mat-form-field-underline
-{
+.mat-form-field-appearance-standard .mat-form-field-underline {
   position: fixed;
   height: 0px !important;
   .mat-form-field-underline:focus {
@@ -287,4 +305,5 @@ button:hover {
 
 .cdk-overlay-pane {
   transform: none !important;
+  position: absolute !important;
 }

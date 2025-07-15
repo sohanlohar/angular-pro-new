@@ -133,7 +133,7 @@
     padding-top: 10px;
   }
   .my-shipment-wrapper .container-right {
-    padding-top: 25px;
+    // padding-top: 25px;
   }
 }
 // @media screen and (max-width: 390px) {
@@ -185,6 +185,7 @@
 @media screen and (max-width: 570px) {
   .my-shipment-wrapper .container button {
     flex: 1;
+    font-size: 12px;
   }
 
   ::ng-deep .mat-tab-header-pagination {
@@ -216,7 +217,7 @@
 
   .mobile-filter-popup {
     background: white;
-    width: 90%;
+    // width: 90%;
     max-width: 400px;
     padding: 24px;
     border-radius: 12px;

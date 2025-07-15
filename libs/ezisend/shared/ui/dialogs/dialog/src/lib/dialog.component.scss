@@ -2,7 +2,7 @@
 
 .dialogContainer {
   font-family: 'Poppins', Helvetica, sans-serif;
-  width: 25rem;
+  // width: 25rem;
   padding: 2.5rem 2rem;
   text-align: center;
   .mat-dialog-title {
@@ -195,7 +195,7 @@
 }
 @media screen  and (max-width:700px) {
   .dialogContainer{
-    width: 82%;
+    // width: 82%;
   }
 
   .dialogContainer .mat-dialog-content .date-container{

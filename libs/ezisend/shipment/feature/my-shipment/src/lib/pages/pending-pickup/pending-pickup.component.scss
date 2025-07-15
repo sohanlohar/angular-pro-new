@@ -116,6 +116,7 @@ mat-form-field {
 
   .my-shipment-wrapper .action-button button {
     flex: 1;
+    font-size: 12px;
   }
 
   ::ng-deep .mat-tab-header-pagination {
@@ -147,7 +148,7 @@ mat-form-field {
 
   .mobile-filter-popup {
     background: white;
-    width: 90%;
+    // width: 90%;
     max-width: 400px;
     padding: 24px;
     border-radius: 12px;
