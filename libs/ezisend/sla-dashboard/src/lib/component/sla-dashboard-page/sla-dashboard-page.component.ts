@@ -113,6 +113,12 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
   end_date = '';
   isLoading = false;
 
+  // Individual loading states for each graph
+  isStatusLoading = false;
+  isCategoryLoading = false;
+  isStateLoading = false;
+  isDexLoading = false;
+
   mainTitle = 'SLA Dashboard';
   loading = false;
   lastRefreshData = moment().format('DD MMM YYYY, hh:mm A');
@@ -423,35 +429,88 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
 
   private loadDashboardData() {
     this.last_updated = [];
-    this.isLoading = true;
 
-    forkJoin([
-      this.getCategoryData().pipe(catchError((err) => of(null))),
-      this.getStatusData().pipe(catchError((err) => of(null))),
-      this.getStateData().pipe(catchError((err) => of(null))),
-      this.getDexList().pipe(catchError((err) => of(null))),
-    ]).subscribe({
-      next: ([catRes, statusRes, stateRes, dexRes]) => {
-        if (catRes) {
-          this.mappingCategoryResponse(catRes);
-        }
+    // Load each graph data individually with separate loading states
+    this.loadStatusData();
+    this.loadCategoryData();
+    this.loadStateData();
+    this.loadDexData();
+  }
 
+  private loadStatusData() {
+    this.isStatusLoading = true;
+    this.getStatusData()
+      .pipe(
+        catchError((err) => {
+          console.error('Error loading status data:', err);
+          return of(null);
+        }),
+        finalize(() => {
+          this.isStatusLoading = false;
+        })
+      )
+      .subscribe((statusRes) => {
         if (statusRes) {
           this.mappingStatusResponse(statusRes);
         }
+      });
+  }
 
+  private loadCategoryData() {
+    this.isCategoryLoading = true;
+    this.getCategoryData()
+      .pipe(
+        catchError((err) => {
+          console.error('Error loading category data:', err);
+          return of(null);
+        }),
+        finalize(() => {
+          this.isCategoryLoading = false;
+        })
+      )
+      .subscribe((catRes) => {
+        if (catRes) {
+          this.mappingCategoryResponse(catRes);
+        }
+      });
+  }
+
+  private loadStateData() {
+    this.isStateLoading = true;
+    this.getStateData()
+      .pipe(
+        catchError((err) => {
+          console.error('Error loading state data:', err);
+          return of(null);
+        }),
+        finalize(() => {
+          this.isStateLoading = false;
+        })
+      )
+      .subscribe((stateRes) => {
         if (stateRes) {
           this.mappingStateResponse(stateRes);
         }
+      });
+  }
 
+  private loadDexData() {
+    this.isDexLoading = true;
+    this.getDexList()
+      .pipe(
+        catchError((err) => {
+          console.error('Error loading dex data:', err);
+          return of(null);
+        }),
+        finalize(() => {
+          this.isDexLoading = false;
+        })
+      )
+      .subscribe((dexRes) => {
         if (dexRes) {
           this.mappingDexResponse(dexRes);
         }
-      },
-      complete: () => {
-        this.isLoading = false;
-      },
-    });
+      });
   }
 
   private mappingCategoryResponse(
@@ -517,11 +576,12 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         stack: 'a', // Revert: stack with Success/Failed
         datalabels: {
           display: (ctx: any) => ctx.dataset.label === 'No Data' && ctx.dataset.data[ctx.dataIndex] > 0,
-          color: '#fff',
-          font: { weight: 'bold' as const, size: 16 }, // Larger font for visibility
+          color: '#FFF',
+          font: { weight: 'normal' as const, size: 12 }, // Smaller font size
           align: 'center' as const,
           anchor: 'center' as const,
-          padding: { top: 0, bottom: 0 }, // Explicit padding for centering
+          textAlign: 'center' as const,
+          padding: { top: 0, bottom: 0 },
           formatter: (value: any, ctx: any) => value > 0 ? 'No\nData\nAvailable' : '',
         },
         _customLegend: false, // Custom property to help filter legend
@@ -723,6 +783,10 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     const max = Math.max(...this.shipmentData.map((d) => d.shipments));
     if (max === 0) return 0;
     return (value / max) * 100;
+  }
+
+  getFilteredDexData() {
+    return this.dexSourceData.filter(element => element.total > 0);
   }
 
   async downloadAllFile() {

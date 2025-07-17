@@ -65,12 +65,6 @@
     display: none !important;
   }
 }
-
-::ng-deep .calendar.left,
-.calendar.right {
-  flex: 1 !important;
-}
-
 ::ng-deep
   .date-range-form-wrapper
   .mat-form-field-wrapper
