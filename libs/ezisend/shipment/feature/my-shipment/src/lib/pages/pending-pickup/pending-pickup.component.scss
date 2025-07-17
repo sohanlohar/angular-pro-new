@@ -131,16 +131,16 @@ mat-form-field {
 }
 
 .mobile-filter-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
+  // position: fixed;
+  // top: 0;
+  // left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4);
+  // background: rgba(0, 0, 0, 0.4);
   display: none;
-  justify-content: center;
+  // justify-content: center;
   align-items: center;
-  z-index: 1000;
+  // z-index: 1000;
 
   &.show {
     display: flex;
@@ -175,8 +175,8 @@ mat-form-field {
   padding: 5px 12px;
   font-size: 13px;
   border-radius: 16px;
-  background-color: #3993E5;
-  color: #FFFFFF;
+  background-color: #3993e5;
+  color: #ffffff;
   font-weight: 500;
   margin: 4px;
   white-space: nowrap;

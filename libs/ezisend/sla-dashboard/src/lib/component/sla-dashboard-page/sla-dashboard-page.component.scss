@@ -254,6 +254,9 @@
       width: 100% !important;
     }
   }
+  .no-data, .no-data-gray{
+    min-height: 100px !important;
+  }
 }
 
 .mat-progress-spinner circle,

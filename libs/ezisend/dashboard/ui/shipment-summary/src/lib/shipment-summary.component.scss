@@ -132,8 +132,30 @@
       width: 100% !important;
     }
   }
+
   .wrapper-column {
     flex-direction: column;
+    .column {
+      padding: 15px !important;
+    }
+  }
+  .chart-table-container {
+    flex-direction: column !important;
+  }
+  .container {
+    .container {
+      &__orders {
+        padding: 0.5rem;
+      }
+    }
+  }
+  .card-column {
+    padding: 15px !important;
+  }
+  ::ng-deep .date-range-picker {
+    > form {
+      width: 100% !important;
+    }
   }
 }
 
@@ -151,15 +173,6 @@
 
   .container__shipment-summary > :nth-child(3) {
     break-after: always; /* CSS break after the third item */
-  }
-}
-@media screen and (max-width: 575px) {
-  .container {
-    .container {
-      &__orders {
-        padding: 1rem;
-      }
-    }
   }
 }
 
@@ -184,34 +197,33 @@
   }
 }
 
+// .pieTable {
+//   display: flex;
+//   flex-direction: column;
+//   flex: 1;
 
-  // .pieTable {
-  //   display: flex;
-  //   flex-direction: column;
-  //   flex: 1;
+//   .description {
+//     margin-top: 30px;
+//   }
 
-  //   .description {
-  //     margin-top: 30px;
-  //   }
+//   ::ng-deep .mat-table {
+//     box-shadow: none;
+//     border: 1px solid #E1E1E1;
+//     text-align: center;
+//     border-radius: 5px;
+//     // height: 100%;
 
-  //   ::ng-deep .mat-table {
-  //     box-shadow: none;
-  //     border: 1px solid #E1E1E1;
-  //     text-align: center;
-  //     border-radius: 5px;
-  //     // height: 100%;
+//     .mat-header-cell {
+//       color: #5E5873;
+//       background-color: #F4F4F4;
+//       text-align: center;
+//     }
 
-  //     .mat-header-cell {
-  //       color: #5E5873;
-  //       background-color: #F4F4F4;
-  //       text-align: center;
-  //     }
-
-  //     .mat-row {
-  //       // height: 80px;
-  //     }
-  //   }
-  // }
+//     .mat-row {
+//       // height: 80px;
+//     }
+//   }
+// }
 
 .box-color {
   display: flex;
@@ -257,13 +269,13 @@
 }
 
 .wrapper-column {
-  width: 100%;
+  // width: 100%;
   display: flex;
   justify-content: space-between;
   gap: 24px;
 
   .column {
-    width: 100%;
+    // width: 100%;
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -274,19 +286,19 @@
     padding: 24px;
 
     &.left {
-      width: 50%;
+      // width: 50%;
+      flex-basis: 35%;
 
       pos-cod-order {
-        width: 100%!important;
+        width: 100% !important;
       }
     }
 
     &.cod {
-      padding-left: 0!important;
+      flex-basis: 65%;
     }
   }
 }
-
 
 .no-data {
   display: flex;
@@ -315,17 +327,18 @@
 .custom-table thead th {
   font-size: 14px;
   font-weight: 400;
-  color: #5E5873;
+  color: #5e5873;
 }
 
-.custom-table th, .custom-table td {
+.custom-table th,
+.custom-table td {
   border: 1px solid #e0e0e0;
   padding: 12px 8px;
   text-align: left;
 }
 .custom-table th {
   background: #f4f4f4;
-  color: #5E5873;
+  color: #5e5873;
   font-weight: 600;
 }
 
@@ -343,12 +356,11 @@
   }
 }
 
-
 .no-available {
   height: 150px;
 
   td {
-    text-align: center!important;
+    text-align: center !important;
   }
 }
 
@@ -365,7 +377,7 @@
   }
   > form {
     margin-top: 3px;
-    width: 250px !important;
+    width: 250px;
   }
 
   ::ng-deep .mat-form-field-appearance-standard .mat-form-field-flex {
@@ -376,10 +388,10 @@
   }
 
   label {
-    font-family: 'Poppins', Helvetica, sans-serif!important;
-    font-size: 14px!important;
-    font-weight: 400!important;
-    color: #242424!important;
+    font-family: 'Poppins', Helvetica, sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    color: #242424 !important;
   }
 }
 
@@ -389,19 +401,20 @@
   width: auto;
   align-items: center;
   justify-content: center;
-  margin: 0 auto; // Center the container
+  // margin: 0 auto;
+  gap: 30px;
 
   &.empty {
-    margin:24px!important
+    margin: 24px !important;
   }
 
-  .chart-section {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 260px;
-  }
+  // .chart-section {
+  //   flex: 1;
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+  //   min-height: 260px;
+  // }
 
   .table-section {
     flex: 1;
@@ -412,7 +425,6 @@
 }
 
 .payment-method {
-  padding-left: 24px;
   width: 100%;
   text-align: left;
   font-size: 16px;
