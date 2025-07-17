@@ -268,7 +268,7 @@
               </ng-container>
             </ng-container>
             <ng-container *ngIf="activeTab === 'failed-deliver'">
-              <ng-container *ngIf="data.status === 'failed' || data.status === 'failed-delivery-attempt'">
+              <ng-container *ngIf="data.status === 'failed'">
                 <div class="failed">{{languageData.failed_delivery_attempt}}</div>
               </ng-container>
             </ng-container>
@@ -317,7 +317,7 @@
               <ng-container *ngIf="data.status === 'in-transit-return'">
                 <div class="return_success">{{languageData.out_for_return}}</div>
               </ng-container>
-              <ng-container *ngIf="data.status === 'failed' || data.status === 'failed-delivery-attempt'">
+              <ng-container *ngIf="data.status === 'failed'">
                 <div class="failed">{{languageData.failed_delivery_attempt}}</div>
               </ng-container>
               <ng-container *ngIf="data.status === 'in-transit'">
@@ -337,9 +337,6 @@
               </ng-container>
               <ng-container *ngIf="data.status === 'pickup-requested'">
                 <div class="scheduled">{{languageData.pick_up_scheduled}}</div>
-              </ng-container>
-              <ng-container *ngIf="data.status === 'connote-assigned'">
-                <div class="delivered">{{languageData.order_created}}</div>
               </ng-container>
               <ng-container *ngIf="data.status === 'pickup-assigned'">
                 <div class="scheduled">{{languageData.pick_up_assigned}}</div>

@@ -178,7 +178,7 @@ export class RecipientDetailFormComponent
       });
 
     // this.countryList$ = this.commonService.countryList$;
-    this.countryList$ = this.commonService.getAPI('countries', 'list', 0, 'v1'); // SPPI-2388 - change in the endpoint v1 -> v2
+    this.countryList$ = this.commonService.getAPI('countries', 'list', 0, 'v2'); // SPPI-2388 - change in the endpoint v1 -> v2
   
     this.getState$ = this.commonService.getAPI('states', 'query?country=MY', 0);
     this.resetTypeFormFieldCuntryCityState();

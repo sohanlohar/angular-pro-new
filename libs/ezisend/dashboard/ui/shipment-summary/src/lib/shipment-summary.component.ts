@@ -286,7 +286,7 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
           if (codTotal > 0) {
             this.dataSource2.push({
               name: 'COD',
-              color: '#00AFAF',
+              color: this.doughnutColors[0].backgroundColor?.[0],
               value: codTotal,
               percentage:
                 codTotal + nonCodTotal !== 0
@@ -298,7 +298,7 @@ export class ShipmentSummaryComponent implements OnInit, OnDestroy {
           if (nonCodTotal > 0) {
             this.dataSource2.push({
               name: 'NON COD',
-              color: '#008BD3',
+              color: this.doughnutColors[0].backgroundColor?.[1],
               value: nonCodTotal,
               percentage:
                 codTotal + nonCodTotal !== 0

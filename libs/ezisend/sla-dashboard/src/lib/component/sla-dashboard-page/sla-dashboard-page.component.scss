@@ -3,24 +3,25 @@
 .container-page {
   position: relative;
   margin-top: 40px;
-}
 
-.spinner-container {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  top: 0;
-  background-color: rgba(255, 255, 255, 0.8);
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-}
-
-.spinner {
-  transform: scale(0.6);
+  .spinner-container {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+  }
+  .spinner {
+    transform: scale(0.6);
+    margin: 0 auto;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+  }
 }
 
 .maintitle {
@@ -253,6 +254,9 @@
       width: 100% !important;
     }
   }
+  .no-data, .no-data-gray{
+    min-height: 100px !important;
+  }
 }
 
 .mat-progress-spinner circle,
@@ -306,8 +310,6 @@ a.download-report-button {
   justify-content: space-between;
   flex: 1;
   gap: 1rem;
-  position: relative;
-  min-height: 250px;
 
   .description {
     font-size: 16px;
@@ -353,8 +355,6 @@ a.download-report-button {
 }
 
 .shipment-chart {
-  position: relative;
-  min-height: 250px;
 
   .shipment-row {
     display: flex;
@@ -579,8 +579,6 @@ a.download-report-button {
   align-items: center;
   justify-content: flex-start;
   padding: 0;
-  position: relative;
-  min-height: 250px;
 
   canvas {
     height: 300px !important;
@@ -945,9 +943,5 @@ a.download-report-button {
     color: #222;
     font-size: 12px;
     font-weight: 400;
-  }
-
-  .no-border-bottom {
-    box-shadow: none !important;
   }
 }

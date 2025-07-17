@@ -1,4 +1,7 @@
 <div class="container-page" #dashboardContainer>
+  <div class="spinner-container" *ngIf="isLoading">
+    <mat-spinner class="spinner"></mat-spinner>
+  </div>
 
   <div class="header-sla">
     <span class="main-title">PERFOMANCE INSIGHTS</span>
@@ -68,10 +71,6 @@
         </mat-menu>
       </div>
       <div class="chart-card" #statusChart>
-        <div class="spinner-container" *ngIf="isStatusLoading">
-          <mat-spinner class="spinner"></mat-spinner>
-        </div>
-
         <canvas
           baseChart
           [datasets]="statusPieData"
@@ -80,11 +79,11 @@
           [legend]="true"
           [chartType]="'doughnut'"
           [plugins]="statusPiePlugins"
-          *ngIf="!isStatusEmpty && !isStatusLoading"
+          *ngIf="!isStatusEmpty"
         >
         </canvas>
 
-        <div class="no-data" *ngIf="isStatusEmpty && !isStatusLoading">No data to display</div>
+        <div class="no-data" *ngIf="isStatusEmpty">No data to display</div>
       </div>
     </div>
 
@@ -114,10 +113,6 @@
         </mat-menu>
       </div>
       <div class="chart-card" #categoryChart>
-        <div class="spinner-container" *ngIf="isCategoryLoading">
-          <mat-spinner class="spinner"></mat-spinner>
-        </div>
-
         <canvas
           baseChart
           [datasets]="catBarData"
@@ -126,11 +121,11 @@
           [legend]="catBarLegend"
           [chartType]="catBarType"
           [plugins]="catBarPlugins"
-          *ngIf="!isEmptyType && !isCategoryLoading"
+          *ngIf="!isEmptyType"
         >
         </canvas>
 
-        <div class="no-data-gray" *ngIf="isEmptyType && !isCategoryLoading">
+        <div class="no-data-gray" *ngIf="isEmptyType">
           <div class="no-data-content">
             <p>No available data</p>
           </div>
@@ -169,15 +164,11 @@
       </div>
 
       <div class="shipment-chart" #stateChart>
-        <div class="spinner-container" *ngIf="isStateLoading">
-          <mat-spinner class="spinner"></mat-spinner>
-        </div>
-
-        <div class="sla-bar-header-row" *ngIf="!isStateLoading">
+        <div class="sla-bar-header-row">
           <div class="sla-bar-header-percentage">SLA Success by Percentage</div>
           <div class="sla-bar-header-volume">SLA Success by Volume</div>
         </div>
-        <ng-container *ngIf="shipmentData.length > 0 && !isStateLoading">
+        <ng-container *ngIf="shipmentData.length > 0">
           <div class="sla-bar-row" *ngFor="let item of shipmentData">
             <!-- State Name Label -->
             <div class="sla-bar-label">{{ item.state }}</div>
@@ -222,12 +213,12 @@
             </div>
           </div>
         </ng-container>
-        <div class="total-shipment" *ngIf="shipmentData.length > 0 && !isStateLoading">
+        <div class="total-shipment" *ngIf="shipmentData.length > 0">
           Total Shipment: <strong>{{ getTotalShipments() | number }}</strong>
         </div>
       </div>
 
-      <div class="no-data" *ngIf="shipmentData.length === 0 && !isStateLoading">
+      <div class="no-data" *ngIf="shipmentData.length === 0">
         No data to display
       </div>
     </div>
@@ -258,12 +249,8 @@
         </mat-menu>
       </div>
 
-            <div class="pieChart" #dexChart>
-        <div class="spinner-container" *ngIf="isDexLoading">
-          <mat-spinner class="spinner"></mat-spinner>
-        </div>
-
-        <div class="section-data" *ngIf="!isDexLoading">
+      <div class="pieChart" #dexChart>
+        <div class="section-data">
           <canvas
             baseChart
             [data]="dexChartData"
@@ -280,11 +267,10 @@
           </div>
         </div>
 
-        <div class="dex-table-scroll" *ngIf="!isEmptyDex && !isDexLoading">
+        <div class="dex-table-scroll" *ngIf="!isEmptyDex">
           <table class="dex-custom-table">
             <tbody>
-              <tr *ngFor="let element of getFilteredDexData(); let last = last"
-                  [ngClass]="{ 'no-border-bottom': getFilteredDexData().length === 1 }">
+              <tr *ngFor="let element of dexSourceData">
                 <td class="dex-color-bar-cell">
                   <div
                     class="dex-color-bar"
@@ -297,7 +283,7 @@
             </tbody>
           </table>
         </div>
-        <div class="no-data table" *ngIf="isEmptyDex && !isDexLoading">
+        <div class="no-data table" *ngIf="isEmptyDex">
           <p>Data unavailable</p>
         </div>
       </div>
