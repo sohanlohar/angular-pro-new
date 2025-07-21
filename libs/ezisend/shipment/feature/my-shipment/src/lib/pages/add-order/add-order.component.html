@@ -25,6 +25,8 @@
             <span>{{ pickup_address }}</span>
           </div>
         </div>
+      </div>
+      <div class="container-group">
         <div class="container">
           <div class="container-label" style="opacity:0;">button label</div>
           <button mat-flat-button color="primary" (click)="addToPickup()">{{languageData.add_pickup}}</button>
@@ -58,7 +60,7 @@
     (selectedData)="onSelectRow($event)">
   </pos-my-shipment-table>
 </div>
-<div style="margin-top: 30px; text-align: center;" *ngIf="commonService.checkIfMobile() && total===0">
+<div style="margin-top: 30px; text-align: center;" *ngIf="commonService.checkIfMobile() && total==0">
   <mat-card>
     <mat-card-content>{{languageData.no_data_found}}</mat-card-content>
   </mat-card>  

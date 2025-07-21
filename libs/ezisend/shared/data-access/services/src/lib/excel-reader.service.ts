@@ -376,14 +376,6 @@ export class ExcelReaderService {
     }
 
     if (
-      element['Receiver Country'].trim() === 'SY'
-    ) {
-      element.error =
-        element?.error +
-        `\r\n ERROR - Selected receiver country is suspended temporarily \r\n`;
-    }
-
-    if (
       element['Receiver State'].trim() !== '' &&
       !/^.{3,50}$/.test(element['Receiver State'].trim())
     ) {
