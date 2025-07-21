@@ -194,8 +194,12 @@
   text-align: center;
 }
 @media screen  and (max-width:700px) {
-  .dialogContainer{
-    // width: 82%;
+  .dialogContainer {
+    .mat-dialog-content {
+      &_logo mat-icon {
+        height: 2em;
+      }
+    }
   }
 
   .dialogContainer .mat-dialog-content .date-container{

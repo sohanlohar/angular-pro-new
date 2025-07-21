@@ -306,4 +306,9 @@ button:hover {
 .cdk-overlay-pane {
   transform: none !important;
   position: absolute !important;
+  height: auto !important;
+}
+
+div#mat-menu-panel-0 {
+  margin-top: 5px;
 }

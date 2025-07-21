@@ -22,3 +22,26 @@
     }
   }
 }
+
+@media screen and (max-width: 360px) {
+  .paginator-wrapper {
+    ::ng-deep .mat-paginator-container {
+      padding: 0;
+      .mat-paginator-page-size-select {
+        width: 40px;
+        font-size: 11px;
+      }
+      .mat-paginator-page-size {
+        margin-right: 0;
+        .mat-paginator-page-size-label {
+          font-size: 11px;
+        }
+      }
+      .mat-paginator-range-actions {
+        .mat-paginator-range-label {
+          font-size: 11px;
+        }
+      }
+    }
+  }
+}

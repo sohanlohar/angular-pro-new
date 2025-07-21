@@ -55,7 +55,11 @@ pos-page-layout {
 
     .report {
       display: block;
-      width: fit-content;
+      max-width: 330px;
+      width: 100%;
+      .ms-auto{
+        text-align: right;
+      }
     }
 
     .report-label {
@@ -104,9 +108,9 @@ pos-page-layout {
     }
   }
 
-  .col {
-    margin-right: 15px;
-  }
+  // .col {
+  //   margin-right: 15px;
+  // }
 
   .ms-auto {
     // margin-left: auto;
@@ -184,8 +188,9 @@ pos-page-layout {
   }
   .dropdown-input {
     // min-width: 150px;
-    width: 390px;
+    // width: 390px;
     padding: 4px 0;
+    width: 100%;
 
     .mat-form-field-wrapper {
       // padding-bottom: 0.7rem;

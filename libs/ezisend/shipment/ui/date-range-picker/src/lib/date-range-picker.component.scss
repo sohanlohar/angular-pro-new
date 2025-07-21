@@ -267,6 +267,7 @@
 
         .buttons {
           display: block !important;
+          margin-right: 0 !important;
         }
       }
 
@@ -299,8 +300,10 @@
 
       .buttons_input {
         display: flex;
-        justify-content: space-between;
         width: 100%;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
 
         .btn {
           padding: 0 40px !important;

@@ -4,6 +4,7 @@
   text-align: center;
   &-mat-dialog-title {
     font-size: v.$font_size_m;
+    font-weight: 600;
   }
   span.mat-header-close {
     position: absolute;
@@ -16,7 +17,7 @@
     }
   }
   &-container {
-    padding: 1rem;
+    // padding: 1rem;
     .date {
       display: flex;
       justify-content: space-between;
@@ -72,7 +73,9 @@
       justify-content: center;
       align-items: center;
       margin: 0 auto;
-      padding-bottom: 2rem;
+      margin: 1rem auto 2rem;
+      border: 2px dashed #008000;
+      padding: 15px;
     }
   }
   mat-dialog-actions {
@@ -91,7 +94,7 @@
       }
     }
     button.mat-raised-button {
-      width: 210px;
+      // width: 210px;
       height: 2.375rem;
     }
   }
@@ -154,7 +157,7 @@
 @media screen and (max-width: 575px) {
   .pickup {
     &__form-container {
-      padding: 0;
+      // padding: 0;
       .note {
         max-width: 100%;
       }

@@ -391,7 +391,7 @@
     .mat-field-container {
       &.weight-field {
         ::ng-deep .mat-form-field-wrapper {
-          padding-bottom: 0;
+          // padding-bottom: 0;
         }
         .volumetric-calculator {
           font-size: 12px;
@@ -401,6 +401,7 @@
             color: #999;
             padding-top: 3px;
             cursor: auto;
+            bottom: 0;
           }
         }
         .error-message {
@@ -415,6 +416,7 @@
       .generate-quote-btn {
         button {
           padding: 0 1rem;
+          margin-top: 10px;
         }
       }
       ::ng-deep {
@@ -560,8 +562,13 @@
   .rate-calc__ui .mat-field-container {
     margin-right: 0 !important;
   }
-  .mat-fields-wrapper {
-    flex-direction: row;
+  .rate-calc__ui {
+    .shipment-details {
+      .mat-fields-wrapper {
+        flex-direction: row;
+        gap: 0;
+      }
+    }
   }
 
   .mat-field-container {
@@ -571,10 +578,10 @@
   }
   .weight-field {
     position: relative;
-    .volumetric-calculator {
-      position: inherit !important;
-      bottom: auto !important;
-    }
+    // .volumetric-calculator {
+    //   position: inherit !important;
+    //   bottom: auto !important;
+    // }
   }
 }
 

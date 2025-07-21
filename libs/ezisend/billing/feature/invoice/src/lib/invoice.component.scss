@@ -94,6 +94,11 @@ td.status {
 td.mat-cell:last-of-type {
   display: table-cell !important;
   place-content: center !important;
+  ::ng-deep div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 .alignHeaderLeft {
   text-align: center;
@@ -214,8 +219,8 @@ td.mat-cell:last-of-type {
     .mat-paginator-range-label {
       margin: 0;
     }
-    .mat-paginator-page-size-select{
-        width: 40px;
+    .mat-paginator-page-size-select {
+      width: 40px;
     }
   }
 }

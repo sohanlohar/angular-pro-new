@@ -152,7 +152,7 @@
           margin-bottom: 0.3rem;
           display: flex;
           gap: 10px;
-          align-items: baseline;
+          align-items: center;
 
           img[src=''] {
             display: none;
@@ -468,6 +468,8 @@
   overflow: visible;
   font-weight: bold;
   cursor: pointer;
+  height: auto;
+  width: auto;
 }
 
 ::ng-deep .filter-dropdown-menu {
