@@ -4,7 +4,7 @@
   text-align: center;
   &-mat-dialog-title {
     font-size: v.$font_size_m;
-    font-weight: 600;
+    // font-weight: 600;
   }
   span.mat-header-close {
     position: absolute;
@@ -74,8 +74,8 @@
       align-items: center;
       margin: 0 auto;
       margin: 1rem auto 2rem;
-      border: 2px dashed #008000;
-      padding: 15px;
+      // border: 2px dashed #008000;
+      // padding: 15px;
     }
   }
   mat-dialog-actions {
@@ -151,7 +151,11 @@
       }
     }
   }
-  // .pickup__form
+  .pickup__form {
+    mat-dialog-actions {
+      display: flex;
+    }
+  }
 }
 // @media screen and (max-width:780px)
 @media screen and (max-width: 575px) {
