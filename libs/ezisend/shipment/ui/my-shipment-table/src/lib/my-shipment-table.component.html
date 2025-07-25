@@ -232,6 +232,27 @@
               <ng-container *ngIf="data.status === 'droppedoff' || data.status === 'in-transit'">
                 <div class="in-transit">{{languageData.on_the_way}}</div>
               </ng-container>
+              <ng-container *ngIf="data.status === 'out-for-delivery'">
+                <div class="out-for-delivery">{{languageData.out_for_delivery}}</div>
+              </ng-container>
+              <ng-container *ngIf="data.status === 'prepare-to-deliver'">
+                <div class="in-transit">{{languageData.prepare_to_deliver}}</div>
+              </ng-container>
+              <!-- Specific handling for missing tracking ID on statuses -->
+              <ng-container *ngIf="(!data.tracking_details?.tracking_id || data.tracking_details?.tracking_id === '') && (data.status === 'complete' || data.status === 'order-created')">
+                <div class="no-tracking-id">{{ languageData.no_tracking_id }}</div>
+              </ng-container>
+
+              <!-- Else if tracking ID exists -->
+              <ng-container *ngIf="data.tracking_details?.tracking_id && (data.status === 'complete' || data.status === 'order-created')">
+                <div class="delivered">{{ languageData.order_created }}</div>
+              </ng-container>
+              <ng-container *ngIf="data.status === 'return_failed'">
+                <div class="return_failed failed">{{languageData.return_failed}}</div>
+              </ng-container>
+               <ng-container *ngIf="data.status === 'failed' || data.status === 'failed-delivery-attempt'">
+                <div class="failed">{{languageData.failed_delivery_attempt}}</div>
+              </ng-container>
             </ng-container>
             <ng-container *ngIf="activeTab === 'live'">
               <ng-container *ngIf="data.status === 'in-transit'">
@@ -329,6 +350,9 @@
               <ng-container *ngIf="data.status === 'out-for-delivery'">
                 <div class="out-for-delivery">{{languageData.out_for_delivery}}</div>
               </ng-container>
+              <ng-container *ngIf="data.status === 'prepare-to-deliver'">
+                <div class="in-transit">{{languageData.prepare_to_deliver}}</div>
+              </ng-container>
               <ng-container *ngIf="data.status === 'to-collect'">
                 <div class="to-collect">{{languageData.ready_to_collect}}</div>
               </ng-container>
@@ -358,9 +382,6 @@
                   {{languageData?.proof_of_delivery}}
                 </span>
               </div>
-              </ng-container>
-              <ng-container *ngIf="data.status === 'pickup-failed'">
-                <div class="pickup-failed failed">{{languageData.pickup_failed}}</div>
               </ng-container>
               <ng-container *ngIf="data.status === 'cancelled'">
                 <div class="cancelled">{{languageData.cancelled}}</div>

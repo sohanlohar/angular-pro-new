@@ -7,6 +7,8 @@ import {
   ISlaCategoryStatusData,
   ISlaStateData,
   ISlaStatusData,
+  IStatusSummary,
+  DownloadType,
 } from '../models/sla.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '@pos/shared/environments';
@@ -64,13 +66,27 @@ export class SlaService {
   }
 
 
-  getRtoSummary(): Observable<IGlobalSlaResponse<IRtoSummary>> {
+  getRtoSummary(startDate: string, endDate: string): Observable<IGlobalSlaResponse<IRtoSummary>> {
+    const params = new HttpParams()
+    .set('startDate', startDate)
+    .set('endDate', endDate);
     return this.http.get<IGlobalSlaResponse<IRtoSummary>>(
-      `${environment.sppUatUrl}dashboard/v1/rto`
+      `${environment.sppUatUrl}dashboard/v1/rto`,
+      { params }
     );
   }
 
-  getDownloadFile(type: 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex' | 'sla_all', startDate: string, endDate: string): Observable<any> {
+  getStatusSummary(startDate: string, endDate: string): Observable<IGlobalSlaResponse<IStatusSummary>> {
+    const params = new HttpParams()
+    .set('startDate', startDate)
+    .set('endDate', endDate);
+    return this.http.get<IGlobalSlaResponse<IStatusSummary>>(
+      `${environment.sppUatUrl}dashboard/v1/status`,
+      { params }
+    );
+  }
+
+  getDownloadFile(type: DownloadType, startDate: string, endDate: string): Observable<any> {
     const params = new HttpParams()
       .set('type', type)
       .set('startDate', startDate)

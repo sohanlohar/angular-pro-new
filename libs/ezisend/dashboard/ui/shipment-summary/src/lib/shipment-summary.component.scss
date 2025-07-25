@@ -308,11 +308,16 @@
   font-weight: 500;
   color: #1c4888;
   background-color: #fafafa;
-  width: 100%;
   min-height: 250px;
   border-radius: 8px;
   margin-right: 24px;
-  width: 100%;
+  width: 50% !important;
+
+  &.table {
+    color: #5e5873;
+    font-weight: 400;
+    font-size: 14px;
+  }
 }
 
 .custom-table {
@@ -408,13 +413,13 @@
     margin: 24px !important;
   }
 
-  // .chart-section {
-  //   flex: 1;
-  //   display: flex;
-  //   justify-content: center;
-  //   align-items: center;
-  //   min-height: 260px;
-  // }
+  .chart-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 260px;
+  }
 
   .table-section {
     flex: 1;

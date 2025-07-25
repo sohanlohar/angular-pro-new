@@ -16,7 +16,7 @@
 
   <ng-container>
     <div class="container__orders" [class.nameClass]="!allStatusLoadingState()">
-      <div class="card-column">
+      <!-- <div class="card-column">
         <div class="container__shipment-summary">
           <span *ngFor="let summary of summaryTiles">
             <pos-shipment-tile
@@ -25,7 +25,7 @@
             ></pos-shipment-tile>
           </span>
         </div>
-      </div>
+      </div> -->
 
       <div class="wrapper-column">
         <div class="column left">
@@ -82,8 +82,11 @@
               <div class="no-data" *ngIf="isEmptyDoughnutChart">
                 No data to display
               </div>
+              <div class="no-data table" *ngIf="isEmptyDoughnutChart">
+                <p>Data unavailable</p>
+              </div>
             </div>
-            <div class="table-section">
+            <div class="table-section" *ngIf="!isEmptyDoughnutChart">
               <table class="custom-table">
                 <thead>
                   <tr>
@@ -122,6 +125,8 @@
                 </tbody>
               </table>
             </div>
+
+
           </div>
         </div>
       </div>
