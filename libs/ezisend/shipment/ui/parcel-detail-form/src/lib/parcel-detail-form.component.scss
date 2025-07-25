@@ -689,7 +689,7 @@
     }
   }
   .parcel-container1 {
-    // padding: 0 1rem;
+    padding: 0 1rem;
   }
   .cod-label {
     height: 1.5rem;
@@ -749,6 +749,7 @@
     display: block;
     width: fit-content;
     margin-right: 10px; // Add some spacing between the buttons
+    border: none;
   }
   label .mat-checkbox-layout {
     white-space: normal !important;

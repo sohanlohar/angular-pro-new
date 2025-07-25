@@ -280,6 +280,9 @@ textarea.mat-input-element {
       }
     }
   }
+  .cdk-overlay-pane .mat-select-panel-wrap .mat-select-panel {
+    max-width: 220px !important;
+  }
 }
 
 /* Hide scrollbars globally but allow scrolling */

@@ -54,7 +54,7 @@
       height: 6rem;
     }
   }
-  
+
   &__address-group-1,
   &__address-group-2 {
     display: grid;
@@ -87,20 +87,20 @@
 }
 
 @media screen and (max-width: 780px) {
-  .form-group__address-group-1{
-    grid-template-columns: repeat(2, 50%);
+  .form-group__address-group-1 {
+    grid-template-columns: repeat(1, 100%);
     gap: 0rem;
   }
-  .form-group__address-group-2{
-    grid-template-columns: repeat(2, 50%);
+  .form-group__address-group-2 {
+    grid-template-columns: repeat(1, 100%);
     gap: 0rem;
   }
-.form-group{
-  padding: 0.5rem;
-}
-::ng-deep{
-  .mat-form-field {
-padding-bottom: 5px;
+  .form-group {
+    padding: 0.5rem;
   }
-}
+  ::ng-deep {
+    .mat-form-field {
+      padding-bottom: 5px;
+    }
+  }
 }

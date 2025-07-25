@@ -1,7 +1,8 @@
 @use 'apps/ezisend/src/styles/variables/index' as v;
 
 .container {
-  .content-container, .pickup-container {
+  .content-container,
+  .pickup-container {
     color: v.$teritary_color;
     font-size: v.$font_size_m;
     font-weight: v.$font-weight-medium;
@@ -58,7 +59,35 @@
   }
 }
 @media screen and (max-width: 768px) {
-  .dashboard-wrapper .create-order-tile {
-    margin-bottom: 2.5rem !important;
+  .dashboard-wrapper {
+    padding: 0 0.5rem;
+    .create-order-tile {
+      margin-bottom: 2.5rem !important;
+    }
+  }
+  .summaryshipment {
+    .container__title-wrapper {
+      padding: 0 0.5rem;
+    }
+    .date-range-picker {
+      padding: 0 0.5rem;
+    }
+  }
+  .insights {
+    .main-title {
+      padding: 0 0.5rem;
+    }
+    .flex-container {
+      padding: 0 0.5rem;
+    }
+    .header-filter {
+      align-items: flex-start !important;
+      .date-picker-container {
+        padding-left: 0.5rem;
+      }
+    }
+    .no-data {
+      background-color: #fff !important;
+    }
   }
 }

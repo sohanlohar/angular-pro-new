@@ -133,4 +133,10 @@
       outline: none !important;
     }
   }
-  
+  @media screen and (max-width: 500px) {
+  .maintitle.second-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+}

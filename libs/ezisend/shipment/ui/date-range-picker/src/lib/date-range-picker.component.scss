@@ -172,6 +172,12 @@
         > div {
           display: inline-flex !important;
         }
+        > div:first-child {
+          margin-right: 20px;
+        }
+        .dropdowns {
+          width: 60px !important;
+        }
       }
     }
     &.ltr .calendar.left .calendar-table {
@@ -262,6 +268,7 @@
           &.left,
           &.right {
             display: block !important;
+            max-width: 100%;
           }
         }
 
@@ -301,7 +308,7 @@
       .buttons_input {
         display: flex;
         width: 100%;
-        gap: 10px;
+        gap: 20px;
         align-items: center;
         justify-content: center;
 
@@ -315,5 +322,11 @@
     .mat-tab-body-content {
       overflow: auto !important;
     }
+  }
+}
+
+@media (max-width: 575px) {
+  .date-range-form-wrapper {
+    min-width: auto !important;
   }
 }

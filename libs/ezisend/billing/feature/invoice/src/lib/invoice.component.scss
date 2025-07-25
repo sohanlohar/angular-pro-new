@@ -193,12 +193,19 @@ td.mat-cell:last-of-type {
 @media screen and (max-width: 768px) {
   .payment-box {
     flex-direction: column;
-    padding: 20px !important;
+    padding: 20px !important;        
+    .column:last-child {
+      padding: 20px 0 !important;
+    }
     .amount-container {
-      flex-direction: column;
+      flex-direction: row;
       gap: 20px;
       .amount {
-        align-items: end;
+        // align-items: end;
+        span {
+          font-size: 12px !important;
+          line-height: 16px !important;
+        }
       }
     }
     .pay-button {

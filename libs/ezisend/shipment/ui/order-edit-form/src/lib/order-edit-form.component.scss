@@ -18,7 +18,7 @@
 
   pos-recipient-detail-form {
     background-color: #ffffff;
-    padding: 0rem 1rem;
+    // padding: 0rem 1rem;
     border-radius: 6px;
   }
 }
@@ -31,14 +31,14 @@
   pos-parcel-detail-form {
     background-color: #ffffff;
     border-radius: 6px;
-    padding: 0rem 1rem;
+    padding: 0rem 2rem;
   }
 }
 
 @media screen and (min-width: 40rem) {
-  .parcel-container>pos-parcel-detail-form {
-    padding: 0rem 2rem;
-  }
+  // .parcel-container>pos-parcel-detail-form {
+  //   padding: 0rem 2rem;
+  // }
 }
 
 @media screen and (min-width: 60rem) {
@@ -67,6 +67,7 @@
 @media screen and (max-width: 767px) {
   .parcel-container > pos-parcel-detail-form{
     margin-bottom: 2rem;
+    padding: 0 1rem;
   }
 }
 @media screen and (max-width: 575px) {
