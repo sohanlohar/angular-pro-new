@@ -56,11 +56,11 @@ mat-stepper {
   
 }
 
-@media (max-width: 768px) {
-  .mat-select-panel {
-    max-width: 192px !important;
-  }
-}
+// @media (max-width: 768px) {
+//   .mat-select-panel {
+//     max-width: 192px !important;
+//   }
+// }
 
 @media (min-width: 320px) and (max-width: 567px){
   ::ng-deep .dialog-container-custom .mat-dialog-container{

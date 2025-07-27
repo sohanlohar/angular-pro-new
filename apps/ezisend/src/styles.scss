@@ -280,9 +280,9 @@ textarea.mat-input-element {
       }
     }
   }
-  .cdk-overlay-pane .mat-select-panel-wrap .mat-select-panel {
-    max-width: 220px !important;
-  }
+  // .cdk-overlay-pane .mat-select-panel-wrap .mat-select-panel {
+  //   max-width: 220px !important;
+  // }
 }
 
 /* Hide scrollbars globally but allow scrolling */
@@ -308,8 +308,8 @@ button:hover {
 
 .cdk-overlay-pane {
   transform: none !important;
-  position: absolute !important;
-  height: auto !important;
+  // position: absolute !important;
+  // height: auto !important;
 }
 
 div#mat-menu-panel-0 {

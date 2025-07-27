@@ -237,15 +237,15 @@ color:rgba(0, 73, 141, 1);
   justify-content: right;
 }
 ::ng-deep{
-  .mat-select-panel{
-    min-width: calc(100% + 7%) !important;
-    margin-left: 10%;
-    max-height: 30% !important;
-    margin-top: 11.5%;
-    margin-right: 10%;
-    padding-bottom: 4.5%;
-    border: 1px solid #00498D;
-  }
+  // .mat-select-panel{
+  //   min-width: calc(100% + 7%) !important;
+  //   margin-left: 10%;
+  //   max-height: 30% !important;
+  //   margin-top: 11.5%;
+  //   margin-right: 10%;
+  //   padding-bottom: 4.5%;
+  //   border: 1px solid #00498D;
+  // }
   .mat-select-panel:not([class*=mat-elevation-z]) {
     margin-left: -10px !important;
   }
@@ -258,11 +258,11 @@ color:rgba(0, 73, 141, 1);
     width: 94% !important;
   }
 
-  ::ng-deep{
-    .mat-select-panel{
-    min-width: 1% !important;
-    }
-  }
+  // ::ng-deep{
+  //   .mat-select-panel{
+  //   min-width: 1% !important;
+  //   }
+  // }
 
 }
 @media screen and(max-width:390px) {
