@@ -54,12 +54,13 @@
     }
 
     &__input-search {
-      margin-left: 1.5rem;
+      // margin-left: 1.5rem;
       margin-top: 10px;
-      margin-right: 6px;
+      // margin-right: 6px;
       display: flex;
       flex-direction: row;
       align-items: center;
+      padding: 0 20px;
 
       mat-form-field.search {
         margin-right: 10px;
@@ -81,6 +82,10 @@
         align-items: center;
         justify-content: center;
         transition: all 0.25s linear;
+        width: 100%;
+        form{
+          width: 100%;
+        }
 
         input {
           height: 70%;
@@ -142,7 +147,7 @@
     border-radius: 0;
 
     &_warn {
-      margin-left: 8px;
+      // margin-left: 8px;
     }
   }
 }
@@ -151,6 +156,6 @@
     width: 150% !important;
   }
   .wrapper .action__input-search {
-    width: 91%;
+    width: 100%;
   }
 }

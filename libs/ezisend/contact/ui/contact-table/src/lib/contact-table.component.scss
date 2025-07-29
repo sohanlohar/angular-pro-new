@@ -30,12 +30,12 @@ th {
     flex-wrap: wrap;
     background-color: white;
     border-radius: 10px 10px 0 0;
-    padding: 20px 0 10px;
+    padding: 20px 20px 0;
 
     .container {
       display: flex;
       flex-direction: column;
-      margin-left: 20px;
+      // margin-left: 20px;
 
       .container-label {
         color: #6e6b7b;
@@ -121,8 +121,8 @@ th {
     }
 
     &__group-button {
-      margin-right: 1.5rem;
-      margin-left: 1.5rem;
+      // margin-right: 1.5rem;
+      // margin-left: 1.5rem;
       display: flex;
       flex-direction: row;
       gap: 1.0625rem;
@@ -232,9 +232,19 @@ th {
   .mat-checkbox {
     margin-right: 8px !important;
   }
-  .wrapper .action .container {
-    margin-top: 17px;
-    margin-bottom: 18px;
+  .wrapper .action {
+    .container {
+      margin-top: 17px;
+      margin-bottom: 18px;
+      width: 100%;
+      // padding: 0 20px;
+    }
+    .action__group-button{
+      width: 100%;
+      button{
+        width: 100%;
+      }
+    }
   }
   ::ng-deep {
     .mat-paginator-container {

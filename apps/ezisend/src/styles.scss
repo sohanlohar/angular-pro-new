@@ -67,20 +67,26 @@ body {
 .dialog-container-custom .mat-dialog-container {
   position: relative;
   overflow: inherit;
-  padding: 0px 24px !important;
+  padding: 24px !important;
+  // max-height: 100vh;
+  // display: flex;
+  // align-items: center;
 }
 @media screen and (max-width: 435px) {
   .dialog-container-custom .mat-dialog-container {
-    max-width: 95vw;
+    max-width: 100vw;
     margin: auto;
     padding: inherit;
+    display: flex;
+    align-items: center;
+    max-height: 100vh;
   }
 
-  .dialog-container-custom .mat-dialog-container .cdk-dialog-container {
-    width: 70%;
-    margin: auto;
-    padding: inherit;
-  }
+  // .dialog-container-custom .mat-dialog-container .cdk-dialog-container {
+  //   width: 70%;
+  //   margin: auto;
+  //   padding: inherit;
+  // }
 }
 // .px-3 {
 //   padding-left: 0.5rem;
@@ -216,6 +222,9 @@ textarea.mat-input-element {
     width: 250px !important;
     height: 300px !important;
   }
+  mat-card.mat-card.mat-focus-indicator {
+    margin-bottom: 40px;
+  }
 }
 @media screen and (max-width: 435px) {
   .mat-datepicker-content .mat-calendar {
@@ -310,6 +319,8 @@ button:hover {
   transform: none !important;
   // position: absolute !important;
   // height: auto !important;
+  // max-height: 100vh;
+  // overflow-y: auto;
 }
 
 div#mat-menu-panel-0 {

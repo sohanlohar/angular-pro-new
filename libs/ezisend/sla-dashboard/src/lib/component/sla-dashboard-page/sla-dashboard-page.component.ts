@@ -362,17 +362,34 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     hover: {
       mode: false as any,
     },
-    plugins: {
-      datalabels: {
-        display: false, // Disable data labels
-      },
-    },
     legend: {
-      display: false,
+      display: true,
+      position: 'bottom',
+      align: 'center',
+      labels: {
+        padding: 20,
+      },
     },
     animation: {
       animateScale: true,
       animateRotate: true,
+    },
+    plugins: {
+      datalabels: {
+        display: true,
+        color: '#fff',
+        font: {
+          weight: 'bold',
+          size: 14,
+        },
+        formatter: (value: number, ctx: any) => {
+          const dataArr = ctx.chart.data.datasets[0].data;
+          const total = dataArr.reduce((a: number, b: number) => a + b, 0);
+          if (!total) return '';
+          const percentage = (value / total) * 100;
+          return percentage > 0 ? this.truncateDecimal(percentage, 2) + '%' : '';
+        },
+      },
     },
   };
 
@@ -380,6 +397,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
   statusSummaryChartData: number[] = [];
   isStatusSummaryEmpty = true;
   statusSummaryChartType = 'doughnut';
+  statusSummaryChartPlugins = [ChartDataLabels];
 
   // RTO data
   rtoData: IRtoCardData[] = [];
@@ -513,24 +531,24 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     this.rtoData = [
       {
         theme: 'green' as const,
-        icon: 'done',
-        label: 'Total No. of RTO',
+        icon: 'thumb_up',
+        label: 'Total No. of Acceptance',
         status: 'delivered',
         price: '0'
       },
       {
         theme: 'blue' as const,
         icon: 'done',
-        label: 'Total No. of Acceptance',
+        label: 'Total No. of RTO',
         status: 'delivered',
         price: '0'
       },
       {
-        theme: 'red' as const,
-        icon: 'warning',
+        theme: 'yellow' as const,
+        icon: 'u_turn_right',
         label: 'Percentage of RTO',
         status: 'delivered',
-        price: '0%'
+        price: '0.00%'
       }
     ];
     this.isRtoEmpty = false;
@@ -906,23 +924,23 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       {
         theme: 'green' as const,
         icon: 'done',
-        label: 'Total No. of RTO',
-        status: 'delivered',
-        price: rtoRes.data.total_rto.toString()
-      },
-      {
-        theme: 'blue' as const,
-        icon: 'done',
         label: 'Total No. of Acceptance',
         status: 'delivered',
         price: rtoRes.data.total_acceptance.toString()
       },
       {
-        theme: 'red' as const,
+        theme: 'blue' as const,
+        icon: 'done',
+        label: 'Total No. of RTO',
+        status: 'delivered',
+        price: rtoRes.data.total_rto.toString()
+      },
+      {
+        theme: 'yellow' as const,
         icon: 'warning',
         label: 'Percentage of RTO',
         status: 'delivered',
-        price: this.truncateDecimal(rtoRes.data.percentage_rto, 2) + '%'
+        price: rtoRes.data.percentage_rto.toFixed(2) + '%'
       }
     ];
 
@@ -1000,6 +1018,18 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
 
   getFilteredStatusSummaryData(): IChartDataItem[] {
     return this.statusSummarySourceData.filter(element => element.total > 0);
+  }
+
+  hasStatusSummaryData(): boolean {
+    return this.statusSummaryChartData.some(value => value > 0);
+  }
+
+  getFilteredStatusSummaryLabels(): string[] {
+    return this.statusSummaryChartLabels.filter((_, index) => this.statusSummaryChartData[index] > 0);
+  }
+
+  getFilteredStatusSummaryChartData(): number[] {
+    return this.statusSummaryChartData.filter(value => value > 0);
   }
 
   async downloadAllFile(): Promise<void> {

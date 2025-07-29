@@ -55,7 +55,7 @@ $language-border-color: #cde7ff;
         }
       }
 
-      margin: 5px;
+      // margin: 5px;
 
       .user {
         display: block;
@@ -362,7 +362,7 @@ a.active {
   .toolbar {
     &__menu {
       &__container {
-        margin: 0px !important;
+        // margin: 0px !important;
       }
     }
   }
@@ -385,7 +385,7 @@ a.active {
   .toolbar {
     &__menu {
       &__container {
-        margin: 5px !important;
+        // margin: 5px !important;
       }
     }
   }
@@ -394,7 +394,7 @@ a.active {
   .toolbar {
     &__menu {
       &__container {
-        margin: 1px !important;
+        // margin: 1px !important;
       }
     }
   }
@@ -509,7 +509,7 @@ a.active {
 @media screen and (max-width: 360px) and (min-width: 344px) {
   ::ng-deep {
     .toolbar__menu .toolbar__menu__container {
-      margin: -23px !important;
+      // margin: -23px !important;
     }
     .languageDropdown .mat-form-field-wrapper {
       width: 70% !important;

@@ -745,7 +745,7 @@ export const en = {
     smart_fill_data: {
       title: 'Smart Fill',
       note1:
-        "Paste receiver details in any order and we'll fill out the fields for you",
+        "Paste receiver details in any order and we'll fill out the fields for you ",
       note2: '(Malaysian addresses only).',
       note3: 'E.g. Muhammad Ali',
       note4: '0125456789',

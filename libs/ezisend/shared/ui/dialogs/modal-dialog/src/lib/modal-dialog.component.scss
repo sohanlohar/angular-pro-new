@@ -184,6 +184,12 @@ pos-modal-dialog {
   .progress-icon-wrapper {
     display: initial;
   }
+  .steps_container {
+    margin: 2rem 0 2rem 0 !important;
+  }
+  .dialog_desc {
+    margin-bottom: 1.5rem;
+  }
 }
 @media screen and (max-width: 435px) {
   .steps_container .modal-top-section .progress-label.blue {

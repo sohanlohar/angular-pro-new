@@ -69,7 +69,7 @@ export interface IStatusSummary {
 
 // New interfaces for component data structures
 export interface IRtoCardData {
-  theme: 'green' | 'blue' | 'red';
+  theme: ThemeType;
   icon: string;
   label: string;
   status: string;
@@ -173,7 +173,7 @@ export type DownloadType = 'sla_status' | 'sla_category' | 'sla_state' | 'sla_de
 
 export type DashboardChartType = 'status' | 'category' | 'state' | 'dex' | 'status_summary';
 
-export type ThemeType = 'green' | 'blue' | 'red';
+export type ThemeType = 'green' | 'blue' | 'red' | 'yellow';
 
 export type DateRangeEvent = {
   start_date: string;

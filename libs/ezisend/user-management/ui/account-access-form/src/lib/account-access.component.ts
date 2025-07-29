@@ -32,7 +32,7 @@ export class AccountAccessComponent implements OnInit {
   loggedInAccountNumber = localStorage.getItem('loggedInAccountNumber');
 
   constructor(public dialogRefs: MatDialogRef<AccountAccessComponent>,private translate : TranslationService,@Inject(MAT_DIALOG_DATA) public data: any,private domSanitizer: DomSanitizer,private matIconRegistry: MatIconRegistry, private cdr: ChangeDetectorRef,private _snackBar: MatSnackBar,public router: Router, public commonService: CommonService,public dialogRef: MatDialogRef<any>) {
-    this.dialogRef.addPanelClass('dialog-container-custom');
+    this.dialogRef.addPanelClass(['dialog-container-custom', 'account-acccess']);
     this.matIconRegistry.addSvgIcon(
       `close_icon`,
       this.domSanitizer.bypassSecurityTrustResourceUrl(`./assets/close-x.svg`)

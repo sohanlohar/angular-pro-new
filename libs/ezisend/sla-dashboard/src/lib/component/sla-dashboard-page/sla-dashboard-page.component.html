@@ -71,7 +71,7 @@
   <div class="flex-container">
     <div class="container">
       <div class="title-container">
-        <span>Delivery Status</span>
+        <span>Shipments Status</span>
         <a
           color="primary"
           [matMenuTriggerFor]="statusSummaryMenu"
@@ -94,68 +94,26 @@
           </button>
         </mat-menu>
       </div>
-      <div class="pieChart" #statusSummaryChart>
-        <div
-          class="spinner-container spinner-pie"
-          *ngIf="isStatusSummaryLoading"
-        >
+      <div class="chart-card" #statusSummaryChart>
+        <div class="spinner-container spinner-pie" *ngIf="isStatusSummaryLoading">
           <mat-spinner class="spinner"></mat-spinner>
         </div>
 
-        <div
-          class="section-data"
-          #statusSummaryChartOnly
-          *ngIf="!isStatusSummaryLoading"
+        <canvas
+          baseChart
+          [data]="getFilteredStatusSummaryChartData()"
+          [labels]="getFilteredStatusSummaryLabels()"
+          [chartType]="'doughnut'"
+          [options]="statusSummaryChartOptions"
+          [colors]="statusSummaryChartColors"
+          [legend]="true"
+          [plugins]="statusSummaryChartPlugins"
+          *ngIf="!isStatusSummaryEmpty && !isStatusSummaryLoading && hasStatusSummaryData()"
         >
-          <canvas
-            baseChart
-            [data]="statusSummaryChartData"
-            [labels]="statusSummaryChartLabels"
-            [chartType]="'doughnut'"
-            [options]="statusSummaryChartOptions"
-            [colors]="statusSummaryChartColors"
-            style="width: 800px"
-            *ngIf="!isStatusSummaryEmpty"
-          >
-          </canvas>
-          <div *ngIf="isStatusSummaryEmpty" class="no-data">
-            <p>No data available</p>
-          </div>
-        </div>
+        </canvas>
 
-        <div
-          class="dex-table-scroll"
-          *ngIf="!isStatusSummaryEmpty && !isStatusSummaryLoading"
-        >
-          <table class="dex-custom-table">
-            <tbody>
-              <tr
-                *ngFor="
-                  let element of getFilteredStatusSummaryData();
-                  let last = last
-                "
-                [ngClass]="{
-                  'no-border-bottom':
-                    getFilteredStatusSummaryData().length === 1
-                }"
-              >
-                <td class="dex-color-bar-cell">
-                  <div
-                    class="dex-color-bar"
-                    [ngStyle]="{ background: element.color }"
-                  ></div>
-                </td>
-                <td class="dex-desc">{{ element.label }}</td>
-                <td class="dex-count">{{ element.total }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div
-          class="no-data table"
-          *ngIf="isStatusSummaryEmpty && !isStatusSummaryLoading"
-        >
-          <p>Data unavailable</p>
+        <div class="no-data" *ngIf="isStatusSummaryEmpty && !isStatusSummaryLoading">
+          No data to display
         </div>
       </div>
     </div>
