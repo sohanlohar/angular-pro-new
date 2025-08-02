@@ -228,6 +228,9 @@ pos-page-layout {
   table {
     width: 100%;
     margin-bottom: 36px;
+    ::ng-deep thead th:not(:first-child) {
+      padding: 0 10px;
+    }
     ::ng-deep tbody tr {
       td:not(:first-child) {
         white-space: nowrap !important;

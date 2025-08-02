@@ -80,6 +80,7 @@ body {
     display: flex;
     align-items: center;
     max-height: 100vh;
+    flex-direction: column;
   }
 
   // .dialog-container-custom .mat-dialog-container .cdk-dialog-container {
@@ -322,6 +323,7 @@ button:hover {
   // height: auto !important;
   // max-height: 100vh;
   // overflow-y: auto;
+  margin: 0 10px;
 }
 
 .cdk-overlay-pane.dialog-container-custom {
