@@ -154,8 +154,16 @@ mat-form-field {
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     max-height: 80vh;
-    overflow-y: auto;
+    // overflow-y: auto;
     animation: fadeIn 0.2s ease-out;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .mobile-filter-overlay {
+    .mobile-filter-popup {
+      padding: 15px;
+    }
   }
 }
 

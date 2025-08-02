@@ -43,7 +43,7 @@
       <td mat-cell *matCellDef="let element" class="alignLeft">
         <ng-container *ngIf="element?.is_password_created" class="userManagement">
           <!-- Show mat-slide-toggle if password is created -->
-          <mat-slide-toggle (change)="toggleChanged($event, element)" [class.action-icon_disabled]="!isMasterAccount"
+          <mat-slide-toggle (change)="toggleChanged($event, element)" [class.action-icon_disabled-toggle]="!isMasterAccount"
             [checked]="element?.is_user_active">
           </mat-slide-toggle>
         </ng-container>

@@ -86,7 +86,7 @@
           </mat-icon>
         </a>
         <mat-menu #statusSummaryMenu="matMenu">
-          <button mat-menu-item (click)="downloadFile('sla_status_summary')">
+          <button mat-menu-item (click)="downloadFile('sla_shipment_status')">
             Report (.xlsx)
           </button>
           <button mat-menu-item (click)="downloadChartAsPDF('status_summary')">
@@ -115,7 +115,7 @@
         <div class="no-data" *ngIf="isStatusSummaryEmpty && !isStatusSummaryLoading">
           No data to display
         </div>
-      </div>
+            </div>
     </div>
 
     <div class="container">

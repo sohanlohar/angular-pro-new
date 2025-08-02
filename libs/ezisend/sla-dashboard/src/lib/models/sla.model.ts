@@ -57,9 +57,11 @@ export interface IDexData {
 
 export interface IRtoSummary {
   last_updated?: string; // Make optional since it's not always provided
-  total_rto: number;
-  total_acceptance: number;
-  percentage_rto: number;
+  rto_data: {
+    rto_count: number;
+    acceptance_count: number;
+    percentage: number;
+  };
 }
 
 export interface IStatusSummary {
@@ -169,7 +171,7 @@ export type DateRange = {
   endDate: string;
 };
 
-export type DownloadType = 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex' | 'sla_status_summary' | 'sla_all';
+export type DownloadType = 'sla_status' | 'sla_category' | 'sla_state' | 'sla_dex' | 'sla_status_summary' | 'sla_all' | 'sla_shipment_status';
 
 export type DashboardChartType = 'status' | 'category' | 'state' | 'dex' | 'status_summary';
 

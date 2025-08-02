@@ -74,6 +74,8 @@ export class UserManagementComponent implements OnInit {
   statusAccount: any = localStorage.getItem('statusAccount') || 'ACTIVE';
   fetchAccountNo: any;
   loading = true;
+  
+  selectedLanguage = localStorage.getItem("language") ?? 'en';
   addEditPickupAddress(isNew = false, item?: any) {
     if (isNew) {
       this.eventAddEditPickup.emit();
@@ -134,6 +136,15 @@ export class UserManagementComponent implements OnInit {
   }
 
   toggleChanged(event: MatSlideToggleChange, element: any) {
+    let accountType = this.isMasterAccount ? 'Master' : 'Sub';
+    this.commonService.googleEventPush({
+      "event": "activate_user",
+      "event_category": "SendParcel Pro - User Management - " + accountType,
+      "event_action": "Activate User",
+      "event_label": "User",
+      "selected_language": this.selectedLanguage?.toUpperCase(),
+    });
+
     if (event.checked) {
       this.isActive = !this.isActive;
       this.statusAccount = 'ACTIVE';
@@ -159,6 +170,15 @@ export class UserManagementComponent implements OnInit {
   }
 
   deleteUser(element: any) {
+    let accountType = this.isMasterAccount ? 'Master' : 'Sub';
+    this.commonService.googleEventPush({
+      "event": "remove_user",​
+      "event_category": "SendParcel Pro - User Management - " + accountType,​
+      "event_action": "Remove User",​
+      "event_label": "User",
+      "selected_language": this.selectedLanguage?.toUpperCase(),​
+    });
+
     const dialogRef = this.dialog.open(DialogComponent, {
       data: {
         descriptions: this.languageData.are_you_confirmed_to_remove_this_user,
@@ -172,12 +192,28 @@ export class UserManagementComponent implements OnInit {
 
     const dialogSubmitSubscription =
       dialogRef.componentInstance.confirmEvent.subscribe((result: any) => {
+        this.commonService.googleEventPush({
+          "event": "confirm_remove_user",​
+          "event_category": "SendParcel Pro - Remove User",​
+          "event_action": "Confirm Remove User",​
+          "event_label": "Confirm Remove User",
+          "selected_language": this.selectedLanguage?.toUpperCase(),​
+        });
+        
         dialogSubmitSubscription.unsubscribe();
         dialogRef.close();
         this.commonService
           .deleteUser('user', 'delete', this.authToken, element.id)
           .subscribe({
             next: (res: any) => {
+              this.commonService.googleEventPush({
+                "event": "remove_user_success",
+                "event_category": "SendParcel Pro - Remove User - Success",
+                "event_action": "Remove User Success",
+                "event_label": "Remove User Success",
+                "selected_language": this.selectedLanguage?.toUpperCase(),
+              });
+              
               this.loading = true;
               this._snackBar.open(
                 this.languageData.user_has_been_deleted_successfully,
@@ -185,11 +221,49 @@ export class UserManagementComponent implements OnInit {
               );
               this.fetchLinkedAccountUser();
             },
+            error: (err: any) => {
+              this.commonService.googleEventPush({
+                "event": "remove_user_error",
+                "event_category": "SendParcel Pro - Remove User - Error",
+                "event_action": "Remove User Error",
+                "event_label": "Remove User Error",
+                "selected_language": this.selectedLanguage?.toUpperCase(),
+              });
+            }
           });
+      });
+      
+    const dialogCancelSubscription =
+      dialogRef.componentInstance.cancelEvent.subscribe(() => {
+        dialogCancelSubscription.unsubscribe();
+        this.commonService.googleEventPush({
+          "event": "reject_remove_user",​
+          "event_category": "SendParcel Pro - Remove User",​
+          "event_action": "Reject Remove User",​
+          "event_label": "Reject Remove User",
+          "selected_language": this.selectedLanguage?.toUpperCase(),​
+        });
+        dialogRef.close();
       });
   }
 
-  editUser(element: any) {
+  editUser(element: any) {    
+    let accountType = this.isMasterAccount ? 'Master' : 'Sub';
+    this.commonService.googleEventPush({
+      "event": "edit_user",​
+      "event_category": "SendParcel Pro - User Management - " + accountType,​
+      "event_action": "Edit User",​
+      "event_label": "User",​
+      "selected_language": this.selectedLanguage?.toUpperCase(),​
+    });
+    // // // Even if the action is disabled, we still push a Google Analytics event
+    // // to track user intent (i.e., clicking on the disabled edit icon).
+    // // Actual edit logic is bypassed if isDisabled is true.
+    const isDisabled = !this.isMasterAccount || (element?.is_password_created && !element?.is_user_active);
+    if (isDisabled) {
+      return;
+    }
+
     this.isEditMode = true;
     const dialogRef = this.dialog.open(AddUserComponent, {
       minWidth: '50%',
@@ -211,6 +285,15 @@ export class UserManagementComponent implements OnInit {
   }
 
   resendEmail(element: any) {
+    let accountType = this.isMasterAccount ? 'Master' : 'Sub';
+    this.commonService.googleEventPush({
+      "event": "resend_activation_email",​
+      "event_category": "SendParcel Pro - User Management - " + accountType,​
+      "event_action": "Resend Activation Email",​
+      "event_label": "Activation Email",​
+      "selected_language": this.selectedLanguage?.toUpperCase(),​
+    });
+
     this.commonService
       .resendEmail(
         'user',
@@ -243,6 +326,15 @@ export class UserManagementComponent implements OnInit {
   }
 
   openDialog(): void {
+    let accountType = this.isMasterAccount ? 'Master' : 'Sub';
+    this.commonService.googleEventPush({
+      "event": "add_user",​
+      "event_category": "SendParcel Pro - User Management - "+accountType,​
+      "event_action": "Add User",​
+      "event_label": "User",​
+      "selected_language": this.selectedLanguage?.toUpperCase(),​
+    });
+
     this.isEditMode = false;
     const dialogRef = this.dialog.open(AddUserComponent, {
       minWidth: '50%',

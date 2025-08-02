@@ -118,7 +118,7 @@ export class ContactDetailsComponent implements OnDestroy, AfterViewInit {
         descriptions: `Are you sure you want to make these changes?`,
         icon: 'warning',
         confirmEvent: true,
-        information: 'Press Save to confirm your changes or <br> press cancel to return to the previous screen.',
+        information: 'Press Save to confirm your changes or press cancel to return to the previous screen.',
         actionText: 'Save'
       },
     });

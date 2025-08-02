@@ -30,9 +30,15 @@
     cursor: pointer;
     margin-top: 10px;
   }
-  .action-icon_disabled {
+  .action-icon_disabled-toggle {
     opacity: 0.3;
     pointer-events: none;
+    cursor: not-allowed;
+  }
+  .action-icon_disabled {
+    opacity: 0.3;
+    pointer-events: auto;
+    cursor: not-allowed;
   }
     table {
       width: 100%;

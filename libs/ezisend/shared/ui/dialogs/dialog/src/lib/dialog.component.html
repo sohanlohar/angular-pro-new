@@ -61,13 +61,13 @@
         <button class="actionButton" *ngIf="data.actionUrl" mat-raised-button mat-button color="primary" (click)="actionBtn(data.actionUrl)">{{data.actionText}}</button>
       </div>
       <div *ngIf="!data.deleteUserText && data.cancelText" class="mat-dialog-actions_cancel" [class.stretch]="data.information">
-        <button class="cancelButton" (click)="dialogRef.close()">{{data.cancelText}}</button>
+        <button class="cancelButton" (click)="dialogRef.close(); cancelEvent.emit(true)">{{data.cancelText}}</button>
       </div>
       <div *ngIf="data.deleteUserText" class="actionButtonContainer">
        <div><button class="deleteAction " *ngIf="!data.actionUrl"
         mat-stroked-button (click)="confirmEvent.emit(true)" color="primary">{{languageData.yes}}</button></div>
         <div><button class="deleteActionText" *ngIf="!data.actionUrl" mat-raised-button mat-button color="primary"
-           (click)="dialogRef.close()">{{languageData.cancel}}</button></div>
+           (click)="dialogRef.close(); cancelEvent.emit(true)">{{languageData.cancel}}</button></div>
       </div>
     </ng-container>
   </div>

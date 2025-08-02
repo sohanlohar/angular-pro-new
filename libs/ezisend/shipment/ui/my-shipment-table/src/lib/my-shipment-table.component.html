@@ -73,7 +73,8 @@
         <ng-container matColumnDef="trackingDetail">
           <th mat-header-cell *matHeaderCellDef class="alignHeaderLeft">{{languageData.tracking_details}}</th>
           <td mat-cell *matCellDef="let data" class="alignLeft">
-            <div class="connote" *ngIf="activeTab !== 'request-pickup' && (data.channel_order | keyvalue)?.length === 0">
+            <!-- removed this activeTab !== 'request-pickup' &&  condition from cannot number due to this cannot number not showing in req pickup tab 25-07-2025 -->
+            <div class="connote" *ngIf="(data.channel_order | keyvalue)?.length === 0">
               <span class="click" (click)="actionHandler(data, 'order-details')">
                 {{ data.tracking_details.tracking_id }}
               </span>
@@ -100,7 +101,7 @@
                 </span>
               <span (click)="actionHandler(data, 'order-details')" class="click">{{data.channel_order.order_no}}</span>
             </div>
-            <div class="date-time-td">
+            <div class="date-time-td"> 
               <ng-container>
                 <div class="date-time-row">
                   <div class="date">{{ changeDateFormat(data.created_date) }}</div>

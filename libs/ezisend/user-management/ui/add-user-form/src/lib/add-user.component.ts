@@ -55,6 +55,7 @@ selectedAccountNumber: any=[]; // To display the selected account number in inpu
   isPresentAccountNumber: any;
   selectedValues: any=[];
   accountValue: any;
+  selectedLanguage = localStorage.getItem("language") ?? 'en';
 
   getLabel(): string {
     return this.mode === 'add' ? 'Add User' : 'Update User';
@@ -173,6 +174,13 @@ get emailControl(){
   return this.form.controls['email'];
 }
 handleSubmit(){
+  this.commonService.googleEventPush({
+    "event": "confirm_"+this.data.getButtonLabel=='Add User' ? 'add':'edit' +"_user",​
+    "event_category": "SendParcel Pro - "+this.data.getButtonLabel,​
+    "event_action": "Confirm "+this.data.getButtonLabel,​
+    "event_label": "Confirm "+this.data.getButtonLabel,​
+    "selected_language": this.selectedLanguage?.toUpperCase(),
+  });
   if (this.form.invalid) {
     this.form.markAllAsTouched();
     return;
@@ -186,7 +194,23 @@ handleSubmit(){
       if(res.code == "S0000"){
         this.openDialog(`${this.languageData.send_email1} `+' '+` <strong>${this.email}</strong>.<br /> ${this.languageData.send_email2}`,true, this.languageData.ok_got_it,'checkmark')
       }
+      this.commonService.googleEventPush({
+        "event": "add_user_success",​
+        "event_category": "SendParcel Pro - Add User - Success",​
+        "event_action": "Add User Success",​
+        "event_label": "Add User Success",​
+        "selected_language": this.selectedLanguage?.toUpperCase(),
+      });
     },error: (error) => {
+      
+      this.commonService.googleEventPush({
+        "event": "add_user_error",​
+        "event_category": "SendParcel Pro - Add User - Error",​
+        "event_action": "Add User Error",​
+        "event_label": "Add User Error",​
+        "selected_language": this.selectedLanguage?.toUpperCase(),
+      });
+
       this.isSubmitting = false;
       if(error.error.code == 'E1003'){
         this._snackBar.open(`${this.languageData.email_msg1} `+' '+` ${this.email} `+' '+`${this.languageData.email_msg2}`,'ok');
@@ -211,6 +235,13 @@ if(this.data.getButtonLabel=='Edit User'){
     if(res.code=="S0000"){
       this._snackBar.open(this.languageData.error_msg2,'ok');
     }
+    this.commonService.googleEventPush({
+      "event": "edit_user_success",​
+      "event_category": "SendParcel Pro - Edit User Success",​
+      "event_action": "Edit User Success",​
+      "event_label": "Edit User Success",
+      "selected_language": this.selectedLanguage?.toUpperCase(),
+    });
 
     },
     error: (error) => {
@@ -221,8 +252,25 @@ if(this.data.getButtonLabel=='Edit User'){
       else{
         this._snackBar.open(this.languageData.error_msg4, 'ok');
       }
+      
+      this.commonService.googleEventPush({
+        "event": "edit_user_error",​
+        "event_category": "SendParcel Pro - Edit User Error",​
+        "event_action": "Edit User Error",​
+        "event_label": "Edit User Error",
+        "selected_language": this.selectedLanguage?.toUpperCase(),
+      });
     },
     complete : () => {
+      
+      this.commonService.googleEventPush({
+        "event": "edit_user_success",​
+        "event_category": "SendParcel Pro - Edit User Success",​
+        "event_action": "Edit User Success",​
+        "event_label": "Edit User Success",
+        "selected_language": this.selectedLanguage?.toUpperCase(),
+      });
+
       this.isSubmitting = false;
       this.dialogRef.close()
       this.commonService.fetchLinkedAccountUser('user', 'list',this.authToken).subscribe({
@@ -281,6 +329,15 @@ this.cdr.detectChanges();
 }
 
   removeUser(){
+    let accountType = this.data.isMasterAccount ? 'Master' : 'Sub';
+    this.commonService.googleEventPush({
+      "event": "remove_user",​
+      "event_category": "SendParcel Pro - User Management - " + accountType,​
+      "event_action": "Remove User",​
+      "event_label": "User",
+      "selected_language": this.selectedLanguage?.toUpperCase(),​
+    });
+
     const removeUser = {removed: true}
     this.dialogRef.close(removeUser);
   }

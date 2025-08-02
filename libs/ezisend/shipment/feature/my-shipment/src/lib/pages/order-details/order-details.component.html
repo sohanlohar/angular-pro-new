@@ -111,6 +111,7 @@
           <button
             (click)="onDownloadAsAndPrintButton(detail?.id)"
             target="_blank"
+            [disabled]="activeTabRoute === 'request-pickup'"
             color="primary"
             mat-flat-button
           >

@@ -5,6 +5,7 @@ import {
   OnInit,
   ViewChild,
   ElementRef,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BreadcrumbItem } from '@pos/ezisend/shared/data-access/models';
@@ -44,8 +45,12 @@ Chart.plugins.register(ChartDataLabels);
 
 // Chart.js v2 plugin for rounded bar edges (4px radius)
 // Place this after Chart import and before component definition
-if ((Chart as any) && (Chart as any).elements && (Chart as any).elements.Rectangle) {
-  (Chart as any).elements.Rectangle.prototype.draw = function() {
+if (
+  (Chart as any) &&
+  (Chart as any).elements &&
+  (Chart as any).elements.Rectangle
+) {
+  (Chart as any).elements.Rectangle.prototype.draw = function () {
     const ctx = this._chart.ctx;
     const vm = this._view;
     let left, right, top, bottom;
@@ -54,8 +59,10 @@ if ((Chart as any) && (Chart as any).elements && (Chart as any).elements.Rectang
 
     // Get dataset label
     const dataset = this._chart.data.datasets[this._datasetIndex];
-    const isSuccessOrNoData = dataset.label &&
-      (dataset.label.toLowerCase().includes('success') || dataset.label.toLowerCase().includes('no data'));
+    const isSuccessOrNoData =
+      dataset.label &&
+      (dataset.label.toLowerCase().includes('success') ||
+        dataset.label.toLowerCase().includes('no data'));
 
     if (!vm.horizontal) {
       left = vm.x - vm.width / 2;
@@ -115,8 +122,8 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
   @ViewChild('stateChart', { static: false }) stateChart!: ElementRef;
   @ViewChild('dexChart', { static: false }) dexChart!: ElementRef;
   @ViewChild('dexChartOnly', { static: false }) dexChartOnly!: ElementRef;
-  @ViewChild('statusSummaryChart', { static: false }) statusSummaryChart!: ElementRef;
-  @ViewChild('statusSummaryChartOnly', { static: false }) statusSummaryChartOnly!: ElementRef;
+  @ViewChild('statusSummaryChart', { static: false })
+  statusSummaryChart!: ElementRef;
 
   @Input() datePicker: DateRange = {
     startDate: '',
@@ -236,7 +243,8 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
           weight: 'bold',
           size: 14,
         },
-        formatter: (value: number) => (value >= 10 ? this.truncateDecimal(value, 2) + '%' : ''),
+        formatter: (value: number) =>
+          value >= 10 ? this.truncateDecimal(value, 2) + '%' : '',
       },
     },
     tooltips: {
@@ -249,7 +257,9 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
             data.datasets[dsIdx].label === 'Success' ? 'success' : 'failed';
           const rawVal = this.catBarRawData[comp][idx];
           const percentage = tooltipItem.yLabel || tooltipItem.value;
-          return `${data.datasets[dsIdx].label}: ${rawVal} (${this.truncateDecimal(percentage, 2)}%)`;
+          return `${
+            data.datasets[dsIdx].label
+          }: ${rawVal} (${this.truncateDecimal(percentage, 2)}%)`;
         },
       },
     },
@@ -299,7 +309,9 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
           const total = dataArr.reduce((a: number, b: number) => a + b, 0);
           if (!total) return '';
           const percentage = (value / total) * 100;
-          return percentage > 0 ? this.truncateDecimal(percentage, 2) + '%' : '';
+          return percentage > 0
+            ? this.truncateDecimal(percentage, 2) + '%'
+            : '';
         },
       },
     },
@@ -387,7 +399,9 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
           const total = dataArr.reduce((a: number, b: number) => a + b, 0);
           if (!total) return '';
           const percentage = (value / total) * 100;
-          return percentage > 0 ? this.truncateDecimal(percentage, 2) + '%' : '';
+          return percentage > 0
+            ? this.truncateDecimal(percentage, 2) + '%'
+            : '';
         },
       },
     },
@@ -505,7 +519,8 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
   constructor(
     private fb: FormBuilder,
     private slaService: SlaService,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   // Helper function to truncate decimal places without rounding
@@ -534,22 +549,22 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         icon: 'thumb_up',
         label: 'Total No. of Acceptance',
         status: 'delivered',
-        price: '0'
+        price: '0',
       },
       {
         theme: 'blue' as const,
         icon: 'done',
         label: 'Total No. of RTO',
         status: 'delivered',
-        price: '0'
+        price: '0',
       },
       {
         theme: 'yellow' as const,
         icon: 'u_turn_right',
         label: 'Percentage of RTO',
         status: 'delivered',
-        price: '0.00%'
-      }
+        price: '0.00%',
+      },
     ];
     this.isRtoEmpty = false;
   }
@@ -559,6 +574,16 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
   }
 
   onDateRangeChange(): void {
+    // Reset all loading states to true when date range changes
+    this.isStatusLoading = true;
+    this.isCategoryLoading = true;
+    this.isStateLoading = true;
+    this.isDexLoading = true;
+    this.isRtoLoading = true;
+    this.isStatusSummaryLoading = true;
+
+    this.cdr.detectChanges(); // Force change detection to show all loading states
+
     this.loadDashboardData();
   }
 
@@ -576,6 +601,8 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
 
   private loadStatusData() {
     this.isStatusLoading = true;
+    this.cdr.detectChanges(); // Force change detection to show loading
+
     this.getStatusData()
       .pipe(
         catchError((err) => {
@@ -584,6 +611,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         }),
         finalize(() => {
           this.isStatusLoading = false;
+          this.cdr.detectChanges(); // Force change detection to hide loading
         })
       )
       .subscribe((statusRes) => {
@@ -595,6 +623,8 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
 
   private loadCategoryData() {
     this.isCategoryLoading = true;
+    this.cdr.detectChanges(); // Force change detection to show loading
+
     this.getCategoryData()
       .pipe(
         catchError((err) => {
@@ -603,6 +633,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         }),
         finalize(() => {
           this.isCategoryLoading = false;
+          this.cdr.detectChanges(); // Force change detection to hide loading
         })
       )
       .subscribe((catRes) => {
@@ -614,6 +645,8 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
 
   private loadStateData() {
     this.isStateLoading = true;
+    this.cdr.detectChanges(); // Force change detection to show loading
+
     this.getStateData()
       .pipe(
         catchError((err) => {
@@ -622,6 +655,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         }),
         finalize(() => {
           this.isStateLoading = false;
+          this.cdr.detectChanges(); // Force change detection to hide loading
         })
       )
       .subscribe((stateRes) => {
@@ -633,6 +667,8 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
 
   private loadDexData() {
     this.isDexLoading = true;
+    this.cdr.detectChanges(); // Force change detection to show loading
+
     this.getDexList()
       .pipe(
         catchError((err) => {
@@ -641,6 +677,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         }),
         finalize(() => {
           this.isDexLoading = false;
+          this.cdr.detectChanges(); // Force change detection to hide loading
         })
       )
       .subscribe((dexRes) => {
@@ -652,13 +689,18 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
 
   private loadRtoSummary() {
     this.isRtoLoading = true;
+    this.cdr.detectChanges(); // Force change detection to show loading
+
     this.getRtoData()
       .pipe(
         catchError((err) => {
           console.error('Error loading RTO data:', err);
           return of(null);
         }),
-        finalize(() => this.isRtoLoading = false)
+        finalize(() => {
+          this.isRtoLoading = false;
+          this.cdr.detectChanges(); // Force change detection to hide loading
+        })
       )
       .subscribe((rtoRes) => {
         if (rtoRes) {
@@ -669,13 +711,18 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
 
   private loadStatusSummary() {
     this.isStatusSummaryLoading = true;
+    this.cdr.detectChanges(); // Force change detection to show loading
+
     this.getStatusSummaryData()
       .pipe(
         catchError((err) => {
           console.error('Error loading status summary data:', err);
           return of(null);
         }),
-        finalize(() => this.isStatusSummaryLoading = false)
+        finalize(() => {
+          this.isStatusSummaryLoading = false;
+          this.cdr.detectChanges(); // Force change detection to hide loading
+        })
       )
       .subscribe((statusSummaryRes) => {
         if (statusSummaryRes) {
@@ -746,14 +793,17 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         borderColor: '#cccccc',
         stack: 'a', // Revert: stack with Success/Failed
         datalabels: {
-          display: (ctx: any) => ctx.dataset.label === 'No Data' && ctx.dataset.data[ctx.dataIndex] > 0,
+          display: (ctx: any) =>
+            ctx.dataset.label === 'No Data' &&
+            ctx.dataset.data[ctx.dataIndex] > 0,
           color: '#FFF',
           font: { weight: 'normal' as const, size: 12 }, // Smaller font size
           align: 'center' as const,
           anchor: 'center' as const,
           textAlign: 'center' as const,
           padding: { top: 0, bottom: 0 },
-          formatter: (value: any, ctx: any) => value > 0 ? 'No\nData\nAvailable' : '',
+          formatter: (value: any, ctx: any) =>
+            value > 0 ? 'No\nData\nAvailable' : '',
         },
         _customLegend: false, // Custom property to help filter legend
       },
@@ -784,7 +834,8 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
           font: { weight: 'bold' as const, size: 14 },
           align: 'center' as const,
           anchor: 'center' as const,
-          formatter: (value: any, ctx: any) => value > 0 ? this.truncateDecimal(value, 2) + '%' : '',
+          formatter: (value: any, ctx: any) =>
+            value > 0 ? this.truncateDecimal(value, 2) + '%' : '',
         },
       },
     ];
@@ -798,13 +849,13 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         labels: {
           ...this.catBarOptions.legend?.labels,
           padding: 20,
-          filter: function(legendItem: any, chartData: any) {
+          filter: function (legendItem: any, chartData: any) {
             // Only show legend for datasets with _customLegend: true
             if (!chartData.datasets) return false;
             const ds = chartData.datasets[legendItem.datasetIndex];
             return ds && ds._customLegend;
-          }
-        }
+          },
+        },
       },
       plugins: {
         ...this.catBarOptions.plugins,
@@ -823,7 +874,9 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
               const failedVal = this.catBarRawData.failed[idx];
               const total = rawVal + failedVal;
               const percentage = total > 0 ? (rawVal / total) * 100 : 0;
-              return percentage > 0 ? `Success: ${rawVal} (${this.truncateDecimal(percentage, 2)}%)` : '';
+              return percentage > 0
+                ? `Success: ${rawVal} (${this.truncateDecimal(percentage, 2)}%)`
+                : '';
             }
             if (dsLabel === 'Failed') {
               const idx = tooltipItem.index;
@@ -831,7 +884,9 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
               const successVal = this.catBarRawData.success[idx];
               const total = rawVal + successVal;
               const percentage = total > 0 ? (rawVal / total) * 100 : 0;
-              return percentage > 0 ? `Failed: ${rawVal} (${this.truncateDecimal(percentage, 2)}%)` : '';
+              return percentage > 0
+                ? `Failed: ${rawVal} (${this.truncateDecimal(percentage, 2)}%)`
+                : '';
             }
             return '';
           },
@@ -843,6 +898,8 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       sla_category.every(
         (item) => item.total_success === 0 && item.total_failed === 0
       );
+
+    this.cdr.detectChanges(); // Force change detection after data mapping
   }
 
   private mappingStatusResponse(statusRes: IGlobalSlaResponse<ISlaStatusData>) {
@@ -854,7 +911,9 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     );
     this.statusPieData = [
       {
-        data: sla_status.map((item) => Number(this.truncateDecimal(item.percentage, 2))),
+        data: sla_status.map((item) =>
+          Number(this.truncateDecimal(item.percentage, 2))
+        ),
         backgroundColor: ['#50a0f8', '#f7cb4f'],
         borderColor: ['#50a0f8', '#f7cb4f'],
         borderWidth: 2,
@@ -862,6 +921,8 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     ];
     this.isStatusEmpty =
       sla_status.length === 0 || sla_status.every((item) => item.value === 0);
+
+    this.cdr.detectChanges(); // Force change detection after data mapping
   }
 
   private mappingStateResponse(stateRes: IGlobalSlaResponse<ISlaStateData>) {
@@ -874,6 +935,8 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       shipments: item.total,
     }));
     this.totalShipmentState = stateRes.data.total_shipment;
+
+    this.cdr.detectChanges(); // Force change detection after data mapping
   }
 
   private mappingDexResponse(dexRes: IGlobalSlaResponse<IDexData>) {
@@ -884,9 +947,13 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     const sortedDex = dex.sort((a, b) => b.total - a.total);
 
     // Create labels with count information
-    this.dexChartLabels = sortedDex.map((item) => `${item.label} (${item.total})`);
+    this.dexChartLabels = sortedDex.map(
+      (item) => `${item.label} (${item.total})`
+    );
 
-    this.dexChartData = sortedDex.map((item) => Number(this.truncateDecimal(item.percentage, 2)));
+    this.dexChartData = sortedDex.map((item) =>
+      Number(this.truncateDecimal(item.percentage, 2))
+    );
     this.dexSourceData = sortedDex.map((item, index) => ({
       label: item.label,
       total: item.total,
@@ -894,9 +961,13 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       color: this.dexChartBackgroundColor[index],
     }));
     this.isEmptyDex = dex.length === 0 || dex.every((item) => item.total === 0);
+
+    this.cdr.detectChanges(); // Force change detection after data mapping
   }
 
-  private mappingStatusSummaryResponse(statusSummaryRes: IGlobalSlaResponse<IStatusSummary>) {
+  private mappingStatusSummaryResponse(
+    statusSummaryRes: IGlobalSlaResponse<IStatusSummary>
+  ) {
     this.last_updated.push(statusSummaryRes.data.last_updated);
     const statuses = statusSummaryRes.data.statuses || [];
 
@@ -904,48 +975,57 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     const sortedStatuses = statuses.sort((a, b) => b.total - a.total);
 
     // Create labels with count information
-    this.statusSummaryChartLabels = sortedStatuses.map((item) => `${item.label} (${item.total})`);
+    this.statusSummaryChartLabels = sortedStatuses.map(
+      (item) => `${item.label} (${item.total})`
+    );
 
-    this.statusSummaryChartData = sortedStatuses.map((item) => Number(this.truncateDecimal(item.percentage, 2)));
+    this.statusSummaryChartData = sortedStatuses.map((item) =>
+      Number(this.truncateDecimal(item.percentage, 2))
+    );
     this.statusSummarySourceData = sortedStatuses.map((item, index) => ({
       label: item.label,
       total: item.total,
       percentage: Number(this.truncateDecimal(item.percentage, 2)),
       color: this.statusSummaryChartBackgroundColor[index],
     }));
-    this.isStatusSummaryEmpty = statuses.length === 0 || statuses.every((item) => item.total === 0);
+    this.isStatusSummaryEmpty =
+      statuses.length === 0 || statuses.every((item) => item.total === 0);
+
+    this.cdr.detectChanges(); // Force change detection after data mapping
   }
 
-        private mappingRtoResponse(rtoRes: IGlobalSlaResponse<IRtoSummary>) {
+  private mappingRtoResponse(rtoRes: IGlobalSlaResponse<IRtoSummary>) {
     // Note: IRtoSummary doesn't have last_updated, so we'll use current timestamp
     this.last_updated.push(new Date().toISOString());
 
     this.rtoData = [
       {
         theme: 'green' as const,
-        icon: 'done',
+        icon: 'thumb_up',
         label: 'Total No. of Acceptance',
         status: 'delivered',
-        price: rtoRes.data.total_acceptance.toString()
+        price: rtoRes.data.rto_data.acceptance_count.toString(),
       },
       {
         theme: 'blue' as const,
         icon: 'done',
         label: 'Total No. of RTO',
         status: 'delivered',
-        price: rtoRes.data.total_rto.toString()
+        price: rtoRes.data.rto_data.rto_count.toString(),
       },
       {
         theme: 'yellow' as const,
-        icon: 'warning',
+        icon: 'u_turn_right',
         label: 'Percentage of RTO',
         status: 'delivered',
-        price: rtoRes.data.percentage_rto.toFixed(2) + '%'
-      }
+        price: rtoRes.data.rto_data.percentage.toFixed(2) + '%',
+      },
     ];
 
     // Always show the cards, never set as empty
     this.isRtoEmpty = false;
+
+    this.cdr.detectChanges(); // Force change detection after data mapping
   }
 
   private getCategoryData() {
@@ -977,6 +1057,17 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       start_date: event.start_date,
       end_date: event.end_date,
     });
+
+    // Reset all loading states to true when date range changes
+    this.isStatusLoading = true;
+    this.isCategoryLoading = true;
+    this.isStateLoading = true;
+    this.isDexLoading = true;
+    this.isRtoLoading = true;
+    this.isStatusSummaryLoading = true;
+
+    this.cdr.detectChanges(); // Force change detection to show all loading states
+
     this.ngAfterViewInit();
   }
 
@@ -1013,23 +1104,25 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
   }
 
   getFilteredDexData(): IChartDataItem[] {
-    return this.dexSourceData.filter(element => element.total > 0);
+    return this.dexSourceData.filter((element) => element.total > 0);
   }
 
   getFilteredStatusSummaryData(): IChartDataItem[] {
-    return this.statusSummarySourceData.filter(element => element.total > 0);
+    return this.statusSummarySourceData.filter((element) => element.total > 0);
   }
 
   hasStatusSummaryData(): boolean {
-    return this.statusSummaryChartData.some(value => value > 0);
+    return this.statusSummaryChartData.some((value) => value > 0);
   }
 
   getFilteredStatusSummaryLabels(): string[] {
-    return this.statusSummaryChartLabels.filter((_, index) => this.statusSummaryChartData[index] > 0);
+    return this.statusSummaryChartLabels.filter(
+      (_, index) => this.statusSummaryChartData[index] > 0
+    );
   }
 
   getFilteredStatusSummaryChartData(): number[] {
-    return this.statusSummaryChartData.filter(value => value > 0);
+    return this.statusSummaryChartData.filter((value) => value > 0);
   }
 
   async downloadAllFile(): Promise<void> {
@@ -1063,10 +1156,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       });
   }
 
-  private downloadWithFileName(
-    type: DownloadType,
-    resp: Blob
-  ): void {
+  private downloadWithFileName(type: DownloadType, resp: Blob): void {
     const fileName = `${type.toUpperCase()}_${moment().format(
       'YYYY-MM-DD_HH-mm'
     )}.xlsx`;
@@ -1141,7 +1231,16 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
           title: 'SLA by Destination',
           element: this.stateChart,
         },
-        { type: 'dex', title: 'Delivery Exceptions', element: this.dexChartOnly },
+        {
+          type: 'dex',
+          title: 'Delivery Exceptions',
+          element: this.dexChartOnly,
+        },
+        {
+          type: 'status_summary',
+          title: 'Shipments Status',
+          element: this.statusSummaryChart,
+        },
       ];
 
       for (const chart of charts) {
@@ -1243,15 +1342,25 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         fileName = `SLA_DEX_${moment().format('YYYY-MM-DD_HH-mm')}.pdf`;
         break;
       case 'status_summary':
-        chartElement = this.statusSummaryChartOnly;
-        title = 'Delivery Status';
-        fileName = `SLA_Status_Summary_${moment().format('YYYY-MM-DD_HH-mm')}.pdf`;
+        chartElement = this.statusSummaryChart;
+        title = 'Shipments Status';
+        fileName = `SLA_Shipments_Status_${moment().format(
+          'YYYY-MM-DD_HH-mm'
+        )}.pdf`;
         break;
     }
 
     if (!chartElement) {
       console.error(`${chartType} chart element not found`);
       return;
+    }
+
+    // Check if chart data is available for status_summary
+    if (chartType === 'status_summary') {
+      if (this.isStatusSummaryEmpty || !this.hasStatusSummaryData()) {
+        console.error('Status summary chart has no data to display');
+        return;
+      }
     }
 
     console.log(
@@ -1264,11 +1373,14 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       this.commonService.isLoading(true);
     }
 
-    try {
+        try {
       // Wait for chart to be fully rendered
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const element = chartElement.nativeElement;
+
+      console.log(`Element dimensions: ${element.scrollWidth}x${element.scrollHeight}`);
+      console.log(`Element content:`, element.innerHTML);
 
       // Configure html2canvas options for chart only
       const canvas = await html2canvas(element, {
@@ -1282,6 +1394,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         scrollY: 0,
         windowWidth: element.scrollWidth,
         windowHeight: element.scrollHeight,
+        logging: true, // Enable logging for debugging
       });
 
       // Create PDF
@@ -1291,7 +1404,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       // Different sizing for DEX chart to allow side-by-side layout
       let imgWidth, imgHeight, xPosition, yPosition, tableYPosition;
 
-            if (chartType === 'dex') {
+      if (chartType === 'dex') {
         // Smaller chart for DEX in flex column layout
         imgWidth = 120; // Smaller width but not too small
         imgHeight = (canvas.height * imgWidth) / canvas.width;
@@ -1309,9 +1422,9 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
           { align: 'center' }
         );
         pdf.text(
-          `Date Range: ${moment(this.startDate).format('DD MMM YYYY')} - ${moment(
-            this.endDate
-          ).format('DD MMM YYYY')}`,
+          `Date Range: ${moment(this.startDate).format(
+            'DD MMM YYYY'
+          )} - ${moment(this.endDate).format('DD MMM YYYY')}`,
           105,
           35,
           { align: 'center' }
@@ -1341,9 +1454,9 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
           { align: 'center' }
         );
         pdf.text(
-          `Date Range: ${moment(this.startDate).format('DD MMM YYYY')} - ${moment(
-            this.endDate
-          ).format('DD MMM YYYY')}`,
+          `Date Range: ${moment(this.startDate).format(
+            'DD MMM YYYY'
+          )} - ${moment(this.endDate).format('DD MMM YYYY')}`,
           105,
           35,
           { align: 'center' }
@@ -1357,7 +1470,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         this.addDetailTable(pdf, chartType, tableYPosition);
       }
 
-      // Save the PDF
+            // Save the PDF
       pdf.save(fileName);
       console.log(`Successfully downloaded ${fileName}`);
     } catch (error) {
@@ -1369,7 +1482,11 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private addDetailTable(pdf: jsPDF, chartType: DashboardChartType, startY: number): void {
+  private addDetailTable(
+    pdf: jsPDF,
+    chartType: DashboardChartType,
+    startY: number
+  ): void {
     pdf.setFontSize(12);
     pdf.text('Detailed Data', 20, startY);
 
@@ -1387,6 +1504,9 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         break;
       case 'dex':
         this.addDexTable(pdf, currentY);
+        break;
+      case 'status_summary':
+        this.addStatusSummaryTable(pdf, currentY);
         break;
     }
   }
@@ -1413,6 +1533,9 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         break;
       case 'dex':
         currentY = this.addDexTableToPDF(pdf, currentY);
+        break;
+      case 'status_summary':
+        currentY = this.addStatusSummaryTableToPDF(pdf, currentY);
         break;
     }
 
@@ -1453,7 +1576,11 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       pdf.rect(20, currentY, 170, 8);
       pdf.text(item.label, 25, currentY + 6);
       pdf.text(item.count.toString(), 100, currentY + 6);
-      pdf.text(`${this.truncateDecimal(item.percentage, 2)}%`, 140, currentY + 6);
+      pdf.text(
+        `${this.truncateDecimal(item.percentage, 2)}%`,
+        140,
+        currentY + 6
+      );
 
       currentY += 8;
     });
@@ -1525,7 +1652,11 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       pdf.rect(20, currentY, 170, 8);
       pdf.text(item.state, 25, currentY + 6);
       pdf.text(item.shipments.toString(), 100, currentY + 6);
-      pdf.text(`${this.truncateDecimal(item.percentage, 2)}%`, 140, currentY + 6);
+      pdf.text(
+        `${this.truncateDecimal(item.percentage, 2)}%`,
+        140,
+        currentY + 6
+      );
 
       currentY += 8;
     });
@@ -1567,10 +1698,80 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       pdf.rect(20, currentY, 170, 8);
       pdf.text(item.label || '', 25, currentY + 6);
       pdf.text((item.total || 0).toString(), 120, currentY + 6);
-      pdf.text(`${this.truncateDecimal(item.percentage || 0, 2)}%`, 150, currentY + 6);
+      pdf.text(
+        `${this.truncateDecimal(item.percentage || 0, 2)}%`,
+        150,
+        currentY + 6
+      );
 
       currentY += 8;
     });
+  }
+
+  private addStatusSummaryTable(pdf: jsPDF, startY: number): void {
+    // Table headers
+    pdf.setFontSize(10);
+    pdf.setFillColor(240, 240, 240);
+    pdf.rect(20, startY, 170, 8);
+    pdf.text('Status', 25, startY + 6);
+    pdf.text('Count', 120, startY + 6);
+    pdf.text('Percentage', 150, startY + 6);
+
+    // Table data
+    let currentY = startY + 8;
+    this.statusSummarySourceData.forEach((item, index) => {
+      if (currentY > 270) {
+        pdf.addPage();
+        currentY = 20;
+      }
+
+      const fillColor = index % 2 === 0 ? 248 : 255;
+      pdf.setFillColor(fillColor, fillColor, fillColor);
+      pdf.rect(20, currentY, 170, 8);
+      pdf.text(item.label || '', 25, currentY + 6);
+      pdf.text((item.total || 0).toString(), 120, currentY + 6);
+      pdf.text(
+        `${this.truncateDecimal(item.percentage || 0, 2)}%`,
+        150,
+        currentY + 6
+      );
+
+      currentY += 8;
+    });
+  }
+
+  private addStatusSummaryTableToPDF(pdf: jsPDF, startY: number): number {
+    // Table headers
+    pdf.setFontSize(10);
+    pdf.setFillColor(240, 240, 240);
+    pdf.rect(20, startY, 170, 8);
+    pdf.text('Status', 25, startY + 6);
+    pdf.text('Count', 120, startY + 6);
+    pdf.text('Percentage', 150, startY + 6);
+
+    // Table data
+    let currentY = startY + 8;
+    this.statusSummarySourceData.forEach((item, index) => {
+      if (currentY > 270) {
+        pdf.addPage();
+        currentY = 20;
+      }
+
+      const fillColor = index % 2 === 0 ? 248 : 255;
+      pdf.setFillColor(fillColor, fillColor, fillColor);
+      pdf.rect(20, currentY, 170, 8);
+      pdf.text(item.label || '', 25, currentY + 6);
+      pdf.text((item.total || 0).toString(), 120, currentY + 6);
+      pdf.text(
+        `${this.truncateDecimal(item.percentage || 0, 2)}%`,
+        150,
+        currentY + 6
+      );
+
+      currentY += 8;
+    });
+
+    return currentY;
   }
 
   private addStatusTableToPDF(pdf: jsPDF, startY: number): number {
@@ -1607,7 +1808,11 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       pdf.rect(20, currentY, 170, 8);
       pdf.text(item.label, 25, currentY + 6);
       pdf.text(item.count.toString(), 100, currentY + 6);
-      pdf.text(`${this.truncateDecimal(item.percentage, 2)}%`, 140, currentY + 6);
+      pdf.text(
+        `${this.truncateDecimal(item.percentage, 2)}%`,
+        140,
+        currentY + 6
+      );
 
       currentY += 8;
     });
@@ -1683,7 +1888,11 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       pdf.rect(20, currentY, 170, 8);
       pdf.text(item.state, 25, currentY + 6);
       pdf.text(item.shipments.toString(), 100, currentY + 6);
-      pdf.text(`${this.truncateDecimal(item.percentage, 2)}%`, 140, currentY + 6);
+      pdf.text(
+        `${this.truncateDecimal(item.percentage, 2)}%`,
+        140,
+        currentY + 6
+      );
 
       currentY += 8;
     });
@@ -1727,7 +1936,11 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       pdf.rect(20, currentY, 170, 8);
       pdf.text(item.label || '', 25, currentY + 6);
       pdf.text((item.total || 0).toString(), 120, currentY + 6);
-      pdf.text(`${this.truncateDecimal(item.percentage || 0, 2)}%`, 150, currentY + 6);
+      pdf.text(
+        `${this.truncateDecimal(item.percentage || 0, 2)}%`,
+        150,
+        currentY + 6
+      );
 
       currentY += 8;
     });
@@ -1735,7 +1948,11 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     return currentY;
   }
 
-  private addDexTableSideBySide(pdf: jsPDF, startX: number, startY: number): void {
+  private addDexTableSideBySide(
+    pdf: jsPDF,
+    startX: number,
+    startY: number
+  ): void {
     // Table headers
     pdf.setFontSize(10);
     pdf.setFillColor(240, 240, 240);
@@ -1785,7 +2002,11 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       pdf.text((index + 1).toString(), 25, currentY + 6); // Row number
       pdf.text(item.label || '', 40, currentY + 6);
       pdf.text((item.total || 0).toString(), 100, currentY + 6);
-      pdf.text(`${this.truncateDecimal(item.percentage || 0, 2)}%`, 140, currentY + 6);
+      pdf.text(
+        `${this.truncateDecimal(item.percentage || 0, 2)}%`,
+        140,
+        currentY + 6
+      );
 
       currentY += 8;
     });

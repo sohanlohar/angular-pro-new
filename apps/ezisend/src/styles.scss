@@ -224,6 +224,7 @@ textarea.mat-input-element {
   }
   mat-card.mat-card.mat-focus-indicator {
     margin-bottom: 40px;
+    box-shadow: none;
   }
 }
 @media screen and (max-width: 435px) {
@@ -321,6 +322,13 @@ button:hover {
   // height: auto !important;
   // max-height: 100vh;
   // overflow-y: auto;
+}
+
+.cdk-overlay-pane.dialog-container-custom {
+  align-items: center;
+  .mat-dialog-container.cdk-dialog-container.ng-tns-c41-54.ng-trigger.ng-trigger-dialogContainer {
+    height: auto;
+  }
 }
 
 div#mat-menu-panel-0 {

@@ -48,6 +48,7 @@ export interface IDialogEvent {
 })
 export class DialogComponent {
   @Output() confirmEvent = new EventEmitter<boolean>(false);
+  @Output() cancelEvent = new EventEmitter<boolean>(false);
   @Output() changeDate = new EventEmitter<string>();
   minDate: Date = new Date();
 

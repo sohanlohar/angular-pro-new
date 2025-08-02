@@ -63,7 +63,20 @@ export class AccountAccessComponent implements OnInit {
     ['logo', 'name', 'account_no', 'type', 'permissions'] :
     ['logo', 'name', 'account_no', 'type'];
   }
-  handleViewAccount(account:any){
+  handleViewAccount(account:any){   
+    let eventData = {
+      "event": "select_account",​
+      "event_category": "SendParcel Pro - Available Accounts",​
+      "event_action": "Select Account",​
+      "event_label": "Account - "+ account?.name,​
+      "selected_language": this.selectedLanguage?.toUpperCase(),​
+      "account_no": account?.account_no,​
+      "account_name": account?.name,​
+      "account_type": account?.type,​
+      "account_default_status": account?.is_default_account ? 'Yes' : 'No'
+    } 
+    this.commonService.googleEventPush(eventData);
+    
     const authToken:any= 'Bearer ' + localStorage.getItem('authToken');
     this.isViewSubmitted.status = true;
   this.commonService.accountSwitch('account', 'switch',authToken, account.account_no).subscribe({
@@ -101,6 +114,18 @@ export class AccountAccessComponent implements OnInit {
   }
 
   handleDefaultAccount(account: any) {
+    let eventData = {
+      "event": "set_account_default",​
+      "event_category": "SendParcel Pro - Available Accounts",​
+      "event_action": "Set Account As Default",​
+      "event_label": "Account - "+ account?.name,​
+      "selected_language": this.selectedLanguage?.toUpperCase(),​
+      "account_no": account?.account_no,​
+      "account_name": account?.name,​
+      "account_type": account?.type,​
+      "account_default_status": account?.is_default_account ? 'Yes' : 'No'
+    } 
+    this.commonService.googleEventPush(eventData);
     
     this.isSetDefaultSubmitted.status = true;
     this.authToken = 'Bearer ' + localStorage.getItem('authToken');
@@ -108,13 +133,29 @@ export class AccountAccessComponent implements OnInit {
       complete: () => {
         // console.log('Update default account request completed');
         this.commonService.fetchLinkedAccountUser('account', 'list',this.authToken).subscribe({
-          next:(res: any)=>{
+          next:(res: any)=>{ 
+          this.commonService.googleEventPush({
+            "event": "set_account_default_success",
+            "event_category": "SendParcel Pro - Set As Default - Success",
+            "event_action": "Set Account Default Success",
+            "event_label": "Set Account Default Success",
+            "selected_language": this.selectedLanguage?.toUpperCase(),
+          });
+          
             this.isSetDefaultSubmitted.status = false;
             this.data = res?.data
             this.cdr.detectChanges();
           }, complete : () => {
             this.isSetDefaultSubmitted.status = false;
             this.cdr.detectChanges();
+          }, error: (err: any) => {
+            this.commonService.googleEventPush({
+              "event": "set_account_default_fail",​
+              "event_category": "SendParcel Pro - Set As Default - Fail",​
+              "event_action": "Set Account Default Fail",​
+              "event_label": "Set Account Default Fail",
+              "selected_language": this.selectedLanguage?.toUpperCase(),
+            });
           }
         })
       }

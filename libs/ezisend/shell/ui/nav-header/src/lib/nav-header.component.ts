@@ -339,6 +339,14 @@ export class NavHeaderComponent implements OnInit{
     });
   }
   openDialog(): void {
+    this.commonService.googleEventPush({
+      "event": "top_menu",
+      "event_category": "SendParcel Pro - Menu",
+      "event_action": "Click Top Menu",
+      "event_label": "Linked Accounts",
+      "selected_language": this.selectedLanguage?.initial
+    });
+
     this.dialog.open(AccountAccessComponent, {
       minWidth: '40%',
       height:'390px',
@@ -347,6 +355,14 @@ export class NavHeaderComponent implements OnInit{
   }
 
   changeLanguage(){
+    this.commonService.googleEventPush({   
+      "event": "switch_language",​
+      "event_category": "SendParcel Pro - Dashboard",​
+      "event_action": "Switch Language",​
+      "event_label": "Language - EN/ BM",
+      "selected_language": this.selectedLanguage.initial,
+    });
+
     localStorage.setItem("language",this.selectedLanguage.value)
     this.translate.emitButtonClick();
   }

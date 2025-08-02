@@ -49,6 +49,9 @@ export class BillingInvoiceComponent {
         localStorage.getItem('language') === 'my'
       ? bm.data.billing
       : en.data.billing;
+      
+  selectedLanguage = localStorage.getItem("language") ?? 'en';
+
   constructor(
     public commonService: CommonService,
     private loginService: LoginService,
@@ -232,6 +235,13 @@ export class BillingInvoiceComponent {
                       this.invoiceList.push(invoice.invoice_number.toString());
                     });
                   } else {
+                    this.commonService.googleEventPush({
+                      "event": "page_error",​
+                      "event_category": "SendParcel Pro - Billing - Error",​
+                      "event_action": "Page Error",​
+                      "event_label": "Error - No Data Available",
+                      "selected_language": this.selectedLanguage?.toUpperCase(),
+                    });
                     this.displayInvoiceData = false;
                   }
                   this.loading = false;
@@ -242,6 +252,16 @@ export class BillingInvoiceComponent {
                   this.cdr.detectChanges();
                   this.getStatus(this.invoiceList);
                 },
+
+                error: (err) => {
+                  this.commonService.googleEventPush({
+                    "event": "page_error",​
+                    "event_category": "SendParcel Pro - Billing - Error",​
+                    "event_action": "Page Error",​
+                    "event_label": "Error - Access is Unavailable",
+                    "selected_language": this.selectedLanguage?.toUpperCase(),
+                  });
+                }
               });
           },
         });
