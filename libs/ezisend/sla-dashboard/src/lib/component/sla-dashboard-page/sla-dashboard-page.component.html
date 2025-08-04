@@ -3,39 +3,35 @@
     <span class="main-title">PERFOMANCE INSIGHTS</span>
     <div class="header-filter">
       <div class="date-picker-container">
-        <form [formGroup]="dateRangePickerForm" class="date-picker-form">
-          <pos-date-range-picker
-            (formChange)="onDateRangePickerFormChange($event)"
-            class="px-3"
-          ></pos-date-range-picker>
-        </form>
-        <label>Last Refreshed: {{ updatedLastRefreshed }}</label>
-      </div>
-      <div class="button-download">
-        <button
-          mat-flat-button
-          color="primary"
-          [matMenuTriggerFor]="headerMenu"
-          *ngIf="
-            !isStatusEmpty ||
-            !isEmptyType ||
-            !isEmptyDex ||
-            shipmentData.length > 0
-          "
-        >
-          Download All
-          <mat-icon class="material-icon-outlined" mat-icon-button>
-            arrow_drop_down
-          </mat-icon>
-        </button>
-        <mat-menu #headerMenu="matMenu">
-          <button mat-menu-item (click)="downloadFile('sla_all')">
-            Report (.xlsx)
+        <div class="date-picker-wrapper">
+          <form [formGroup]="dateRangePickerForm" class="date-picker-form">
+            <pos-date-range-picker
+              (formChange)="onDateRangePickerFormChange($event)"
+              class="px-3"
+            ></pos-date-range-picker>
+          </form>
+          <label>Last Refreshed: {{ updatedLastRefreshed }}</label>
+        </div>
+        <div class="button-download">
+          <button
+            mat-flat-button
+            color="primary"
+            [matMenuTriggerFor]="headerMenu"
+          >
+            Download All
+            <mat-icon class="material-icon-outlined" mat-icon-button>
+              arrow_drop_down
+            </mat-icon>
           </button>
-          <button mat-menu-item (click)="downloadAllAsPDF()">
-            Report (.pdf)
-          </button>
-        </mat-menu>
+          <mat-menu #headerMenu="matMenu">
+            <button mat-menu-item (click)="downloadFile('sla_all')">
+              Report (.xlsx)
+            </button>
+            <button mat-menu-item (click)="downloadAllAsPDF()">
+              Report (.pdf)
+            </button>
+          </mat-menu>
+        </div>
       </div>
     </div>
   </div>
@@ -95,7 +91,10 @@
         </mat-menu>
       </div>
       <div class="chart-card" #statusSummaryChart>
-        <div class="spinner-container spinner-pie" *ngIf="isStatusSummaryLoading">
+        <div
+          class="spinner-container spinner-pie"
+          *ngIf="isStatusSummaryLoading"
+        >
           <mat-spinner class="spinner"></mat-spinner>
         </div>
 
@@ -108,14 +107,21 @@
           [colors]="statusSummaryChartColors"
           [legend]="true"
           [plugins]="statusSummaryChartPlugins"
-          *ngIf="!isStatusSummaryEmpty && !isStatusSummaryLoading && hasStatusSummaryData()"
+          *ngIf="
+            !isStatusSummaryEmpty &&
+            !isStatusSummaryLoading &&
+            hasStatusSummaryData()
+          "
         >
         </canvas>
 
-        <div class="no-data" *ngIf="isStatusSummaryEmpty && !isStatusSummaryLoading">
+        <div
+          class="no-data"
+          *ngIf="isStatusSummaryEmpty && !isStatusSummaryLoading"
+        >
           No data to display
         </div>
-            </div>
+      </div>
     </div>
 
     <div class="container">

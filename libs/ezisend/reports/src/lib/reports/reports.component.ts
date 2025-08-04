@@ -432,7 +432,7 @@ export class ReportsComponent implements OnInit {
             let errorMessage = this.commonService.errorMessageTranslate(
               error?.error?.error?.message
             );
-            this.commonService.openErrorDialog(' ', errorMessage);
+            this.commonService.openErrorDialog(errorMessage, ' ');
             this.cdr.detectChanges();
           },
         });

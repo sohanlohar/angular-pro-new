@@ -40,7 +40,7 @@
       color: #000000;
       font-size:  v.$font_size_s;
       padding-top: 0.2rem;
-      font-weight: 500;
+      text-align: justify;
 
       span.font-bold {
         color: #00498D!important;
@@ -54,6 +54,7 @@
     }
     &_title {
       font-size: v.$font_size_l;
+      font-weight: 500;
     }
 
     &_information {

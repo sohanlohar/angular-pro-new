@@ -120,6 +120,12 @@
     justify-content: center;
     margin-top: 10px;
   }
+  .mobile-filter-overlay .mobile-filter-popup {
+    padding: 15px !important;
+    ::ng-deep .mat-form-field-infix {
+      width: 200px !important;
+    }
+  }
 }
 
 .mobile-filter-overlay {

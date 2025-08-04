@@ -225,7 +225,7 @@ export const en = {
       deliveries: 'DELIVERIES',
       return: 'RETURN',
       return_shipments: 'SHIPMENTS',
-      all: 'ALL',
+      all: 'All',
       tracking_details: 'TRACKING DETAILS',
       recipient: 'RECIPIENT',
       parcel: 'PARCEL',
@@ -383,7 +383,7 @@ export const en = {
       live_shipment_tab: {
         search_orders: 'Search Orders',
         search_orders_placeholder: 'Search tracking no. or recipient name',
-        all: 'ALL',
+        all: 'All',
         order_type: 'Order Type',
         picked_up: 'Picked Up',
         date_range: 'Date Range',
@@ -402,7 +402,7 @@ export const en = {
       },
       delivered_tab: {
         search_orders: 'Search Orders',
-        all: 'ALL',
+        all: 'All',
         non_cod: 'NON COD',
         date_range: 'Date Range',
         order_type: 'Order Type',
@@ -417,7 +417,7 @@ export const en = {
       },
       failed_deliveries: {
         search_orders: 'Search Orders',
-        all: 'ALL',
+        all: 'All',
         non_cod: 'NON COD',
         date_range: 'Date Range',
         order_type: 'Order Type',
@@ -433,7 +433,7 @@ export const en = {
       },
       returned: {
         search_orders: 'Search Orders',
-        all: 'ALL',
+        all: 'All',
         non_cod: 'NON COD',
         date_range: 'Date Range',
         order_type: 'Order Type',
@@ -649,7 +649,7 @@ export const en = {
       sort_all_contact: 'Sort all of your contact with ease',
       create_new_contact: 'Create New Contact',
       create_new_contact1: 'CREATE NEW CONTACT',
-      contact_all: 'MY CONTACT (ALL)',
+      contact_all: 'MY CONTACT (All)',
       search: 'Search Contact',
       delet: 'Delete',
       download: 'Download All',

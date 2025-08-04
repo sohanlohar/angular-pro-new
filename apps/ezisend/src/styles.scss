@@ -323,11 +323,15 @@ button:hover {
   // height: auto !important;
   // max-height: 100vh;
   // overflow-y: auto;
-  margin: 0 10px;
 }
 
 .cdk-overlay-pane.dialog-container-custom {
   align-items: center;
+  height: -moz-fit-content !important;
+  height: fit-content !important;
+  min-width: 400px !important;
+  width: auto !important;
+  margin: 0 20px !important;
   .mat-dialog-container.cdk-dialog-container.ng-tns-c41-54.ng-trigger.ng-trigger-dialogContainer {
     height: auto;
   }
@@ -335,4 +339,23 @@ button:hover {
 
 div#mat-menu-panel-0 {
   margin-top: 5px;
+}
+
+@media screen and (max-width: 435px) {
+  .cdk-overlay-pane.dialog-container-custom {
+    min-width: 300px !important;
+    width: 98vw !important;
+    max-width: 90vw !important;
+    margin: 0 2px !important;
+    padding: 0 !important;
+  }
+}
+@media screen and (max-width: 390px) {
+  .cdk-overlay-pane.dialog-container-custom {
+    min-width: 275px !important;
+    width: 98vw !important;
+    max-width: 90vw !important;
+    margin: 0 2px !important;
+    padding: 0 !important;
+  }
 }

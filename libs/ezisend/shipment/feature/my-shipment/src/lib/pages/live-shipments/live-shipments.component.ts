@@ -72,7 +72,7 @@ export class LiveShipmentsComponent implements OnInit, OnDestroy {
   filterOrderStatus: { id: string; value: string }[] = [
     {
       id: '',
-      value: 'ALL',
+      value: 'All',
     },
     {
       id: 'picked up',

@@ -285,7 +285,7 @@ td.mat-cell:last-of-type {
   white-space: nowrap;
   border: 1.5px solid #00498d;
   border-radius: 5px;
-  padding: 0px 30px;
+  // padding: 0px 30px;
   font-weight: 400 !important;
 
   flex: 1 1 auto; /* Grow and shrink based on available space */
@@ -295,12 +295,13 @@ td.mat-cell:last-of-type {
   white-space: nowrap; /* Prevent text from wrapping */
   line-height: 36px; /* Set line-height to ensure the text is vertically centered */
   height: auto; /* Let the height adjust based on padding */
+  justify-content: center;
 }
 .button-container span {
   color: #00498d;
   cursor: default;
   border: none;
-  padding: 0px 17.5px 0px 17.5px;
+  padding: 0px 15px;
 }
 .button-container.selectedLanguage button:nth-child(2) {
   padding: 0px 20px;

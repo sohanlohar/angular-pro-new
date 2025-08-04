@@ -39,7 +39,7 @@
         justify-content: center;
 
         &.padding-left {
-          padding-left: 20px;
+          // padding-left: 20px;
         }
 
         .filter-dropdown-icon {
@@ -588,15 +588,19 @@
     }
   }
 }
+  .actionContainer {
+    display: flex !important;
+    align-items: center;
+  }
 @media screen and (max-width: 435px) {
   .mat-checkbox-layout {
     white-space: normal !important;
   }
-  .actionContainer {
-    display: flex !important;
-    align-items: center;
-    height: 96px;
-  }
+  // .actionContainer {
+  //   display: flex !important;
+  //   align-items: center;
+  //   // height: 96px;
+  // }
   .mat-column-trackingDetail {
     .date-time-td {
       flex-direction: row !important;

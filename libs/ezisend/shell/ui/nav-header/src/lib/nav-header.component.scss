@@ -158,6 +158,24 @@ $language-border-color: #cde7ff;
   left: 14.8%;
   top: 63px;
 
+  .flex-item-row {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    margin-bottom: 10px;
+  }
+  .flex-item-column {
+    ::ng-deep .mat-form-field-wrapper {
+      padding-bottom: 1rem;
+    }
+  }
+  .flex-item-row-end {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: end;
+  }
+
   .more {
     margin-left: auto;
     margin-right: 10px;
@@ -165,7 +183,6 @@ $language-border-color: #cde7ff;
 
   ::ng-deep {
     .select {
-      margin-left: 12px;
       font-weight: 400;
       font-size: 14px;
       color: #5e5873;
@@ -177,7 +194,8 @@ $language-border-color: #cde7ff;
 
     .mat-form-field-infix {
       font-size: 14px;
-      padding-bottom: 12px;
+      padding-bottom: 10px;
+      padding-top: 11px;
     }
 
     .mat-standard-chip .mat-chip-remove,
@@ -201,7 +219,6 @@ $language-border-color: #cde7ff;
     .mat-form-field-appearance-standard .mat-form-field-flex {
       padding-top: 0 !important;
       border: 1px solid #cbcbcb;
-      height: 49px;
       border-radius: 5px;
       padding-left: 0.75rem;
       padding-right: 0.75rem;

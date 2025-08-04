@@ -1,10 +1,10 @@
 @use 'apps/ezisend/src/styles/variables/index' as v;
 .pickup__form {
-  padding: 3.8rem 0.5rem 1.5rem 0.5rem;
+  padding: 2rem 0.5rem;
   text-align: center;
   &-mat-dialog-title {
     font-size: v.$font_size_m;
-    // font-weight: 600;
+    font-weight: 500;
   }
   span.mat-header-close {
     position: absolute;
@@ -168,7 +168,7 @@
       }
       .date {
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 15px;
         justify-content: center;
       }
     }

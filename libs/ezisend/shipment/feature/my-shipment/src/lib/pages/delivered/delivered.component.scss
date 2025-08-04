@@ -197,6 +197,12 @@
     justify-content: center;
     margin-top: 10px;
   }
+  .mobile-filter-overlay .mobile-filter-popup {
+    padding: 15px !important;
+    ::ng-deep .mat-form-field-infix {
+      width: 200px !important;
+    }
+  }
 }
 
 .mobile-filter-overlay {
@@ -244,8 +250,8 @@
   padding: 5px 12px;
   font-size: 13px;
   border-radius: 16px;
-  background-color: #3993E5;
-  color: #FFFFFF;
+  background-color: #3993e5;
+  color: #ffffff;
   font-weight: 500;
   margin: 4px;
   white-space: nowrap;

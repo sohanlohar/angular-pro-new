@@ -80,26 +80,26 @@
   }
 
   .form-group-my {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 100%;
-    grid-auto-flow: column;
-    gap: 1rem;
-    row-gap: 0.1rem;
-    grid-template-areas:
-      'pT'
-      'dW'
-      'dL'
-      'dH'
-      'dWe'
-      'vW'
-      'cW'
-      'wM'
-      'dC'
-      'cD'
-      'cE'
-      'pB'
-      'sB';
+    // width: 100%;
+    // // display: grid;
+    // grid-template-columns: 100%;
+    // grid-auto-flow: column;
+    // gap: 1rem;
+    // row-gap: 0.1rem;
+    // grid-template-areas:
+    //   'pT'
+    //   'dW'
+    //   'dL'
+    //   'dH'
+    //   'dWe'
+    //   'vW'
+    //   'cW'
+    //   'wM'
+    //   'dC'
+    //   'cD'
+    //   'cE'
+    //   'pB'
+    //   'sB';
 
     .button-previous {
       margin: 1rem 0rem 0rem 0rem;
