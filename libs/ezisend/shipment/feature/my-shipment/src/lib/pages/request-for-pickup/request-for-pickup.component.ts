@@ -553,7 +553,7 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
     /* dialog config */
     const dialogRef = this.dialog.open(DialogComponent, {
       data: {
-        descriptions:
+        title:
           event !== 'delete'
             ? this.languageData.dailog_msg1 +
               ' ' +

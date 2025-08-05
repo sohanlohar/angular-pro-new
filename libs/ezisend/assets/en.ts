@@ -649,7 +649,7 @@ export const en = {
       sort_all_contact: 'Sort all of your contact with ease',
       create_new_contact: 'Create New Contact',
       create_new_contact1: 'CREATE NEW CONTACT',
-      contact_all: 'MY CONTACT (All)',
+      contact_all: 'MY CONTACT (ALL)',
       search: 'Search Contact',
       delet: 'Delete',
       download: 'Download All',

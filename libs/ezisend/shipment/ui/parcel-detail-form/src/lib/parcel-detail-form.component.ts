@@ -281,7 +281,7 @@ export class ParcelDetailFormComponent
   isCountryMY = true;
   isPendingPickup = false;
   getCitiesByPostcode$!: Observable<any>;
-  
+
    // SPPI-2323 : Suspend/Block Countries for EMS, Air Parcel & Surface Parcel
    productMapping: { [key: string]: string } = {
     'EMS': 'Pos Laju International',
@@ -1201,7 +1201,7 @@ export class ParcelDetailFormComponent
                 else{
                   this.submit_shipment(isMY,isMps);
                 }
-                
+
               }
             }
           });
@@ -1821,7 +1821,7 @@ export class ParcelDetailFormComponent
           .pipe(
             takeUntil(this._onDestroy),
             tap((response: any) => {
-              
+
               this.disabledProducts = response.data.map((product: IProductDisable) => product.product);
               if(!this.isEditOrder) {
                 if (this.disabledProducts) this.parcelAbroadForm.controls['product']?.setValue('')
@@ -1843,7 +1843,7 @@ export class ParcelDetailFormComponent
   openSnackBar(message: string, action: string, time: number){
     this._snackBar.open(message, action, {duration: time})
   }
-  
+
   // SPPI-2323 : Suspend/Block Countries for EMS, Air Parcel & Surface Parcel
   reverseProductMapping: { [key: string]: string } = (() => {
     const reverse: { [key: string]: string } = {};
@@ -1855,12 +1855,12 @@ export class ParcelDetailFormComponent
     }
     return reverse;
   })();
-  
+
   getDisabledCountry(product: string): boolean {
     const apiProductName = this.reverseProductMapping[product];
     return this.disabledProducts.includes(apiProductName);
   }
-  
+
   showCOD(){
     return this.is_cod && !this.isReturnOrder && !this.isMelPlus && !this.isMPS;
   }

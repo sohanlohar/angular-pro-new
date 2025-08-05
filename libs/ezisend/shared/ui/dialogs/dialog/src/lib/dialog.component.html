@@ -11,7 +11,7 @@
         <mat-icon [svgIcon]="icon"></mat-icon>
       </div>
     </ng-container>
-    <ng-container *ngIf="data.descriptions">
+    <ng-container *ngIf="data.descriptions || data.title">
       <h1 class="mat-dialog-content_title" *ngIf="data.title !== ''">
         {{ data.title }}
       </h1>

@@ -990,6 +990,6 @@ export class MyShipmentTableComponent implements OnInit, OnChanges, OnDestroy {
         return action;
     }
   }
-  
+
 
 }

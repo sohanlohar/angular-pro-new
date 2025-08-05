@@ -17,6 +17,7 @@
             mat-flat-button
             color="primary"
             [matMenuTriggerFor]="headerMenu"
+            *ngIf="!isStatusEmpty || !isEmptyType || !isEmptyDex || shipmentData.length > 0"
           >
             Download All
             <mat-icon class="material-icon-outlined" mat-icon-button>
@@ -126,7 +127,7 @@
 
     <div class="container">
       <div class="title-container">
-        <span>SLA Status</span>
+        <span>Delivery Status</span>
         <a
           color="primary"
           [matMenuTriggerFor]="statusMenu"
@@ -178,7 +179,7 @@
   <div class="flex-container">
     <div class="container">
       <div class="title-container">
-        <span>SLA Type</span>
+        <span>Delivery Status (By Days)</span>
         <a
           color="primary"
           [matMenuTriggerFor]="categoryMenu"
@@ -226,7 +227,7 @@
 
     <div class="container">
       <div class="title-container">
-        <span>SLA by Destination</span>
+        <span>Delivery Status (By Destination)</span>
         <a
           color="primary"
           [matMenuTriggerFor]="stateMenu"
@@ -256,8 +257,8 @@
         </div>
 
         <div class="sla-bar-header-row" *ngIf="!isStateLoading">
-          <div class="sla-bar-header-percentage">SLA Success by Percentage</div>
-          <div class="sla-bar-header-volume">SLA Success by Volume</div>
+          <div class="sla-bar-header-percentage">Delivery Success By Percentage</div>
+          <div class="sla-bar-header-volume">Delivery Success By Volume</div>
         </div>
 
         <ng-container *ngIf="shipmentData.length > 0 && !isStateLoading">
@@ -280,7 +281,9 @@
                   'margin-left': '12px',
                   'margin-right': '12px'
                 }"
-              ></div>
+              >
+                <span class="sla-bar-percentage-text">{{ truncateDecimal(item.percentage, 1) }}%</span>
+              </div>
               <div class="sla-bar-tooltip">
                 <div class="sla-bar-tooltip-label">Success %:</div>
                 <div class="sla-bar-tooltip-value">

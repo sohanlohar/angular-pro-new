@@ -159,8 +159,8 @@
           min: languageForm.required_min_amount,
           maxAmountExceeded: languageForm.required_max_amount_exceeds_limit
         }">
-        <input matInput formControlName="amount" maxlength="8" (blur)="roundAmount()" 
-        [readonly]="isPendingPickup && isEditOrder" 
+        <input matInput formControlName="amount" maxlength="8" (blur)="roundAmount()"
+        [readonly]="isPendingPickup && isEditOrder"
         [ngClass]="{ 'disabled-input': isPendingPickup && isEditOrder }"/>
       </pos-form-control-wrapper>
     </mat-form-field>
@@ -200,8 +200,8 @@
           min: languageForm.required_min_sum_insured,
           max: languageForm.required_max_sum_insured
         }">
-        <input matInput formControlName="sum_insured" maxlength="8" 
-              [readonly]="isPendingPickup && isEditOrder" 
+        <input matInput formControlName="sum_insured" maxlength="8"
+              [readonly]="isPendingPickup && isEditOrder"
               [ngClass]="{ 'disabled-input': isPendingPickup && isEditOrder }"/>
       </pos-form-control-wrapper>
     </mat-form-field>
@@ -374,7 +374,7 @@
       <mat-label> <b>{{languageData.shipping_insurance}}</b></mat-label>
     </div>
     <div class="insurance-check">
-      <mat-checkbox formControlName="insuranceCheck" [checked]="isIssuredIntl" color="primary" (change)="getInsuranceValIntl($event)" 
+      <mat-checkbox formControlName="insuranceCheck" [checked]="isIssuredIntl" color="primary" (change)="getInsuranceValIntl($event)"
        [disabled]="(isPendingPickup && isEditOrder)">
       <div class="pos_coverage_text"> {{languageData.shipping_note1}}
         <span class="highlightText">{{languageData.shipping_note2}}</span></div></mat-checkbox
@@ -386,10 +386,10 @@
       <div>
         <ul class="insurance_notes mt-0">
           <li>
-            <b>{{languageData.insurance_note4_1_bold}}</b> {{languageData.insurance_note4_1}} 
+            <b>{{languageData.insurance_note4_1_bold}}</b> {{languageData.insurance_note4_1}}
           </li>
           <li>
-            <b>{{languageData.insurance_note4_2_bold}}</b> {{languageData.insurance_note4_2}} 
+            <b>{{languageData.insurance_note4_2_bold}}</b> {{languageData.insurance_note4_2}}
           </li>
         </ul>
     </div>
@@ -407,7 +407,7 @@
           max: languageForm.required_max_sum_insured
         }">
         <input matInput formControlName="sum_insured" maxlength="8"
-            [readonly]="isPendingPickup && isEditOrder" 
+            [readonly]="isPendingPickup && isEditOrder"
             [ngClass]="{ 'disabled-input': isPendingPickup && isEditOrder }"/>
       </pos-form-control-wrapper>
     </mat-form-field>
@@ -520,7 +520,7 @@
             [isParcel]="true">
           </pos-country-select>
 
-          <div class="delete_custom">
+          <div class="delete_custom" *ngIf="customs_declarations.controls.length > 1">
             <button mat-mini-fab color="primary" type="button" [disabled]="isDisable" (click)="removeCustom(i)">
               <mat-icon aria-hidden="false" class="material-icons-outlined">
                 delete
@@ -546,13 +546,13 @@
         </mat-icon> {{languageForm.back}}
       </button>
     </div>
-    <div class="button-previous" *ngIf="(!isEditOrder || !isReturnOrder) && commonService.checkIfMobile()">
+    <!-- <div class="button-previous" *ngIf="(!isEditOrder || !isReturnOrder) && commonService.checkIfMobile()">
       <button (click)="onBackButtonClick()" mat-button color="primary" type="button">
         <mat-icon aria-hidden="false" class="material-icons-outlined">
           arrow_back
         </mat-icon> {{languageForm.back}}
       </button>
-    </div>
+    </div> -->
     <div class="button-submit">
       <button type="submit" (click)="VaidatedSenderPostcode(false,isMPS)" [disabled]="(isReturnOrder  && isconfirmOrderEnable)?false:isSubmitDisabled(parcelAbroadForm.valid)" mat-flat-button color="primary">
         <mat-spinner *ngIf="isSubmitting" [diameter]="25" class="login-loading-spinner"></mat-spinner>

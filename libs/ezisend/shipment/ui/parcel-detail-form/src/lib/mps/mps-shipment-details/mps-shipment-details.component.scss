@@ -438,12 +438,14 @@
 // ================
 /* Main container adaptations */
 .child_accordions,
-.customs_container,
-.mat-expansion-panel {
-  max-width: 100%;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0 8px 0 0;
+.customs_container{
+  padding: 1rem 0 0 0;
+  .mat-expansion-panel {
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 8px 0 0;
+  }
 }
 
 /* Border box for all descendants */
@@ -546,8 +548,19 @@
 .delete_custom {
   margin-top: 16px;
   text-align: right;
+  background-color: transparent;
   button {
     padding: 8px 20px;
+    background-color: white;
+    color: #F86262;
+    cursor: pointer;
+    border: 2px solid #F86262;
+    border-radius: 5px;
+  }
+  button:disabled{
+      border: 2px solid #696969;
+      border-radius: 5px;
+      color: #696969;
   }
 }
 

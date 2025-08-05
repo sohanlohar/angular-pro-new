@@ -528,11 +528,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     const factor = Math.pow(10, decimalPlaces);
     const truncated = Math.floor(value * factor) / factor;
 
-    // If the value is a whole number, don't show decimal places
-    if (truncated % 1 === 0) {
-      return truncated.toString();
-    }
-
+    // Always show decimal places for PDF export consistency
     return truncated.toFixed(decimalPlaces);
   }
 
@@ -808,7 +804,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         _customLegend: false, // Custom property to help filter legend
       },
       {
-        label: 'Failed',
+        label: 'Exceed',
         data: percentFailed,
         backgroundColor: '#eb4d5f',
         borderColor: '#eb4d5f',
@@ -818,7 +814,7 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
         datalabels: { display: false }, // Never show label for failed
       },
       {
-        label: 'Success',
+        label: 'Achieved',
         data: percentSuccess,
         backgroundColor: '#3478cb',
         borderColor: '#3478cb',
@@ -868,24 +864,24 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
             if (dsLabel === 'No Data') {
               return 'No data available';
             }
-            if (dsLabel === 'Success') {
+            if (dsLabel === 'Achieved') {
               const idx = tooltipItem.index;
               const rawVal = this.catBarRawData.success[idx];
               const failedVal = this.catBarRawData.failed[idx];
               const total = rawVal + failedVal;
               const percentage = total > 0 ? (rawVal / total) * 100 : 0;
               return percentage > 0
-                ? `Success: ${rawVal} (${this.truncateDecimal(percentage, 2)}%)`
+                ? `Achieved: ${rawVal} (${this.truncateDecimal(percentage, 2)}%)`
                 : '';
             }
-            if (dsLabel === 'Failed') {
+            if (dsLabel === 'Exceed') {
               const idx = tooltipItem.index;
               const rawVal = this.catBarRawData.failed[idx];
               const successVal = this.catBarRawData.success[idx];
               const total = rawVal + successVal;
               const percentage = total > 0 ? (rawVal / total) * 100 : 0;
               return percentage > 0
-                ? `Failed: ${rawVal} (${this.truncateDecimal(percentage, 2)}%)`
+                ? `Exceed: ${rawVal} (${this.truncateDecimal(percentage, 2)}%)`
                 : '';
             }
             return '';
@@ -1323,23 +1319,23 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     switch (chartType) {
       case 'status':
         chartElement = this.statusChart;
-        title = 'SLA Status';
-        fileName = `SLA_Status_${moment().format('YYYY-MM-DD_HH-mm')}.pdf`;
+        title = 'Delivery Status';
+        fileName = `Delivery_Status_${moment().format('YYYY-MM-DD_HH-mm')}.pdf`;
         break;
       case 'category':
         chartElement = this.categoryChart;
-        title = 'SLA Type (D+1 to D+5)';
-        fileName = `SLA_Category_${moment().format('YYYY-MM-DD_HH-mm')}.pdf`;
+        title = 'Delivery Status (By Days)';
+        fileName = `Delivery_Status_By_Days_${moment().format('YYYY-MM-DD_HH-mm')}.pdf`;
         break;
       case 'state':
         chartElement = this.stateChart;
-        title = 'SLA by Destination';
-        fileName = `SLA_State_${moment().format('YYYY-MM-DD_HH-mm')}.pdf`;
+        title = 'Delivery Status (By Destination)';
+        fileName = `Delivery_Status_By_Destination_${moment().format('YYYY-MM-DD_HH-mm')}.pdf`;
         break;
       case 'dex':
         chartElement = this.dexChartOnly;
         title = 'Delivery Exceptions';
-        fileName = `SLA_DEX_${moment().format('YYYY-MM-DD_HH-mm')}.pdf`;
+        fileName = `Delivery_Exceptionss_${moment().format('YYYY-MM-DD_HH-mm')}.pdf`;
         break;
       case 'status_summary':
         chartElement = this.statusSummaryChart;
@@ -1606,8 +1602,8 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     pdf.setFillColor(240, 240, 240);
     pdf.rect(20, startY, 170, 8);
     pdf.text('SLA Type', 25, startY + 6);
-    pdf.text('Success', 80, startY + 6);
-    pdf.text('Failed', 120, startY + 6);
+    pdf.text('Achieved', 80, startY + 6);
+    pdf.text('Exceed', 120, startY + 6);
     pdf.text('Total', 160, startY + 6);
 
     // Table data
@@ -1622,9 +1618,9 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       pdf.setFillColor(fillColor, fillColor, fillColor);
       pdf.rect(20, currentY, 170, 8);
       pdf.text(item.label, 25, currentY + 6);
-      pdf.text(item.success.toString(), 80, currentY + 6);
-      pdf.text(item.failed.toString(), 120, currentY + 6);
-      pdf.text(item.total.toString(), 160, currentY + 6);
+      pdf.text(this.truncateDecimal(item.success, 2), 80, currentY + 6);
+      pdf.text(this.truncateDecimal(item.failed, 2), 120, currentY + 6);
+      pdf.text(this.truncateDecimal(item.total, 2), 160, currentY + 6);
 
       currentY += 8;
     });
@@ -1840,8 +1836,8 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
     pdf.setFillColor(240, 240, 240);
     pdf.rect(20, startY, 170, 8);
     pdf.text('SLA Type', 25, startY + 6);
-    pdf.text('Success', 80, startY + 6);
-    pdf.text('Failed', 120, startY + 6);
+    pdf.text('Achieved', 80, startY + 6);
+    pdf.text('Exceed', 120, startY + 6);
     pdf.text('Total', 160, startY + 6);
 
     // Table data
@@ -1856,9 +1852,9 @@ export class SlaDashboardPageComponent implements OnInit, AfterViewInit {
       pdf.setFillColor(fillColor, fillColor, fillColor);
       pdf.rect(20, currentY, 170, 8);
       pdf.text(item.label, 25, currentY + 6);
-      pdf.text(item.success.toString(), 80, currentY + 6);
-      pdf.text(item.failed.toString(), 120, currentY + 6);
-      pdf.text(item.total.toString(), 160, currentY + 6);
+      pdf.text(this.truncateDecimal(item.success, 2), 80, currentY + 6);
+      pdf.text(this.truncateDecimal(item.failed, 2), 120, currentY + 6);
+      pdf.text(this.truncateDecimal(item.total, 2), 160, currentY + 6);
 
       currentY += 8;
     });
