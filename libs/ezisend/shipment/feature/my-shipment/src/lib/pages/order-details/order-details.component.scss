@@ -57,6 +57,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 20px;
+    flex-wrap: wrap;
     .tracking-inner {
       display: flex;
       flex-direction: column;
@@ -83,8 +84,8 @@
     gap: 30px;
     flex-direction: row;
   }
-  .parcel-details{
-    .mat-icon{
+  .parcel-details {
+    .mat-icon {
       margin-right: 30px;
     }
   }
@@ -673,8 +674,14 @@
   .sender-recipent-wrapper {
     flex-direction: column !important;
   }
-  .parcel-details{
+  .parcel-details {
     flex-direction: column !important;
     gap: 20px;
+  }
+  .container {
+    background-color: #ffffff;
+    color: v.$primary_color;
+    font-weight: 500;
+    padding: 2rem 1rem;
   }
 }

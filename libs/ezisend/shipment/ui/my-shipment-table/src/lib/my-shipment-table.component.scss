@@ -588,10 +588,12 @@
     }
   }
 }
+@media screen and (min-width: 768px) {
   .actionContainer {
     display: flex !important;
     align-items: center;
   }
+}
 @media screen and (max-width: 435px) {
   .mat-checkbox-layout {
     white-space: normal !important;

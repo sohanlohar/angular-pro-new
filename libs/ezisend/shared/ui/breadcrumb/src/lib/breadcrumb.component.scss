@@ -16,8 +16,9 @@ $icon-size: 1rem;
   &__breadcrumb {
     display: flex;
     align-items: center;
-    gap: 0rem;
+    gap: 5px;
     padding-left: 0px !important;
+    flex-wrap: wrap;
 
     li {
       font-weight: 400;
@@ -45,7 +46,7 @@ $icon-size: 1rem;
   .back {
     display: flex;
     align-items: center;
-    padding-right: 48px;
+    // padding-right: 48px;
 
     > mat-icon {
       color: v.$primary_color;

@@ -749,8 +749,9 @@
   .add_btn {
     display: block;
     width: fit-content;
-    margin-right: 10px; // Add some spacing between the buttons
+    // margin-right: 10px;
     border: none;
+    padding-left: 0;
   }
   label .mat-checkbox-layout {
     white-space: normal !important;

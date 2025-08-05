@@ -38,18 +38,18 @@
     }
     &_description {
       color: #000000;
-      font-size:  v.$font_size_s;
+      font-size: v.$font_size_s;
       padding-top: 0.2rem;
       text-align: justify;
 
       span.font-bold {
-        color: #00498D!important;
-        font-weight: 600!important;
+        color: #00498d !important;
+        font-weight: 600 !important;
       }
 
       span.convert {
-        color: #5E5873!important;
-        font-weight: 600!important;
+        color: #5e5873 !important;
+        font-weight: 600 !important;
       }
     }
     &_title {
@@ -74,31 +74,31 @@
     }
 
     .date-container {
-      margin-top: 40px;
+      margin-top: 15px;
       display: flex;
       flex-direction: row;
-      gap: 8px;
+      gap: 15px;
       align-items: center;
       justify-content: center;
 
-        .date-form {
-          height: 60px!important;
+      .date-form {
+        // height: 60px !important;
 
-          .mat-form-field-infix {
-            display: flex;
-            justify-content: space-between;
-            flex-direction: row;
-            align-items: center;
-            padding: 0!important;
-          }
+        .mat-form-field-infix {
+          display: flex;
+          justify-content: space-between;
+          flex-direction: row;
+          align-items: center;
+          padding: 0 !important;
+        }
 
-          .mat-form-field-appearance-outline .mat-form-field-flex {
-            margin-top: 0!important
-          }
+        .mat-form-field-appearance-outline .mat-form-field-flex {
+          margin-top: 0 !important;
+        }
       }
 
       .date-button {
-        width: 200px!important;
+        width: 200px !important;
       }
     }
   }
@@ -138,18 +138,17 @@
       // width: 140.25px;
       cursor: pointer;
       justify-content: center;
-
     }
 
-    .cancelButton{
-      background: transparent!important;
+    .cancelButton {
+      background: transparent !important;
       color: #00498d;
-      border: none!important;
+      border: none !important;
       text-decoration: underline;
       font-weight: 500;
       font-size: 14px;
 
-      &:hover{
+      &:hover {
         cursor: pointer;
       }
     }
@@ -157,24 +156,24 @@
     .stretch {
       margin-top: 8px;
 
-      >button {
+      > button {
         width: 80%;
       }
     }
   }
 }
-.actionButton{
+.actionButton {
   height: 2.5rem;
-      margin: auto;
-      text-align: center;
-      display: flex;
-      align-items: center;
+  margin: auto;
+  text-align: center;
+  display: flex;
+  align-items: center;
 }
-.deleteAction{
+.deleteAction {
   width: 172px !important;
   height: 2.5rem;
   margin: auto;
-   font-family: Poppins !important;
+  font-family: Poppins !important;
   font-size: 14px !important;
   font-weight: 500 !important;
   line-height: 21px !important;
@@ -182,10 +181,12 @@
   text-align: center;
   border: 1.5px solid rgba(0, 73, 141, 1) !important;
 }
-.actionButtonContainer{
-  display: flex; justify-content: space-around; margin-top: 10px;
+.actionButtonContainer {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
 }
-.deleteActionText{
+.deleteActionText {
   font-family: Poppins;
   height: 2.5rem;
   margin: auto;
@@ -196,29 +197,33 @@
   letter-spacing: 0.4x;
   text-align: center;
 }
-@media screen  and (max-width:700px) {
+@media screen and (max-width: 700px) {
   .dialogContainer {
     .mat-dialog-content {
       &_logo mat-icon {
         height: 2em;
       }
+      .date-container{
+        gap: 8px;
+      }
     }
   }
 
-  .dialogContainer .mat-dialog-content .date-container{
+  .dialogContainer .mat-dialog-content .date-container {
     flex-direction: column !important;
   }
 
-  .actionButtonContainer{
+  .actionButtonContainer {
     flex-direction: column;
     gap: 10px;
   }
 }
 
-.mat-dialog-actions .mat-button-base+.mat-button-base, .mat-dialog-actions .mat-mdc-button-base+.mat-mdc-button-base {
-  margin-left: none!important;
+.mat-dialog-actions .mat-button-base + .mat-button-base,
+.mat-dialog-actions .mat-mdc-button-base + .mat-mdc-button-base {
+  margin-left: none !important;
 }
 
-.mat-dialog-content::-webkit-scrollbar{
+.mat-dialog-content::-webkit-scrollbar {
   display: none;
 }
