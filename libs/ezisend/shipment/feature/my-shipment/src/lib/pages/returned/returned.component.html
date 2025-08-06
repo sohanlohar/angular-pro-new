@@ -70,7 +70,7 @@
     </div>
   </div>
 </div>
-    <div class="container container-right">
+    <div class="container container-right" [ngClass]="{'container': _commonService.checkIfMobile() && selectedMultipleData.length > 0}">
       <button
           mat-flat-button
           color="primary"

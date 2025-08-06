@@ -84,7 +84,7 @@ export class RequestForPickupComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private fb: FormBuilder,
-    private _commonService: CommonService,
+    public _commonService: CommonService,
     private cdr: ChangeDetectorRef,
     private router: Router,
     private route: ActivatedRoute,

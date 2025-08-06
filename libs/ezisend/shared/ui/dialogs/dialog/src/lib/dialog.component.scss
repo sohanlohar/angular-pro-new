@@ -2,8 +2,7 @@
 
 .dialogContainer {
   font-family: 'Poppins', Helvetica, sans-serif;
-  // width: 25rem;
-  // padding: 2.5rem 2rem;
+  width: 30rem;
   text-align: center;
   .mat-dialog-title {
     font-size: v.$font_size_xs;
@@ -40,7 +39,7 @@
       color: #000000;
       font-size: v.$font_size_s;
       padding-top: 0.2rem;
-      text-align: justify;
+      text-align: center;
 
       span.font-bold {
         color: #00498d !important;
@@ -60,7 +59,7 @@
     &_information {
       color: v.$teritary_color;
       line-height: 25px;
-      text-align: justify;
+      text-align: center;
     }
 
     &_logo mat-icon {
@@ -79,10 +78,14 @@
       flex-direction: row;
       gap: 15px;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
 
       .date-form {
         // height: 60px !important;
+        width: 100%;
+        .mat-form-field {
+          width: 100%;
+        }
 
         .mat-form-field-infix {
           display: flex;
@@ -199,11 +202,12 @@
 }
 @media screen and (max-width: 700px) {
   .dialogContainer {
+    width: 100%;
     .mat-dialog-content {
       &_logo mat-icon {
         height: 2em;
       }
-      .date-container{
+      .date-container {
         gap: 8px;
       }
     }

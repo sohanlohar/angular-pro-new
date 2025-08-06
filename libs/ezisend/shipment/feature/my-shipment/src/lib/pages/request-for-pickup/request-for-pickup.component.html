@@ -24,7 +24,7 @@
     </div>
   </div>
   <div class="wrapper">
-    <div class="action-button">
+    <div class="action-button" [ngClass]="{'action-button': selectedMultipleData.length > 0}">
       <div class="action__group-left">
         <button
           mat-flat-button

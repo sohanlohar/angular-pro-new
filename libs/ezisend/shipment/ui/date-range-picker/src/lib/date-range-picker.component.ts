@@ -217,6 +217,10 @@ export class DateRangePickerComponent implements OnInit {
       start_date: start_date,
       end_date: end_date,
     });
+
+    if (this.isMobileView && !isCustomRange) {
+      this.onApplyDate();
+    }
   }
 
   datesUpdated(range: any): void {

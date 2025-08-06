@@ -43,13 +43,13 @@
 // margin-top: 1.5rem;
 // }
 
-::ng-deep {
-  .dialogContainer {
-    .mat-dialog-content {
-      padding: 24px;
-    }
-  }
-}
+// ::ng-deep {
+//   .dialogContainer {
+//     .mat-dialog-content {
+//       padding: 24px;
+//     }
+//   }
+// }
 
 @media screen and (max-width: 435px) {
   .container .container-action {

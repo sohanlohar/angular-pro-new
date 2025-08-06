@@ -40,7 +40,7 @@
       <button class="filter-btn" mat-icon-button (click)="mobileFilterOpen = true">
         <span>Filters</span><mat-icon>filter_list</mat-icon>
       </button>
-    
+
       <div>
         <span *ngIf="start_date && end_date" class="custom-chip">{{start_date | date}}-{{end_date| date}}</span>
         <span *ngIf="order_status" class="custom-chip">{{order_status}}</span>
@@ -84,7 +84,7 @@
     </div>
   </div>
     </div>
-    <div class="container container-right">
+    <div class="container container-right" [ngClass]="{'container': _commonService.checkIfMobile() && selectedMultipleData.length > 0}">
       <button
           mat-flat-button
           color="primary"

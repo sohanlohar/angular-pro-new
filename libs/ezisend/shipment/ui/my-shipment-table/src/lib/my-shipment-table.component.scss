@@ -581,19 +581,14 @@
     font-size: 18px;
   }
 }
-::ng-deep {
-  .dialogContainer {
-    .mat-dialog-content {
-      padding: 22px;
-    }
-  }
-}
-@media screen and (min-width: 768px) {
-  .actionContainer {
-    display: flex !important;
-    align-items: center;
-  }
-}
+// ::ng-deep {
+//   .dialogContainer {
+//     .mat-dialog-content {
+//       padding: 22px;
+//     }
+//   }
+// }
+
 @media screen and (max-width: 435px) {
   .mat-checkbox-layout {
     white-space: normal !important;

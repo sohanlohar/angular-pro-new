@@ -65,8 +65,8 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private translate: TranslationService
   ) {
-    this.pickup_number = this.route.snapshot.params['trackingId'];    
-    
+    this.pickup_number = this.route.snapshot.params['trackingId'];
+
     this.assignLanguageLabel()
     this.translate.buttonClick$.subscribe(() => {
       if (localStorage.getItem("language") == "en") {
@@ -149,7 +149,7 @@ export class AddOrderComponent implements OnInit, OnDestroy {
       })
     );
   }
-  
+
   fetchShipmentDetails() {
     const query = `list?keyword=${this.pickup_number}&uitab=pending-pickup`
     this.commonService
@@ -211,7 +211,7 @@ export class AddOrderComponent implements OnInit, OnDestroy {
     const dialogSubmitSubscription =
       dialogRef.componentInstance.confirmEvent.subscribe((result) => {
         if (result && event === 'gen-connote') this.onGenerateConnote(event, isMultiple);
-        
+
         dialogSubmitSubscription.unsubscribe();
         dialogRef.close();
       });
@@ -278,7 +278,7 @@ export class AddOrderComponent implements OnInit, OnDestroy {
 
     const dialogSubmitSubscription =
       dialogRef.componentInstance.confirmEvent.subscribe((result) => {
-        
+
         this.commonService.googleEventPush({
           "event": "confirm_add_order",
           "event_category": "SendParcel Pro - My Shipments - Add Order",
@@ -306,7 +306,7 @@ export class AddOrderComponent implements OnInit, OnDestroy {
       })
       .pipe(takeUntil(this._onDestroy))
       .subscribe({
-        next: () => { 
+        next: () => {
           this.commonService.isLoading(false);
           if (this.isSelectAllOrder) {
             this.currentBatchPageRequest +=1;
@@ -318,7 +318,7 @@ export class AddOrderComponent implements OnInit, OnDestroy {
           this.commonService.redirectTo('/my-shipment/add-order', { pickup_number: this.pickup_number, date: this.pickup_date });
         },
         error: (err) => {
-          let errorMessage = this.commonService.errorMessageTranslate(err?.error?.error?.data?.message);
+          const errorMessage = this.commonService.errorMessageTranslate(err?.error?.error?.data?.message);
 
           this.commonService.isLoading(false);
           this.dialog.open(DialogComponent, {
@@ -327,8 +327,8 @@ export class AddOrderComponent implements OnInit, OnDestroy {
               descriptions: errorMessage,
               icon: 'warning',
               confirmEvent: false,
-              closeEvent: true
-
+              closeEvent: true,
+              hideAction: true
             },
           });
         }
