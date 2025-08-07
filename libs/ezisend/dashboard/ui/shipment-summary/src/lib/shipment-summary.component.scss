@@ -448,3 +448,25 @@
   color: v.$teritary_color;
   padding: 24px;
 }
+
+.chart-table-container {
+  display: flex;
+  flex-direction: row;
+  width: auto;
+  align-items: center;
+  justify-content: center;
+  // margin: 0 auto;
+  gap: 30px;
+
+  &.empty {
+    margin: 24px !important;
+  }
+
+  .chart-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 260px;
+  }
+}

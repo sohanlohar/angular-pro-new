@@ -85,6 +85,10 @@
         width: 100%;
         .mat-form-field {
           width: 100%;
+          .mat-form-field-wrapper{
+            padding-bottom: 0;
+            margin: 0;
+          }
         }
 
         .mat-form-field-infix {
@@ -95,9 +99,9 @@
           padding: 0 !important;
         }
 
-        .mat-form-field-appearance-outline .mat-form-field-flex {
-          margin-top: 0 !important;
-        }
+        // .mat-form-field-appearance-outline .mat-form-field-flex {
+        //   margin-top: 0 !important;
+        // }
       }
 
       .date-button {
@@ -166,7 +170,7 @@
   }
 }
 .actionButton {
-  height: 2.5rem;
+  height: 3rem;
   margin: auto;
   text-align: center;
   display: flex;

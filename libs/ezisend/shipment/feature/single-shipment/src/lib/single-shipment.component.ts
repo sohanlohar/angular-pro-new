@@ -196,7 +196,9 @@ export class SingleShipmentComponent implements OnDestroy{
       title: (data && !data.isNew) ? this.languageData.update : this.languageData.add + ' '+ this.languageData.pick_up_address,
       formData: data?.item ? data.item : {},
       isNew: data && !data.isNew ? false : true
+      
     };
+    dialogRefConfig.panelClass = 'add-pickup-address'
 
     const dialogRef = this.dialog.open(GeneralFormDialogComponent, dialogRefConfig);
 

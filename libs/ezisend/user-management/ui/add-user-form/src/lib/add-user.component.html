@@ -1,4 +1,4 @@
-<div [formGroup]="form">
+<div [formGroup]="form" class="add-user-popup">
     <div mat-dialog-title  class="container">
         <span (click)="dialogRef.close()" >
             <mat-icon class="close" svgIcon="close_icon">close</mat-icon>
@@ -40,18 +40,17 @@
             </mat-select>
             <mat-error *ngIf="accountControl.touched && accountControl.hasError('required')">{{languageData.please_select_an_account}}</mat-error>
         </mat-form-field>
-
+        <mat-form-field class="inputEmail-field" appearance="outline">
+            <mat-label>{{languageData.email_address}}</mat-label>
+            <input formControlName="email" [disabled]="data.getButtonLabel === 'Edit User'" type="email" matInput [(ngModel)]="email" name="email" required
+                    [ngClass]="{disableInput: data.getButtonLabel == 'Edit User'}">
+            <mat-error *ngIf="emailControl.touched && emailControl.hasError('required')">{{languageData.require_email}}</mat-error>
+            <mat-error *ngIf="emailControl.touched && emailControl.hasError('email') || emailControl.hasError('pattern')">{{languageData.require_valid_email}} ({{languageData.email_example}})</mat-error>
+        </mat-form-field>
     </div>
-    <mat-form-field class="inputEmail-field" appearance="outline">
-        <mat-label>{{languageData.email_address}}</mat-label>
-        <input formControlName="email" [disabled]="data.getButtonLabel === 'Edit User'" type="email" matInput [(ngModel)]="email" name="email" required
-                [ngClass]="{disableInput: data.getButtonLabel == 'Edit User'}">
-        <mat-error *ngIf="emailControl.touched && emailControl.hasError('required')">{{languageData.require_email}}</mat-error>
-        <mat-error *ngIf="emailControl.touched && emailControl.hasError('email') || emailControl.hasError('pattern')">{{languageData.require_valid_email}} ({{languageData.email_example}})</mat-error>
-    </mat-form-field>
 </div>
 
-<div class="submitButton">
+<div class="submitButton" [ngClass]="{'edit-user': data.getButtonLabel === 'Edit User'}" >
     <button class="removeUser" *ngIf="data.getButtonLabel==='Edit User'" (click)="removeUser()" [disabled]="!data.isMasterAccount" mat-button>
       <mat-icon>delete</mat-icon>&nbsp;
       <span>{{languageData.remove_user}}</span>

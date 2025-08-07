@@ -4,7 +4,7 @@
             <div class="maintitle second-row">
                 {{languageData.user_management}}
               </div>
-              <div *ngIf="isMasterAccount" class="maintitle second-row">
+              <div *ngIf="isMasterAccount" class="maintitle second-row add-user-btn-mg">
                 <button mat-flat-button color="primary" style="width: 220px;" [disabled]="!isMasterAccount" (click)="openDialog()">+ {{languageData.add_user}}</button>
               </div>
         </div>

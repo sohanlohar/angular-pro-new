@@ -1,13 +1,13 @@
 @use 'apps/ezisend/src/styles/variables/index' as v;
 
-$title-color: #034D91;
+$title-color: #034d91;
 /* Gredient colors */
 $ezisend-to-left: #00498d;
 $ezisend-to-right: #2270b8;
 
 .container {
   display: grid;
-  grid-template-columns: 30%  70%;
+  grid-template-columns: 30% 70%;
 }
 
 pos-pickup-card-list {
@@ -35,7 +35,11 @@ mat-stepper {
   }
 
   .mat-step-header .mat-step-icon-selected {
-    background-image: linear-gradient(90deg, $ezisend-to-left, $ezisend-to-right);
+    background-image: linear-gradient(
+      90deg,
+      $ezisend-to-left,
+      $ezisend-to-right
+    );
     color: white;
     box-shadow: 0px 0px 4px 0px $ezisend-to-left;
     width: 2.6rem;
@@ -44,16 +48,15 @@ mat-stepper {
   }
 
   .mat-step-header .mat-step-icon {
-    background-color: #E2ECF5;
+    background-color: #e2ecf5;
     width: 2.6rem;
     height: 2.6rem;
     border-radius: 0.3rem;
   }
 
   .mat-step-text-label {
-    margin-left:0.8rem;
+    margin-left: 0.8rem;
   }
-  
 }
 
 // @media (max-width: 768px) {
@@ -62,15 +65,14 @@ mat-stepper {
 //   }
 // }
 
-@media (min-width: 320px) and (max-width: 567px){
-  ::ng-deep .dialog-container-custom .mat-dialog-container{
+@media (min-width: 320px) and (max-width: 567px) {
+  ::ng-deep .dialog-container-custom .mat-dialog-container {
     // padding: 10px !important;
     min-width: 80vw;
   }
 
-  ::ng-deep .mat-dialog-content{
+  ::ng-deep .mat-dialog-content {
     margin: 0px !important;
     padding: 0px !important;
   }
 }
-
