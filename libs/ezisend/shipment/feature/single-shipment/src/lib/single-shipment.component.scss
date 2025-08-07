@@ -69,6 +69,12 @@ mat-stepper {
   ::ng-deep .dialog-container-custom .mat-dialog-container {
     // padding: 10px !important;
     min-width: 80vw;
+    pos-general-form-dialog {
+      width: 100%;
+      .form-container.general-form-container {
+        padding: 0;
+      }
+    }
   }
 
   ::ng-deep .mat-dialog-content {
