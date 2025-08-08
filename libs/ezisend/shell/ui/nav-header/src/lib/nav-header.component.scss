@@ -571,3 +571,9 @@ a.active {
     max-width: 220px !important;
   }
 }
+
+@media (min-width: 767.5px) and (max-width: 768.5px) {
+  ::ng-deep .languageDropdown {
+    display: none !important;
+  }
+}

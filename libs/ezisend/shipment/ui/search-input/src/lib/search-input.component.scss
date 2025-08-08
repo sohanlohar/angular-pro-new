@@ -111,3 +111,9 @@
     padding: 8px 16px;
   }
 }
+
+@media (min-width: 767.5px) and (max-width: 768.5px) {
+  .search-input {
+    min-width: auto;
+  }
+}

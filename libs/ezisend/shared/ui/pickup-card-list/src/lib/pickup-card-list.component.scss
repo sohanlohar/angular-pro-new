@@ -253,6 +253,12 @@
   .pickup_list li {
     // width: 95%;
   }
+  pos-general-form-dialog {
+    width: 100%;
+    .form-container.general-form-container {
+      padding: 0;
+    }
+  }
 }
 @media screen and (max-width: 770px) {
   .pickup_list li {

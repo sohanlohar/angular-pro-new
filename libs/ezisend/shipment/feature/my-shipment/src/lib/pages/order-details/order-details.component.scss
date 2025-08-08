@@ -685,3 +685,14 @@
     padding: 2rem 1rem;
   }
 }
+
+@media (min-width: 767.5px) and (max-width: 768.5px) {
+  .parcel-details {
+    flex-direction: column !important;
+    gap: 20px;
+    padding-bottom: 0 !important;
+  }
+  .container-custom-details {
+    padding-bottom: 0;
+  }
+}
